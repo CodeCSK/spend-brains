@@ -10,6 +10,7 @@
     "npm": ">=9"
   },
   "scripts": {
+    "build": "npm run build -w web",
     "build:web": "npm run build -w web",
     "deploy:api": "npm run deploy -w backend"
   },
