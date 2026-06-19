@@ -3,7 +3,7 @@ import { Archive, ArchiveRestore } from 'lucide-react'
 import { useState } from 'react'
 
 import { Icon } from '../../../components/Icon'
-import { Alert, Button, Card } from '../../../components/ui'
+import { Alert, Button } from '../../../components/ui'
 import { ApiError, archiveEvent, unarchiveEvent } from '../../../lib/api'
 import { eventKeys } from '../../../lib/query-keys'
 import { useToast } from '../../../lib/store/useToast'
@@ -40,35 +40,38 @@ export function EventArchiveSection({ event, eventId }: EventArchiveSectionProps
     },
   })
 
-  return (
-    <Card as="article">
-      <h2 className="text-lg font-semibold text-text-label">Archive</h2>
-      <p className="mt-1 text-sm text-text-secondary">
-        {event.isArchived
-          ? 'This event is archived and hidden from your active list. Unarchive to restore it.'
-          : 'Archive when the trip is done. Archived events move out of your active list but remain accessible here.'}
-      </p>
+  const actionLabel = event.isArchived ? 'Unarchive' : 'Archive'
+  const hint = event.isArchived
+    ? 'Hidden from your active list until unarchived.'
+    : 'Move out of your active list when the trip is done.'
 
-      <Button
-        type="button"
-        variant="secondary"
-        className="mt-4"
-        loading={archiveMutation.isPending}
-        onClick={() => archiveMutation.mutate()}
-      >
-        <Icon icon={event.isArchived ? ArchiveRestore : Archive} size={20} aria-hidden />
-        {archiveMutation.isPending
-          ? 'Saving…'
-          : event.isArchived
-            ? 'Unarchive event'
-            : 'Archive event'}
-      </Button>
+  return (
+    <section aria-labelledby="event-archive-heading" className="xp-section-card">
+      <div className="xp-settings-action-row">
+        <div className="min-w-0">
+          <h2 id="event-archive-heading" className="text-sm font-semibold text-text-label sm:text-base">
+            Archive
+          </h2>
+          <p className="mt-0.5 text-xs text-text-secondary">{hint}</p>
+        </div>
+
+        <Button
+          type="button"
+          variant="secondary"
+          className="h-8 w-full shrink-0 px-2.5 text-xs sm:w-auto sm:text-sm"
+          loading={archiveMutation.isPending}
+          onClick={() => archiveMutation.mutate()}
+        >
+          <Icon icon={event.isArchived ? ArchiveRestore : Archive} size={16} aria-hidden />
+          {archiveMutation.isPending ? 'Saving…' : actionLabel}
+        </Button>
+      </div>
 
       {actionError && (
-        <Alert variant="error" className="mt-3">
+        <Alert variant="error" className="mt-2.5">
           {actionError}
         </Alert>
       )}
-    </Card>
+    </section>
   )
 }

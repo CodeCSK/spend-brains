@@ -2,12 +2,16 @@ import { useQuery } from '@tanstack/react-query'
 
 import { getEvent } from '../../../lib/api'
 import { eventKeys } from '../../../lib/query-keys'
+import { normalizeEventCode } from '../lib/event-routes'
 
-export function useEvent(eventId: string | undefined) {
+/** Load event by join code (preferred) or legacy UUID. */
+export function useEvent(eventRef: string | undefined) {
+  const normalizedRef = eventRef ? normalizeEventCode(eventRef) : undefined
+
   return useQuery({
-    queryKey: eventKeys.detail(eventId ?? ''),
-    queryFn: () => getEvent(eventId!),
-    enabled: !!eventId,
+    queryKey: eventKeys.detail(normalizedRef ?? ''),
+    queryFn: () => getEvent(normalizedRef!),
+    enabled: !!normalizedRef,
     retry: false,
   })
 }

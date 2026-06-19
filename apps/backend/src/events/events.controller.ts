@@ -6,7 +6,6 @@ import {
   HttpCode,
   HttpStatus,
   Param,
-  ParseUUIDPipe,
   Patch,
   Post,
   Query,
@@ -19,11 +18,13 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { MemberRole } from '@prisma/client';
+import { ParseUUIDPipe } from '@nestjs/common/pipes';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
 import { EventMember } from '../common/decorators/event-member.decorator';
 import { Roles } from '../common/decorators/roles.decorator';
 import { EventMemberGuard } from '../common/guards/event-member.guard';
 import { RolesGuard } from '../common/guards/roles.guard';
+import { ParseEventRefPipe } from '../common/pipes/parse-event-ref.pipe';
 import type { EventMembership } from '../common/guards/event-membership.types';
 import type { RequestUser } from '../auth/types/request-user';
 import { CreateEventDto } from './dto/create-event.dto';
@@ -77,7 +78,7 @@ export class EventsController {
   @ApiOperation({ summary: 'Get event detail with current role and member count' })
   @ApiOkResponse({ type: EventDto })
   getOne(
-    @Param('id', ParseUUIDPipe) id: string,
+    @Param('id', ParseEventRefPipe) id: string,
     @EventMember() membership: EventMembership,
   ) {
     return this.eventsService.getDetail(id, membership.role);
@@ -89,7 +90,7 @@ export class EventsController {
   @ApiOperation({ summary: 'Update an event (captain / vice-captain)' })
   @ApiOkResponse({ type: EventDto })
   update(
-    @Param('id', ParseUUIDPipe) id: string,
+    @Param('id', ParseEventRefPipe) id: string,
     @EventMember() membership: EventMembership,
     @Body() dto: UpdateEventDto,
   ) {
@@ -112,7 +113,7 @@ export class EventsController {
   @ApiOperation({ summary: 'Archive an event (captain / vice-captain)' })
   @ApiOkResponse({ type: EventDto })
   archive(
-    @Param('id', ParseUUIDPipe) id: string,
+    @Param('id', ParseEventRefPipe) id: string,
     @EventMember() membership: EventMembership,
   ) {
     return this.eventsService.setArchived(id, membership.role, true);
@@ -125,7 +126,7 @@ export class EventsController {
   @ApiOperation({ summary: 'Unarchive an event (captain / vice-captain)' })
   @ApiOkResponse({ type: EventDto })
   unarchive(
-    @Param('id', ParseUUIDPipe) id: string,
+    @Param('id', ParseEventRefPipe) id: string,
     @EventMember() membership: EventMembership,
   ) {
     return this.eventsService.setArchived(id, membership.role, false);
@@ -146,7 +147,7 @@ export class EventsController {
   @Roles(MemberRole.captain, MemberRole.vice_captain)
   @ApiOperation({ summary: 'Approve a join request (captain / vice-captain)' })
   approveJoinRequest(
-    @Param('id', ParseUUIDPipe) id: string,
+    @Param('id', ParseEventRefPipe) id: string,
     @Param('requestId', ParseUUIDPipe) requestId: string,
     @CurrentUser() user: RequestUser,
   ) {
@@ -159,7 +160,7 @@ export class EventsController {
   @Roles(MemberRole.captain, MemberRole.vice_captain)
   @ApiOperation({ summary: 'Reject a join request (captain / vice-captain)' })
   rejectJoinRequest(
-    @Param('id', ParseUUIDPipe) id: string,
+    @Param('id', ParseEventRefPipe) id: string,
     @Param('requestId', ParseUUIDPipe) requestId: string,
     @CurrentUser() user: RequestUser,
   ) {

@@ -43,4 +43,5 @@ export const envValidationSchema = Joi.object({
   TURNSTILE_SECRET_KEY: Joi.string().optional(),
   TURNSTILE_SITE_KEY: Joi.string().optional(),
   TURNSTILE_ENABLED: Joi.boolean().default(false),
+  SUPER_ADMIN_PHONES: Joi.string().optional().allow(''),
 });

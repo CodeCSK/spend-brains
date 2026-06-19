@@ -2,10 +2,10 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Save } from 'lucide-react'
 import { useEffect } from 'react'
-import { useForm } from 'react-hook-form'
+import { Controller, useForm } from 'react-hook-form'
 
 import { Icon } from '../../../components/Icon'
-import { Alert, Button, Card, FormField, Input, Select, Textarea } from '../../../components/ui'
+import { Alert, Button, FormField, Input, SegmentedControl, Select, Textarea } from '../../../components/ui'
 import { ApiError, updateEvent } from '../../../lib/api'
 import { eventKeys } from '../../../lib/query-keys'
 import { useToast } from '../../../lib/store/useToast'
@@ -16,6 +16,8 @@ import {
   EVENT_VISIBILITY_LABELS,
 } from '../lib/event-labels'
 import { eventFormSchema, type EventFormValues } from '../lib/event-form-schema'
+
+export const EDIT_EVENT_FORM_ID = 'edit-event-form'
 
 type EditEventFormProps = {
   event: Event
@@ -76,15 +78,35 @@ export function EditEventForm({ event, eventId }: EditEventFormProps) {
       ? updateMutation.error.message
       : updateMutation.error?.message
 
+  const saveButton = (
+    <Button
+      type="submit"
+      form={EDIT_EVENT_FORM_ID}
+      className="h-8 shrink-0 px-2.5 text-xs sm:text-sm"
+      loading={updateMutation.isPending}
+    >
+      <Icon icon={Save} size={16} aria-hidden />
+      {updateMutation.isPending ? 'Saving…' : 'Save'}
+    </Button>
+  )
+
   return (
-    <Card as="article">
-      <h2 className="text-lg font-semibold text-text-label">Event details</h2>
-      <p className="mt-1 text-sm text-text-secondary">
-        Changing the event type updates the cover image to that type&apos;s default.
-      </p>
+    <section aria-labelledby="event-details-heading" className="xp-section-card">
+      <div className="flex flex-wrap items-start justify-between gap-2">
+        <div className="min-w-0">
+          <h2 id="event-details-heading" className="text-sm font-semibold text-text-label sm:text-base">
+            Event details
+          </h2>
+          <p className="mt-0.5 text-xs text-text-muted">
+            Changing type updates the cover image.
+          </p>
+        </div>
+        {saveButton}
+      </div>
 
       <form
-        className="mt-4 space-y-4"
+        id={EDIT_EVENT_FORM_ID}
+        className="xp-form-dense mt-3"
         onSubmit={form.handleSubmit((values) => {
           updateMutation.mutate(values)
         })}
@@ -97,7 +119,7 @@ export function EditEventForm({ event, eventId }: EditEventFormProps) {
           <Input type="text" maxLength={200} {...form.register('name')} />
         </FormField>
 
-        <div className="grid gap-4 sm:grid-cols-2">
+        <div className="grid gap-3 sm:grid-cols-2">
           <FormField id="settings-start-date" label="Start date">
             <Input type="date" {...form.register('startDate')} />
           </FormField>
@@ -110,55 +132,49 @@ export function EditEventForm({ event, eventId }: EditEventFormProps) {
           </FormField>
         </div>
 
-        <FormField id="settings-description" label="Description">
-          <Textarea rows={3} maxLength={2000} {...form.register('description')} />
-        </FormField>
-
         <FormField id="settings-location" label="Location">
-          <Input type="text" maxLength={300} {...form.register('location')} />
+          <Input type="text" maxLength={300} placeholder="City or venue" {...form.register('location')} />
         </FormField>
 
-        <FormField id="settings-event-type" label="Event type">
-          <Select {...form.register('eventType')}>
-            {EVENT_TYPES.map((type) => (
-              <option key={type} value={type}>
-                {EVENT_TYPE_LABELS[type]}
-              </option>
-            ))}
-          </Select>
+        <FormField id="settings-description" label="Description">
+          <Textarea rows={2} maxLength={2000} {...form.register('description')} />
         </FormField>
 
-        <fieldset>
-          <legend className="xp-label">Visibility</legend>
-          <div className="mt-2 space-y-2">
-            {(['private', 'public'] as const).map((visibility) => (
-              <label
-                key={visibility}
-                className="flex cursor-pointer items-start gap-3 rounded-xp-lg border border-border px-3 py-3 has-[:checked]:border-border-focus has-[:checked]:bg-surface-subtle"
-              >
-                <input
-                  type="radio"
-                  value={visibility}
-                  className="mt-1"
-                  {...form.register('visibility')}
+        <div className="grid gap-3 sm:grid-cols-2 sm:items-end">
+          <FormField id="settings-event-type" label="Event type">
+            <Select {...form.register('eventType')}>
+              {EVENT_TYPES.map((type) => (
+                <option key={type} value={type}>
+                  {EVENT_TYPE_LABELS[type]}
+                </option>
+              ))}
+            </Select>
+          </FormField>
+
+          <Controller
+            name="visibility"
+            control={form.control}
+            render={({ field }) => (
+              <FormField id="settings-visibility" label="Visibility">
+                <SegmentedControl
+                  value={field.value}
+                  onChange={field.onChange}
+                  options={(['private', 'public'] as const).map((visibility) => ({
+                    value: visibility,
+                    label: EVENT_VISIBILITY_LABELS[visibility],
+                  }))}
+                  aria-label="Event visibility"
+                  size="compact"
+                  stretch
+                  className="mt-1 w-full [&>button]:min-w-0 [&>button]:flex-1"
                 />
-                <span>
-                  <span className="block text-sm font-medium">
-                    {EVENT_VISIBILITY_LABELS[visibility]}
-                  </span>
-                </span>
-              </label>
-            ))}
-          </div>
-        </fieldset>
+              </FormField>
+            )}
+          />
+        </div>
 
         {updateError && <Alert variant="error">{updateError}</Alert>}
-
-        <Button type="submit" loading={updateMutation.isPending}>
-          <Icon icon={Save} size={20} aria-hidden />
-          {updateMutation.isPending ? 'Saving…' : 'Save changes'}
-        </Button>
       </form>
-    </Card>
+    </section>
   )
 }

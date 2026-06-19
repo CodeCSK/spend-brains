@@ -3,7 +3,7 @@ import { Trash2 } from 'lucide-react'
 import { useState } from 'react'
 
 import { Icon } from '../../../components/Icon'
-import { Avatar, Button, Card, Select } from '../../../components/ui'
+import { Avatar, Select } from '../../../components/ui'
 import { ApiError, removeMember, updateMemberRole } from '../../../lib/api'
 import { useConfirm } from '../../../lib/store/useConfirm'
 import { useToast } from '../../../lib/store/useToast'
@@ -62,6 +62,7 @@ export function MemberRow({ eventId, member, canChangeRole, canRemove }: MemberR
 
   const displayName = member.displayName ?? 'No display name'
   const isUpdating = roleMutation.isPending || removeMutation.isPending
+  const showActions = canChangeRole || canRemove
 
   async function handleRemove() {
     const label = member.displayName ?? member.phone
@@ -77,32 +78,31 @@ export function MemberRow({ eventId, member, canChangeRole, canRemove }: MemberR
   }
 
   return (
-    <Card
-      as="li"
-      className="flex flex-col gap-4 p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5"
-    >
-      <div className="flex min-w-0 items-center gap-3">
-        <Avatar src={member.avatarUrl} size="md" />
+    <li className="xp-compact-list-row">
+      <Avatar src={member.avatarUrl} size="sm" />
 
-        <div className="min-w-0">
-          <div className="flex flex-wrap items-center gap-2">
-            <p className="truncate font-medium">{displayName}</p>
-            <EventRoleBadge role={member.role} />
-          </div>
-          <p className="truncate text-sm text-text-secondary">{member.phone}</p>
+      <div className="min-w-0 flex-1">
+        <div className="flex min-w-0 items-center gap-1.5">
+          <p className="truncate text-sm font-medium">{displayName}</p>
+          {!canChangeRole && (
+            <EventRoleBadge role={member.role} className="px-1.5 py-0 text-[10px]" />
+          )}
         </div>
+        <p className="truncate text-xs text-text-muted">{member.phone}</p>
+        {actionError && <p className="mt-0.5 text-xs text-error-text">{actionError}</p>}
       </div>
 
-      {(canChangeRole || canRemove) && (
-        <div className="flex flex-col gap-2 sm:items-end">
+      {showActions && (
+        <div className="flex shrink-0 items-center gap-1">
           {canChangeRole && (
-            <div className="flex flex-wrap items-center gap-2">
+            <>
               <label htmlFor={`role-${member.userId}`} className="sr-only">
                 Role for {displayName}
               </label>
               <Select
                 id={`role-${member.userId}`}
-                className="w-full min-w-40 py-2 sm:w-auto"
+                sizeVariant="compact"
+                wrapperClassName="w-[6.75rem] shrink-0 sm:w-[7.25rem]"
                 value={member.role}
                 disabled={isUpdating}
                 onChange={(event) => {
@@ -118,26 +118,22 @@ export function MemberRow({ eventId, member, canChangeRole, canRemove }: MemberR
                   </option>
                 ))}
               </Select>
-            </div>
+            </>
           )}
 
           {canRemove && (
-            <Button
+            <button
               type="button"
-              variant="destructive"
-              disabled={isUpdating}
-              loading={removeMutation.isPending}
-              onClick={handleRemove}
+              className="xp-icon-btn-sm-danger"
               aria-label={`Remove ${displayName}`}
+              disabled={isUpdating}
+              onClick={handleRemove}
             >
-              <Icon icon={Trash2} size={20} aria-hidden />
-              Remove
-            </Button>
+              <Icon icon={Trash2} size={16} aria-hidden />
+            </button>
           )}
         </div>
       )}
-
-      {actionError && <p className="w-full text-sm text-error-text sm:col-span-2">{actionError}</p>}
-    </Card>
+    </li>
   )
 }

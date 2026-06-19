@@ -8,7 +8,6 @@ import { ApiError, getSettlements } from '../../../lib/api'
 import { settlementKeys } from '../../../lib/query-keys'
 import { useEventContext } from '../../events/context/EventContext'
 import { MemberBalancesSection } from '../components/MemberBalancesSection'
-import { SettlementExportButtons } from '../components/SettlementExportButtons'
 import { SettlementLineRow } from '../components/SettlementLineRow'
 import { SettlementSummaryCard } from '../components/SettlementSummaryCard'
 
@@ -34,8 +33,8 @@ export function EventSettlementsPage() {
   if (settlementsQuery.isLoading) {
     return (
       <div className="space-y-4" aria-hidden>
-        <div className="xp-skeleton-card min-h-48" />
-        <div className="xp-skeleton-card min-h-32" />
+        <div className="xp-skeleton-card min-h-40" />
+        <div className="xp-skeleton-card min-h-28" />
       </div>
     )
   }
@@ -58,34 +57,33 @@ export function EventSettlementsPage() {
   const hasLines = summary.lines.length > 0
 
   return (
-    <div className="space-y-8">
-      <SettlementSummaryCard summary={summary} />
+    <div className="space-y-4">
+      <SettlementSummaryCard eventId={eventId} summary={summary} />
 
-      <section aria-labelledby="payment-lines-heading">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <h2 id="payment-lines-heading" className="text-lg font-semibold text-text-label">
-              Payment lines
-            </h2>
-            <p className="mt-1 text-sm text-text-secondary">
-              Who should pay whom to settle up. Amounts come from logged expenses.
-            </p>
-          </div>
+      <section aria-labelledby="payment-lines-heading" className="xp-section-card">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+          <h2 id="payment-lines-heading" className="text-sm font-semibold text-text-label sm:text-base">
+            Payment lines
+          </h2>
 
-          <SegmentedControl
-            aria-label="Settlement line filter"
-            value={lineFilter}
-            onChange={setLineFilter}
-            size="compact"
-            options={[
-              { value: 'all', label: 'All' },
-              { value: 'unsettled', label: 'Unsettled only' },
-            ]}
-          />
+          {hasLines && (
+            <SegmentedControl
+              aria-label="Settlement line filter"
+              value={lineFilter}
+              onChange={setLineFilter}
+              size="compact"
+              stretch
+              className="w-full sm:w-auto"
+              options={[
+                { value: 'all', label: 'All' },
+                { value: 'unsettled', label: 'Unsettled' },
+              ]}
+            />
+          )}
         </div>
 
         {!hasLines && (
-          <div className="mt-6">
+          <div className="mt-3">
             <EmptyState
               icon={Scale}
               title="No settlements yet"
@@ -95,13 +93,13 @@ export function EventSettlementsPage() {
         )}
 
         {hasLines && filteredLines.length === 0 && lineFilter === 'unsettled' && (
-          <Alert variant="success" live className="mt-6">
+          <Alert variant="success" live className="mt-3">
             All payment lines are settled.
           </Alert>
         )}
 
         {filteredLines.length > 0 && (
-          <ul className="mt-4 space-y-3">
+          <ul className="xp-compact-list mt-3">
             {filteredLines.map((line) => (
               <SettlementLineRow
                 key={line.id}
@@ -114,15 +112,13 @@ export function EventSettlementsPage() {
         )}
 
         {!permissions.canSettle && hasLines && (
-          <p className="mt-4 text-xs text-text-muted">
-            Only the captain and vice captain can mark lines as settled.
+          <p className="mt-2 text-xs text-text-muted">
+            Only captain and vice captain can mark lines settled.
           </p>
         )}
       </section>
 
       <MemberBalancesSection balances={summary.balances} />
-
-      <SettlementExportButtons eventId={eventId} />
     </div>
   )
 }

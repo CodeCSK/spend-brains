@@ -46,6 +46,7 @@ Open **http://localhost:5173**. CORS must allow `http://localhost:5173` (default
 | `/app/events/:eventId/settlements` | Balances, payment lines, export |
 | `/app/events/:eventId/settings` | Edit event, archive, delete |
 | `/app/profile` | Profile view + edit |
+| `/app/dev-console` | **Super admin only** — dev health, scripts, docs, AI prompts |
 
 Full route map → [docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md#routing)
 
@@ -65,6 +66,8 @@ API details → [backend/docs/authentication.md](../backend/docs/authentication.
 | Variable | Default | Description |
 |----------|---------|-------------|
 | `VITE_API_URL` | `http://localhost:3000` | Backend base URL |
+
+Super admin dev console: set your phone in backend `SUPER_ADMIN_PHONES` (see [apps/backend/.env.example](../backend/.env.example)), then open `/app/dev-console` after login.
 
 Do not commit `.env`.
 

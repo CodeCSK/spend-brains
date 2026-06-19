@@ -1,9 +1,9 @@
 /**
  * Spendbrains design tokens — SINGLE SOURCE OF TRUTH for all style values.
- * Brand: lavender purple scale. Docs: apps/web/docs/DESIGN_SYSTEM.md
+ * Console-inspired: neutral surfaces, tight density, brand purple accent.
  */
 :root {
-  /* ── Brand: lavender purple ─────────────────────────── */
+  /* ── Brand accent (lavender purple) ─────────────────── */
   --color-lavender-purple-50: #f3eef7;
   --color-lavender-purple-100: #e6ddee;
   --color-lavender-purple-200: #cebade;
@@ -16,27 +16,26 @@
   --color-lavender-purple-900: #1a1122;
   --color-lavender-purple-950: #120c18;
 
-  /* Neutrals alias brand scale (legacy utility names stay valid) */
-  --color-neutral-50: var(--color-lavender-purple-50);
-  --color-neutral-100: var(--color-lavender-purple-100);
-  --color-neutral-200: var(--color-lavender-purple-200);
-  --color-neutral-300: var(--color-lavender-purple-300);
-  --color-neutral-400: var(--color-lavender-purple-400);
-  --color-neutral-500: var(--color-lavender-purple-500);
-  --color-neutral-600: var(--color-lavender-purple-600);
-  --color-neutral-700: var(--color-lavender-purple-700);
-  --color-neutral-800: var(--color-lavender-purple-800);
-  --color-neutral-900: var(--color-lavender-purple-900);
-  --color-neutral-950: var(--color-lavender-purple-950);
+  /* Neutrals — console-style gray scale for UI chrome */
+  --color-neutral-50: #fafafa;
+  --color-neutral-100: #f5f5f5;
+  --color-neutral-200: #e5e5e5;
+  --color-neutral-300: #d4d4d4;
+  --color-neutral-400: #a3a3a3;
+  --color-neutral-500: #737373;
+  --color-neutral-600: #525252;
+  --color-neutral-700: #404040;
+  --color-neutral-800: #262626;
+  --color-neutral-900: #171717;
+  --color-neutral-950: #0a0a0a;
 
-  /* Accent (focus, highlights) */
   --color-accent-50: var(--color-lavender-purple-50);
   --color-accent-100: var(--color-lavender-purple-100);
   --color-accent-500: var(--color-lavender-purple-500);
   --color-accent-600: var(--color-lavender-purple-600);
   --color-accent-700: var(--color-lavender-purple-700);
 
-  /* ── Semantic status (unchanged hues — readable on brand surfaces) */
+  /* ── Semantic status ────────────────────────────────── */
   --color-success-bg: #ecfdf5;
   --color-success-text: #065f46;
   --color-error-bg: #fef2f2;
@@ -44,34 +43,34 @@
   --color-error-text-strong: #7f1d1d;
   --color-warning-bg: #fffbeb;
   --color-warning-text: #92400e;
-  --color-info-bg: var(--color-lavender-purple-100);
-  --color-info-text: var(--color-lavender-purple-800);
+  --color-info-bg: #eef2ff;
+  --color-info-text: #3730a3;
 
-  /* ── Surfaces & text ────────────────────────────────── */
-  --color-surface-page: var(--color-lavender-purple-50);
-  --color-surface-subtle: var(--color-lavender-purple-100);
+  /* ── Surfaces & text (Neon-like neutral shell) ──────── */
+  --color-surface-page: var(--color-neutral-50);
+  --color-surface-subtle: var(--color-neutral-100);
   --color-surface-raised: #ffffff;
-  --color-surface-inverse: var(--color-lavender-purple-900);
-  --color-text-primary: var(--color-lavender-purple-900);
-  --color-text-secondary: var(--color-lavender-purple-700);
-  --color-text-muted: var(--color-lavender-purple-500);
-  --color-text-label: var(--color-lavender-purple-800);
-  --color-text-inverse: var(--color-lavender-purple-50);
+  --color-surface-inverse: var(--color-neutral-900);
+  --color-text-primary: var(--color-neutral-900);
+  --color-text-secondary: var(--color-neutral-600);
+  --color-text-muted: var(--color-neutral-500);
+  --color-text-label: var(--color-neutral-800);
+  --color-text-inverse: #ffffff;
   --color-text-on-primary: #ffffff;
-  --color-border: var(--color-lavender-purple-200);
-  --color-border-input: var(--color-lavender-purple-300);
+  --color-border: var(--color-neutral-200);
+  --color-border-input: var(--color-neutral-300);
   --color-border-focus: var(--color-lavender-purple-500);
 
   /* ── Actions ────────────────────────────────────────── */
   --color-primary: var(--color-lavender-purple-600);
   --color-primary-hover: var(--color-lavender-purple-700);
   --color-primary-fg: var(--color-text-on-primary);
-  --color-secondary: var(--color-lavender-purple-100);
-  --color-secondary-hover: var(--color-lavender-purple-200);
-  --color-secondary-fg: var(--color-lavender-purple-700);
-  --color-secondary-border: var(--color-lavender-purple-300);
+  --color-secondary: #ffffff;
+  --color-secondary-hover: var(--color-neutral-50);
+  --color-secondary-fg: var(--color-neutral-700);
+  --color-secondary-border: var(--color-neutral-300);
 
-  /* ── Spacing (4px base) ─────────────────────────────── */
+  /* ── Spacing (4px base, tighter defaults) ─────────── */
   --space-0: 0;
   --space-1: 0.25rem;
   --space-2: 0.5rem;
@@ -84,20 +83,20 @@
   --space-12: 3rem;
   --space-16: 4rem;
 
-  /* ── Border radius ──────────────────────────────────── */
-  --radius-sm: 6px;
-  --radius-md: 10px;
-  --radius-lg: 14px;
-  --radius-xl: 20px;
+  /* ── Border radius (console: subtle corners) ────────── */
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 10px;
   --radius-full: 9999px;
 
-  /* ── Elevation (brand-tinted) ───────────────────────── */
-  --shadow-sm: 0 1px 2px rgba(26, 17, 34, 0.06);
-  --shadow-md: 0 4px 12px rgba(26, 17, 34, 0.1);
-  --shadow-lg: 0 12px 32px rgba(26, 17, 34, 0.14);
-  --shadow-focus: 0 0 0 3px rgba(132, 83, 172, 0.35);
+  /* ── Elevation (minimal — borders do most of the work) */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.12);
+  --shadow-focus: 0 0 0 2px rgba(132, 83, 172, 0.35);
 
-  /* ── Typography (Outfit variable — W008) ───────────── */
+  /* ── Typography ─────────────────────────────────────── */
   --font-sans: 'Outfit Variable', 'Outfit', system-ui, -apple-system, 'Segoe UI', Roboto,
     sans-serif;
   --font-weight-body: 400;
@@ -105,21 +104,22 @@
   --font-weight-semibold: 600;
   --font-weight-bold: 700;
   --font-weight-regular: 400;
-  --text-display: 2rem;
-  --text-h1: 1.5rem;
-  --text-h2: 1.25rem;
-  --text-h3: 1.125rem;
-  --text-body: 0.9375rem;
-  --text-body-sm: 0.875rem;
+  --text-display: 1.75rem;
+  --text-h1: 1.375rem;
+  --text-h2: 1.125rem;
+  --text-h3: 1rem;
+  --text-body: 0.875rem;
+  --text-body-sm: 0.8125rem;
   --text-caption: 0.75rem;
-  --text-amount-lg: 1.25rem;
-  --text-amount: 1rem;
+  --text-amount-lg: 1rem;
+  --text-amount: 0.875rem;
 
   /* ── Layout ─────────────────────────────────────────── */
   --content-max-width: 720px;
   --content-max-width-wide: 1120px;
   --sidebar-width: 15rem;
   --sidebar-width-collapsed: 4rem;
-  --header-height: 3.5rem;
-  --bottom-nav-height: 4rem;
+  --header-height: 3rem;
+  --bottom-nav-height: 3.5rem;
+  --table-row-height: 2.5rem;
 }

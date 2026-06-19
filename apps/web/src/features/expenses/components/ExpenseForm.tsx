@@ -1,12 +1,12 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Save, Trash2 } from 'lucide-react'
-import { useEffect, useRef } from 'react'
+import { useEffect, useId, useRef } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
 
 import { Icon } from '../../../components/Icon'
-import { Alert, Button, Card, Checkbox, FormField, Input, Select, Textarea } from '../../../components/ui'
+import { Alert, AmountInput, Button, Card, FormField, Input, Select, Textarea } from '../../../components/ui'
 import {
   ApiError,
   createExpense,
@@ -20,9 +20,8 @@ import { useConfirm } from '../../../lib/store/useConfirm'
 import { useToast } from '../../../lib/store/useToast'
 import { useCategories } from '../../categories/hooks/useCategories'
 import { useEventContext } from '../../events/context/EventContext'
-import {
-  canDeleteExpense,
-} from '../../events/lib/event-permissions'
+import { eventExpensesPath } from '../../events/lib/event-routes'
+import { canDeleteExpense } from '../../events/lib/event-permissions'
 import { sortMembers } from '../../members/lib/sort-members'
 import {
   expenseFormSchema,
@@ -31,20 +30,38 @@ import {
   todayIsoDate,
   type ExpenseFormInput,
 } from '../lib/expense-form-schema'
+import { ExpenseMemberSplitField } from './ExpenseMemberSplitField'
+
+export const EXPENSE_FORM_ID = 'expense-form'
 
 type ExpenseFormProps = {
   mode: 'create' | 'edit'
   expenseId?: string
   initialValues?: ExpenseFormInput
   createdBy?: string
+  /** Page keeps card wrapper; modal is bare fields for dialog shell. */
+  layout?: 'page' | 'modal'
+  formId?: string
+  onSuccess?: () => void
+  onCancel?: () => void
 }
 
-export function ExpenseForm({ mode, expenseId, initialValues, createdBy }: ExpenseFormProps) {
+export function ExpenseForm({
+  mode,
+  expenseId,
+  initialValues,
+  createdBy,
+  layout = 'page',
+  formId = EXPENSE_FORM_ID,
+  onSuccess,
+  onCancel,
+}: ExpenseFormProps) {
   const navigate = useNavigate()
   const queryClient = useQueryClient()
   const confirm = useConfirm()
   const toast = useToast()
-  const { eventId, myRole } = useEventContext()
+  const { eventId, eventCode, myRole } = useEventContext()
+  const notesId = useId()
 
   const profileQuery = useQuery({
     queryKey: profileKeys.me,
@@ -113,7 +130,11 @@ export function ExpenseForm({ mode, expenseId, initialValues, createdBy }: Expen
         queryClient.invalidateQueries({ queryKey: expenseKeys.lists() }),
         queryClient.invalidateQueries({ queryKey: settlementKeys.all }),
       ])
-      navigate(`/app/events/${eventId}/expenses`, { replace: true })
+      if (onSuccess) {
+        onSuccess()
+        return
+      }
+      navigate(eventExpensesPath(eventCode), { replace: true })
     },
   })
 
@@ -125,7 +146,11 @@ export function ExpenseForm({ mode, expenseId, initialValues, createdBy }: Expen
         queryClient.invalidateQueries({ queryKey: expenseKeys.lists() }),
         queryClient.invalidateQueries({ queryKey: settlementKeys.all }),
       ])
-      navigate(`/app/events/${eventId}/expenses`, { replace: true })
+      if (onSuccess) {
+        onSuccess()
+        return
+      }
+      navigate(eventExpensesPath(eventCode), { replace: true })
     },
   })
 
@@ -148,9 +173,21 @@ export function ExpenseForm({ mode, expenseId, initialValues, createdBy }: Expen
   const isLoadingDeps =
     membersQuery.isLoading || categoriesQuery.isLoading || profileQuery.isLoading
 
+  async function handleDelete() {
+    const confirmed = await confirm({
+      title: 'Delete expense',
+      message: 'Delete this expense? Settlements will be recalculated.',
+      confirmLabel: 'Delete',
+      destructive: true,
+    })
+    if (confirmed) {
+      deleteMutation.mutate()
+    }
+  }
+
   if (isLoadingDeps) {
     return (
-      <p className="text-sm text-text-secondary" role="status">
+      <p className="py-6 text-sm text-text-secondary" role="status">
         Loading form…
       </p>
     )
@@ -164,12 +201,55 @@ export function ExpenseForm({ mode, expenseId, initialValues, createdBy }: Expen
     )
   }
 
-  return (
-    <Card as="article">
-      <form
-        className="space-y-4"
-        onSubmit={form.handleSubmit((values) => saveMutation.mutate(values))}
+  const submitLabel =
+    saveMutation.isPending
+      ? 'Saving…'
+      : mode === 'create'
+        ? 'Add expense'
+        : 'Save changes'
+
+  const footerActions = (
+    <>
+      {showDelete && (
+        <Button
+          type="button"
+          variant="destructive"
+          className="w-full sm:mr-auto sm:w-auto"
+          loading={deleteMutation.isPending}
+          disabled={saveMutation.isPending}
+          onClick={handleDelete}
+        >
+          <Icon icon={Trash2} size={20} aria-hidden />
+          {deleteMutation.isPending ? 'Deleting…' : 'Delete'}
+        </Button>
+      )}
+      {onCancel && layout !== 'modal' && (
+        <Button
+          type="button"
+          variant="secondary"
+          className="w-full sm:w-auto"
+          disabled={saveMutation.isPending || deleteMutation.isPending}
+          onClick={onCancel}
+        >
+          Cancel
+        </Button>
+      )}
+      <Button
+        type="submit"
+        form={layout === 'modal' ? formId : undefined}
+        className="w-full sm:w-auto"
+        loading={saveMutation.isPending}
+        disabled={deleteMutation.isPending}
       >
+        <Icon icon={Save} size={20} aria-hidden />
+        {submitLabel}
+      </Button>
+    </>
+  )
+
+  const formFields = (
+    <>
+      <section className="space-y-4" aria-label="Expense basics">
         <FormField
           id="expense-description"
           label="Description"
@@ -179,38 +259,44 @@ export function ExpenseForm({ mode, expenseId, initialValues, createdBy }: Expen
             type="text"
             maxLength={500}
             placeholder="Dinner at beach shack"
-            autoFocus
+            autoFocus={layout === 'modal'}
             {...form.register('description')}
           />
         </FormField>
 
-        <div className="grid gap-4 sm:grid-cols-2">
+        <div className="grid gap-3 sm:grid-cols-2 sm:gap-4">
           <FormField
             id="expense-amount"
-            label="Amount (₹)"
+            label="Amount"
             error={form.formState.errors.amount?.message}
           >
-            <Input
+            <AmountInput
               type="number"
               min="0.01"
               step="0.01"
-              inputMode="decimal"
-              placeholder="1200"
-              className="tabular-amount"
+              placeholder="1,200"
+              className="text-base sm:text-sm"
               {...form.register('amount')}
             />
           </FormField>
 
           <FormField
             id="expense-date"
-            label="Expense date"
+            label="Date"
             error={form.formState.errors.expenseDate?.message}
           >
             <Input type="date" {...form.register('expenseDate')} />
           </FormField>
         </div>
+      </section>
 
-        <div className="grid gap-4 sm:grid-cols-2">
+      <section
+        className="space-y-3 rounded-xp-lg border border-border bg-surface-subtle/30 p-3 sm:space-y-4 sm:p-4"
+        aria-label="Payment details"
+      >
+        <h3 className="text-sm font-medium text-text-label">Payment details</h3>
+
+        <div className="grid gap-3 sm:grid-cols-2 sm:gap-4">
           <FormField
             id="expense-category"
             label="Category"
@@ -239,105 +325,67 @@ export function ExpenseForm({ mode, expenseId, initialValues, createdBy }: Expen
             </Select>
           </FormField>
         </div>
+      </section>
 
-        <fieldset>
-          <legend className="xp-label">Shared among</legend>
-          <p className="mt-1 text-sm text-text-secondary">
-            Split equally among selected members. The server calculates each person&apos;s share.
-          </p>
-          <Controller
-            name="sharedAmong"
-            control={form.control}
-            render={({ field }) => (
-              <div className="mt-3 space-y-2">
-                {members.map((member) => {
-                  const checked = field.value?.includes(member.userId) ?? false
-
-                  return (
-                    <label
-                      key={member.userId}
-                      className="flex cursor-pointer items-center gap-3 rounded-xp-lg border border-border px-3 py-2 has-[:checked]:border-border-focus has-[:checked]:bg-surface-subtle"
-                    >
-                      <Checkbox
-                        checked={checked}
-                        onChange={(event) => {
-                          const next = event.target.checked
-                            ? [...(field.value ?? []), member.userId]
-                            : (field.value ?? []).filter((id) => id !== member.userId)
-                          field.onChange(next)
-                        }}
-                      />
-                      <span className="min-w-0 flex-1 text-sm font-medium">
-                        {member.displayName ?? member.phone}
-                      </span>
-                    </label>
-                  )
-                })}
-              </div>
-            )}
+      <Controller
+        name="sharedAmong"
+        control={form.control}
+        render={({ field }) => (
+          <ExpenseMemberSplitField
+            members={members}
+            value={field.value ?? []}
+            onChange={field.onChange}
+            error={form.formState.errors.sharedAmong?.message}
           />
-          {form.formState.errors.sharedAmong && (
-            <p className="mt-1 text-sm text-error-text">
-              {form.formState.errors.sharedAmong.message}
-            </p>
-          )}
-        </fieldset>
+        )}
+      />
 
-        <FormField
-          id="expense-notes"
-          label={
-            <>
-              Notes <span className="font-normal text-text-muted">(optional)</span>
-            </>
-          }
-          error={form.formState.errors.notes?.message}
-        >
-          <Textarea rows={2} maxLength={2000} {...form.register('notes')} />
-        </FormField>
+      <FormField
+        id={notesId}
+        label={
+          <>
+            Notes <span className="font-normal text-text-muted">(optional)</span>
+          </>
+        }
+        error={form.formState.errors.notes?.message}
+      >
+        <Textarea rows={2} maxLength={2000} placeholder="Receipt link, context…" {...form.register('notes')} />
+      </FormField>
 
-        {saveError && <Alert variant="error">{saveError}</Alert>}
-        {deleteError && <Alert variant="error">{deleteError}</Alert>}
-
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <Button
-            type="submit"
-            className="w-full sm:w-auto"
-            loading={saveMutation.isPending}
-            disabled={deleteMutation.isPending}
-          >
-            <Icon icon={Save} size={20} aria-hidden />
-            {saveMutation.isPending
-              ? 'Saving…'
-              : mode === 'create'
-                ? 'Add expense'
-                : 'Save changes'}
-          </Button>
-
-          {showDelete && (
-            <Button
-              type="button"
-              variant="destructive"
-              className="w-full sm:w-auto"
-              loading={deleteMutation.isPending}
-              disabled={saveMutation.isPending}
-              onClick={async () => {
-                const confirmed = await confirm({
-                  title: 'Delete expense',
-                  message: 'Delete this expense? Settlements will be recalculated.',
-                  confirmLabel: 'Delete',
-                  destructive: true,
-                })
-                if (confirmed) {
-                  deleteMutation.mutate()
-                }
-              }}
-            >
-              <Icon icon={Trash2} size={20} aria-hidden />
-              {deleteMutation.isPending ? 'Deleting…' : 'Delete expense'}
-            </Button>
-          )}
-        </div>
-      </form>
-    </Card>
+      {saveError && <Alert variant="error">{saveError}</Alert>}
+      {deleteError && <Alert variant="error">{deleteError}</Alert>}
+    </>
   )
+
+  if (layout === 'modal') {
+    return (
+      <div className="flex min-h-0 flex-1 flex-col">
+        <form
+          id={formId}
+          className="min-h-0 flex-1 space-y-5 overflow-y-auto overscroll-contain px-4 py-4 sm:px-5 sm:py-5"
+          onSubmit={form.handleSubmit((values) => saveMutation.mutate(values))}
+        >
+          {formFields}
+        </form>
+        <div className="flex shrink-0 flex-col gap-2 border-t border-border bg-surface-raised px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-5 sm:py-4">
+          {footerActions}
+        </div>
+      </div>
+    )
+  }
+
+  const formContent = (
+    <form
+      id={formId}
+      className="space-y-5"
+      onSubmit={form.handleSubmit((values) => saveMutation.mutate(values))}
+    >
+      {formFields}
+      <div className="flex flex-col gap-2 border-t border-border pt-4 sm:flex-row sm:items-center sm:justify-between">
+        {footerActions}
+      </div>
+    </form>
+  )
+
+  return <Card as="article">{formContent}</Card>
 }

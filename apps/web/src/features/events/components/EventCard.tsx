@@ -1,10 +1,9 @@
 import { Chip, Card } from '../../../components/ui'
 import type { Event } from '../../../types/event'
+import { EVENT_TYPE_LABELS, formatEventDateRange } from '../lib/event-labels'
+import { eventExpensesPath } from '../lib/event-routes'
+import { EventTypeBanner } from './EventTypeBanner'
 import { EventRoleBadge } from './EventRoleBadge'
-import {
-  EVENT_TYPE_LABELS,
-  formatEventDateRange,
-} from '../lib/event-labels'
 
 type EventCardProps = {
   event: Event
@@ -16,27 +15,10 @@ export function EventCard({ event }: EventCardProps) {
   return (
     <Card
       as="link"
-      to={`/app/events/${event.id}/expenses`}
+      to={eventExpensesPath(event.publicId)}
       className="group block overflow-hidden p-0 transition-shadow hover:shadow-xp-md focus-visible:outline-none focus-visible:shadow-[var(--shadow-focus)]"
     >
-      <div className="relative aspect-[16/9] overflow-hidden bg-surface-subtle">
-        {event.coverImageUrl ? (
-          <img
-            src={event.coverImageUrl}
-            alt=""
-            className="h-full w-full object-cover transition-transform group-hover:scale-[1.02]"
-          />
-        ) : (
-          <div className="flex h-full items-center justify-center text-sm text-text-muted">
-            {EVENT_TYPE_LABELS[event.eventType]}
-          </div>
-        )}
-        {event.isArchived && (
-          <span className="absolute left-3 top-3 rounded-xp-md bg-surface-inverse px-2 py-0.5 text-xs font-medium text-text-inverse">
-            Archived
-          </span>
-        )}
-      </div>
+      <EventTypeBanner eventType={event.eventType} variant="card" archived={event.isArchived} />
 
       <div className="p-4 sm:p-5">
         <div className="flex flex-wrap items-start justify-between gap-2">

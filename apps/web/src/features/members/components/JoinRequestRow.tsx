@@ -3,7 +3,7 @@ import { Check, X } from 'lucide-react'
 import { useState } from 'react'
 
 import { Icon } from '../../../components/Icon'
-import { Avatar, Button, Card } from '../../../components/ui'
+import { Avatar } from '../../../components/ui'
 import { ApiError, approveJoinRequest, rejectJoinRequest } from '../../../lib/api'
 import { eventKeys, memberKeys } from '../../../lib/query-keys'
 import { useToast } from '../../../lib/store/useToast'
@@ -59,45 +59,35 @@ export function JoinRequestRow({ eventId, request }: JoinRequestRowProps) {
   const displayName = request.user.displayName ?? 'No display name'
 
   return (
-    <Card
-      as="li"
-      className="flex flex-col gap-4 p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5"
-    >
-      <div className="flex min-w-0 items-center gap-3">
-        <Avatar src={request.user.avatarUrl} size="md" />
+    <li className="xp-compact-list-row">
+      <Avatar src={request.user.avatarUrl} size="sm" />
 
-        <div className="min-w-0">
-          <p className="truncate font-medium">{displayName}</p>
-          <p className="truncate text-sm text-text-secondary">{request.user.phone}</p>
-          <p className="mt-1 text-xs text-text-muted">
-            Requested {new Date(request.createdAt).toLocaleString()}
-          </p>
-        </div>
+      <div className="min-w-0 flex-1">
+        <p className="truncate text-sm font-medium">{displayName}</p>
+        <p className="truncate text-xs text-text-muted">{request.user.phone}</p>
+        {actionError && <p className="mt-0.5 text-xs text-error-text">{actionError}</p>}
       </div>
 
-      <div className="flex flex-wrap gap-2">
-        <Button
+      <div className="flex shrink-0 items-center gap-0.5">
+        <button
           type="button"
+          className="xp-icon-btn-sm text-primary hover:bg-success-bg hover:text-success-text"
+          aria-label={`Approve ${displayName}`}
           disabled={isPending}
-          loading={approveMutation.isPending}
           onClick={() => approveMutation.mutate()}
         >
-          <Icon icon={Check} size={20} aria-hidden />
-          {approveMutation.isPending ? 'Approving…' : 'Approve'}
-        </Button>
-        <Button
+          <Icon icon={Check} size={16} aria-hidden />
+        </button>
+        <button
           type="button"
-          variant="secondary"
+          className="xp-icon-btn-sm-danger"
+          aria-label={`Reject ${displayName}`}
           disabled={isPending}
-          loading={rejectMutation.isPending}
           onClick={() => rejectMutation.mutate()}
         >
-          <Icon icon={X} size={20} aria-hidden />
-          {rejectMutation.isPending ? 'Rejecting…' : 'Reject'}
-        </Button>
+          <Icon icon={X} size={16} aria-hidden />
+        </button>
       </div>
-
-      {actionError && <p className="w-full text-sm text-error-text">{actionError}</p>}
-    </Card>
+    </li>
   )
 }

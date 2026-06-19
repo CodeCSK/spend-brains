@@ -29,27 +29,29 @@ export function JoinRequestsSection({ eventId }: JoinRequestsSectionProps) {
   const pendingCount = requestsQuery.data?.length ?? 0
 
   return (
-    <PageSection aria-labelledby="join-requests-heading">
+    <PageSection aria-labelledby="join-requests-heading" className="xp-section-card">
       <div className="flex flex-wrap items-center gap-2">
-        <h2 id="join-requests-heading" className="text-lg font-semibold text-text-label">
+        <h2 id="join-requests-heading" className="text-sm font-semibold text-text-label sm:text-base">
           Join requests
         </h2>
         {requestsQuery.isSuccess && pendingCount > 0 && (
-          <Badge variant="info">{pendingCount} pending</Badge>
+          <Badge variant="info" className="px-1.5 py-0 text-[10px]">
+            {pendingCount}
+          </Badge>
         )}
       </div>
-      <p className="mt-1 text-sm text-text-secondary">
-        People who requested to join this private event. Approving adds them as members.
-      </p>
 
       {requestsQuery.isLoading && (
-        <ul className="mt-4 space-y-3" aria-hidden>
-          <li className="xp-skeleton-card" />
+        <ul className="xp-compact-list mt-3" aria-hidden>
+          <li className="xp-compact-list-row">
+            <div className="xp-skeleton h-8 w-8 rounded-xp-full" />
+            <div className="xp-skeleton h-4 flex-1 rounded-xp-md" />
+          </li>
         </ul>
       )}
 
       {requestsQuery.isError && (
-        <Alert variant="error" className="mt-4">
+        <Alert variant="error" className="mt-3">
           {requestsQuery.error instanceof ApiError
             ? requestsQuery.error.message
             : 'Failed to load join requests'}
@@ -57,14 +59,14 @@ export function JoinRequestsSection({ eventId }: JoinRequestsSectionProps) {
       )}
 
       {requestsQuery.isSuccess && pendingCount === 0 && (
-        <p className="mt-4 flex items-center gap-2 text-sm text-text-muted" role="status">
+        <p className="mt-3 flex items-center gap-1.5 text-xs text-text-muted" role="status">
           <Icon icon={UserCheck} size={16} aria-hidden />
-          No pending join requests.
+          No pending requests.
         </p>
       )}
 
       {requestsQuery.isSuccess && pendingCount > 0 && (
-        <ul className="mt-4 space-y-3">
+        <ul className="xp-compact-list mt-3">
           {requestsQuery.data!.map((request) => (
             <JoinRequestRow key={request.id} eventId={eventId} request={request} />
           ))}

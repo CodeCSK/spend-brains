@@ -79,6 +79,10 @@ body {
   @apply min-h-screen bg-surface-page font-sans text-text-primary antialiased;
 }
 
+html {
+  scrollbar-gutter: stable;
+}
+
 .tabular-amount {
   font-variant-numeric: tabular-nums;
   letter-spacing: -0.01em;
@@ -94,29 +98,29 @@ body {
 /* ── Shared UI patterns (use on every screen) ─────────── */
 @layer components {
   .xp-page {
-    @apply mx-auto w-full px-4 py-6 sm:px-6 sm:py-10;
+    @apply mx-auto w-full px-4 py-4 sm:px-5 sm:py-6;
     max-width: var(--content-max-width-wide);
   }
 
   .xp-page-narrow {
-    @apply mx-auto w-full px-4 py-6 sm:px-6 sm:py-10;
+    @apply mx-auto w-full px-4 py-4 sm:px-5 sm:py-6;
     max-width: var(--content-max-width);
   }
 
   .xp-auth-shell {
-    @apply mx-auto flex min-h-screen w-full max-w-md flex-col justify-center px-4 py-8 sm:px-6;
+    @apply mx-auto flex min-h-screen w-full max-w-md flex-col justify-center px-4 py-6 sm:px-6;
   }
 
   .xp-card {
-    @apply rounded-xp-xl border border-border bg-surface-raised p-4 shadow-xp-sm sm:p-6;
+    @apply rounded-xp-lg border border-border bg-surface-raised p-3 shadow-xp-sm sm:p-4;
   }
 
   .xp-page-title {
-    @apply flex flex-wrap items-center gap-2 text-xl font-semibold sm:text-2xl;
+    @apply flex flex-wrap items-center gap-2 text-lg font-semibold sm:text-xl;
   }
 
   .xp-page-subtitle {
-    @apply mt-1 text-sm text-text-secondary;
+    @apply mt-0.5 text-sm text-text-secondary;
   }
 
   .xp-label {
@@ -124,23 +128,178 @@ body {
   }
 
   .xp-input {
-    @apply mt-1 w-full min-h-11 rounded-xp-lg border border-border-input bg-surface-raised px-3 py-2 text-sm text-text-primary outline-none placeholder:text-text-muted focus:border-border-focus focus-visible:shadow-[var(--shadow-focus)];
+    @apply mt-1 w-full min-h-9 rounded-xp-md border border-border-input bg-surface-raised px-3 py-1.5 text-sm text-text-primary outline-none placeholder:text-text-muted focus:border-border-focus focus-visible:shadow-[var(--shadow-focus)];
+  }
+
+  .xp-select-wrap {
+    @apply relative inline-block w-full max-w-full;
+  }
+
+  .xp-select {
+    @apply mt-1 w-full min-h-9 cursor-pointer appearance-none rounded-xp-md border border-border-input bg-surface-raised py-1.5 pl-3 pr-9 text-sm text-text-primary outline-none transition-[border-color,background-color] focus:border-border-focus focus-visible:shadow-[var(--shadow-focus)] disabled:cursor-not-allowed disabled:opacity-60;
+  }
+
+  .xp-select:hover:not(:disabled) {
+    @apply border-border-input bg-surface-subtle/50;
+  }
+
+  .xp-select-chevron {
+    @apply pointer-events-none absolute right-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-text-muted;
+  }
+
+  .xp-select-wrap-compact .xp-select-chevron {
+    @apply right-2 h-3.5 w-3.5;
   }
 
   .xp-btn-primary {
-    @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-xp-lg px-4 py-2 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-60 bg-primary text-primary-fg hover:bg-primary-hover;
+    @apply inline-flex min-h-9 items-center justify-center gap-1.5 rounded-xp-md px-3 py-1.5 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-60 bg-primary text-primary-fg hover:bg-primary-hover;
   }
 
   .xp-btn-secondary {
-    @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-xp-lg px-4 py-2 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-60 border border-secondary-border bg-secondary text-secondary-fg hover:bg-secondary-hover;
+    @apply inline-flex min-h-9 items-center justify-center gap-1.5 rounded-xp-md px-3 py-1.5 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-60 border border-secondary-border bg-secondary text-secondary-fg hover:bg-secondary-hover;
   }
 
   .xp-btn-ghost {
-    @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-xp-lg px-4 py-2 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-60 text-text-secondary hover:bg-surface-subtle hover:text-text-primary;
+    @apply inline-flex min-h-9 items-center justify-center gap-1.5 rounded-xp-md px-3 py-1.5 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-60 text-text-secondary hover:bg-surface-subtle hover:text-text-primary;
+  }
+
+  .xp-icon-btn {
+    @apply inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-xp-md text-text-secondary transition-colors hover:bg-surface-subtle hover:text-text-primary disabled:cursor-not-allowed disabled:opacity-50;
+  }
+
+  .xp-icon-btn-danger {
+    @apply inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-xp-md text-text-secondary transition-colors hover:bg-error-bg hover:text-error-text-strong disabled:cursor-not-allowed disabled:opacity-50;
+  }
+
+  .xp-data-table-wrap {
+    @apply overflow-hidden rounded-xp-lg border border-border bg-surface-raised;
+  }
+
+  .xp-data-table {
+    @apply w-full border-collapse text-sm;
+  }
+
+  @media (min-width: 768px) {
+    .xp-data-table {
+      min-width: 640px;
+    }
+  }
+
+  .xp-scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .xp-scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  .xp-tabs-grid {
+    @apply grid grid-cols-4;
+  }
+
+  .xp-tab-link-mobile {
+    @apply flex-col gap-0.5 px-1 py-2 text-[11px] leading-tight sm:gap-1.5 sm:px-2.5 sm:py-1.5 sm:text-sm;
+  }
+
+  .xp-expense-card {
+    @apply rounded-xp-lg border border-border bg-surface-raised p-3 shadow-xp-sm;
+  }
+
+  .xp-expense-card-meta {
+    @apply flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-text-secondary;
+  }
+
+  .xp-section-card {
+    @apply rounded-xp-lg border border-border bg-surface-raised p-3 shadow-xp-sm sm:p-4;
+  }
+
+  .xp-compact-list {
+    @apply divide-y divide-border overflow-hidden rounded-xp-lg border border-border bg-surface-raised;
+  }
+
+  .xp-compact-list-row {
+    @apply flex items-center gap-2 px-2 py-2 sm:gap-3 sm:px-3 sm:py-2.5;
+  }
+
+  .xp-select-compact {
+    @apply mt-0 min-h-8 py-1 pl-2.5 pr-8 text-xs sm:min-h-8 sm:text-sm;
+  }
+
+  .xp-icon-btn-sm {
+    @apply inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-xp-md text-text-secondary transition-colors hover:bg-surface-subtle hover:text-text-primary disabled:cursor-not-allowed disabled:opacity-50;
+  }
+
+  .xp-icon-btn-sm-danger {
+    @apply inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-xp-md text-text-secondary transition-colors hover:bg-error-bg hover:text-error-text-strong disabled:cursor-not-allowed disabled:opacity-50;
+  }
+
+  .xp-amount-label {
+    @apply text-[10px] font-medium uppercase tracking-wide text-text-muted;
+  }
+
+  .xp-amount-positive {
+    @apply font-semibold text-success-text;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.01em;
+  }
+
+  .xp-amount-negative {
+    @apply font-semibold text-error-text-strong;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.01em;
+  }
+
+  .xp-amount-neutral {
+    @apply font-medium text-text-primary;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.01em;
+  }
+
+  .xp-amount-muted {
+    @apply font-medium text-text-secondary;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.01em;
+  }
+
+  .xp-form-dense {
+    @apply space-y-3;
+  }
+
+  .xp-form-dense .xp-label {
+    @apply text-xs;
+  }
+
+  .xp-form-dense .xp-input {
+    @apply min-h-8 py-1 text-base sm:text-sm;
+  }
+
+  .xp-settings-action-row {
+    @apply flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between sm:gap-3;
+  }
+
+  .xp-stat-pill {
+    @apply rounded-xp-md border border-border bg-surface-subtle/60 px-2.5 py-2;
+  }
+
+  .xp-data-table thead {
+    @apply border-b border-border bg-surface-subtle text-left text-xs font-medium uppercase tracking-wide text-text-muted;
+  }
+
+  .xp-data-table th {
+    @apply px-3 py-2 font-medium;
+  }
+
+  .xp-data-table tbody tr {
+    @apply border-b border-border transition-colors last:border-b-0 hover:bg-surface-subtle/80;
+  }
+
+  .xp-data-table td {
+    @apply px-3 py-2 align-middle;
   }
 
   .xp-nav-link {
-    @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-xp-lg px-3 py-2 text-sm font-medium transition-colors;
+    @apply inline-flex min-h-9 items-center justify-center gap-1.5 rounded-xp-md px-2.5 py-1.5 text-sm font-medium transition-colors;
   }
 
   .xp-nav-link-active {
@@ -152,7 +311,7 @@ body {
   }
 
   .xp-tab-link {
-    @apply inline-flex min-h-11 shrink-0 items-center gap-2 border-b-2 border-transparent px-3 py-2 text-sm font-medium transition-colors;
+    @apply inline-flex min-h-9 shrink-0 items-center justify-center gap-1.5 border-b-2 border-transparent px-2.5 py-1.5 text-sm font-medium transition-colors;
   }
 
   .xp-tab-link-active {
@@ -192,7 +351,7 @@ body {
   }
 
   .xp-skeleton-card {
-    @apply min-h-32 animate-pulse rounded-xp-xl border border-transparent bg-surface-subtle p-4 shadow-none sm:p-6;
+    @apply min-h-10 animate-pulse rounded-xp-lg border border-transparent bg-surface-subtle p-3 shadow-none;
   }
 }
 

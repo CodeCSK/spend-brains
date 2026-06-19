@@ -41,6 +41,11 @@ export interface TurnstileConfig {
   enabled: boolean;
 }
 
+export interface SuperAdminConfig {
+  /** E.164 phones allowed to access dev console (comma-separated in env). */
+  phones: string[];
+}
+
 export interface RootConfig {
   app: AppConfig;
   cors: CorsConfig;
@@ -49,6 +54,7 @@ export interface RootConfig {
   msg91: Msg91Config;
   otp: OtpConfig;
   turnstile: TurnstileConfig;
+  superAdmin: SuperAdminConfig;
 }
 
 export default (): RootConfig => ({
@@ -94,5 +100,11 @@ export default (): RootConfig => ({
     secretKey: process.env.TURNSTILE_SECRET_KEY,
     siteKey: process.env.TURNSTILE_SITE_KEY,
     enabled: process.env.TURNSTILE_ENABLED === 'true',
+  },
+  superAdmin: {
+    phones: (process.env.SUPER_ADMIN_PHONES ?? '')
+      .split(',')
+      .map((phone) => phone.trim())
+      .filter(Boolean),
   },
 });

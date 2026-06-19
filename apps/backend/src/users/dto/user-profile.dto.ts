@@ -18,4 +18,10 @@ export class UserProfileDto {
 
   @ApiProperty({ type: String, format: 'date-time' })
   createdAt!: Date;
+
+  @ApiProperty({
+    description:
+      'True when the user phone is listed in SUPER_ADMIN_PHONES (dev console access).',
+  })
+  isSuperAdmin!: boolean;
 }

@@ -1,18 +1,45 @@
 import { useEffect, useId, useRef, type ReactNode } from 'react'
+import { createPortal } from 'react-dom'
+import { X } from 'lucide-react'
 
+import { lockBodyScroll, unlockBodyScroll } from '../../lib/body-scroll-lock'
 import { cn } from '../../lib/cn'
+import { Icon } from '../Icon'
+
+const sizeClass = {
+  sm: 'max-w-md',
+  md: 'max-w-lg',
+  lg: 'max-w-xl',
+} as const
 
 type DialogProps = {
   open: boolean
   onClose: () => void
   title: string
+  description?: ReactNode
   children: ReactNode
   footer?: ReactNode
   className?: string
+  bodyClassName?: string
+  /** `form` — scrollable body, no secondary text wrapper (expense/profile forms). */
+  variant?: 'default' | 'form'
+  size?: keyof typeof sizeClass
 }
 
-export function Dialog({ open, onClose, title, children, footer, className }: DialogProps) {
+export function Dialog({
+  open,
+  onClose,
+  title,
+  description,
+  children,
+  footer,
+  className,
+  bodyClassName,
+  variant = 'default',
+  size = 'sm',
+}: DialogProps) {
   const titleId = useId()
+  const descriptionId = useId()
   const panelRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -29,16 +56,20 @@ export function Dialog({ open, onClose, title, children, footer, className }: Di
     }
 
     document.addEventListener('keydown', handleKeyDown)
-    document.body.style.overflow = 'hidden'
+    lockBodyScroll()
 
-    const focusable = panelRef.current?.querySelector<HTMLElement>(
-      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
-    )
+    const focusable =
+      panelRef.current?.querySelector<HTMLElement>(
+        'input:not([type="hidden"]), select, textarea',
+      ) ??
+      panelRef.current?.querySelector<HTMLElement>(
+        'button, [href], [tabindex]:not([tabindex="-1"])',
+      )
     focusable?.focus()
 
     return () => {
       document.removeEventListener('keydown', handleKeyDown)
-      document.body.style.overflow = ''
+      unlockBodyScroll()
       previousFocus?.focus()
     }
   }, [open, onClose])
@@ -47,11 +78,16 @@ export function Dialog({ open, onClose, title, children, footer, className }: Di
     return null
   }
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center p-4 sm:items-center">
+  const isForm = variant === 'form'
+
+  return createPortal(
+    <div
+      className="fixed inset-0 z-[100] flex items-end justify-center sm:items-center sm:p-4"
+      style={{ height: '100dvh', width: '100vw' }}
+    >
       <button
         type="button"
-        className="absolute inset-0 bg-surface-inverse/40"
+        className="absolute inset-0 bg-surface-inverse/50 backdrop-blur-[2px]"
         aria-label="Close dialog"
         onClick={onClose}
       />
@@ -60,17 +96,74 @@ export function Dialog({ open, onClose, title, children, footer, className }: Di
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
+        aria-describedby={description ? descriptionId : undefined}
         className={cn(
-          'relative z-10 w-full max-w-md rounded-xp-xl border border-border bg-surface-raised p-4 shadow-xp-md sm:p-6',
+          'relative z-10 flex w-full flex-col border border-border bg-surface-raised shadow-xp-md',
+          isForm
+            ? 'max-h-[min(92dvh,100dvh)] rounded-t-xp-xl sm:max-h-[min(88dvh,calc(100dvh-2rem))] sm:rounded-xp-lg'
+            : 'mx-4 max-h-[calc(100dvh-2rem)] rounded-xp-xl p-4 sm:mx-0 sm:p-5',
+          sizeClass[size],
           className,
         )}
       >
-        <h2 id={titleId} className="text-lg font-semibold text-text-label">
-          {title}
-        </h2>
-        <div className="mt-3 text-sm text-text-secondary">{children}</div>
-        {footer && <div className="mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">{footer}</div>}
+        {isForm ? (
+          <div className="flex shrink-0 items-start justify-between gap-3 border-b border-border px-4 py-4 sm:px-5">
+            <div className="min-w-0 flex-1">
+              <h2 id={titleId} className="text-base font-semibold text-text-label sm:text-lg">
+                {title}
+              </h2>
+              {description && (
+                <p id={descriptionId} className="mt-1 text-sm text-text-secondary">
+                  {description}
+                </p>
+              )}
+            </div>
+            <button
+              type="button"
+              className="xp-icon-btn -mr-1 shrink-0"
+              aria-label="Close"
+              onClick={onClose}
+            >
+              <Icon icon={X} size={20} aria-hidden />
+            </button>
+          </div>
+        ) : (
+          <>
+            <h2 id={titleId} className="text-base font-semibold text-text-label sm:text-lg">
+              {title}
+            </h2>
+            {description && (
+              <p id={descriptionId} className="mt-2 text-sm text-text-secondary">
+                {description}
+              </p>
+            )}
+          </>
+        )}
+
+        {isForm ? (
+          <div className={cn('flex min-h-0 flex-1 flex-col overflow-hidden', bodyClassName)}>
+            {children}
+          </div>
+        ) : (
+          <div className={cn('mt-2 overflow-y-auto text-sm text-text-secondary', bodyClassName)}>
+            {children}
+          </div>
+        )}
+
+        {footer && (
+          <div
+            className={cn(
+              'flex flex-col-reverse gap-2 sm:flex-row sm:justify-end',
+              isForm
+                ? 'shrink-0 border-t border-border px-4 py-3 sm:px-5 sm:py-4'
+                : 'mt-4',
+            )}
+          >
+            {footer}
+          </div>
+        )}
       </div>
-    </div>
+    </div>,
+    document.body,
   )
 }

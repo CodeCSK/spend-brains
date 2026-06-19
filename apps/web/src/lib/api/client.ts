@@ -141,3 +141,73 @@ export async function apiFetchBlob(path: string, options: ApiFetchOptions = {}):
 
   return response.blob()
 }
+
+export type ApiBlobResponse = {
+  blob: Blob
+  filename?: string
+  contentType?: string
+}
+
+function parseContentDisposition(value: string | null): string | undefined {
+  if (!value) return undefined
+
+  const match =
+    /filename\*=UTF-8''([^;]+)|filename="([^"]+)"|filename=([^;]+)/i.exec(value)
+  const raw = match?.[1] ?? match?.[2] ?? match?.[3]
+  if (!raw) return undefined
+
+  try {
+    return decodeURIComponent(raw.trim())
+  } catch {
+    return raw.trim()
+  }
+}
+
+export async function apiFetchBlobResponse(
+  path: string,
+  options: ApiFetchOptions = {},
+): Promise<ApiBlobResponse> {
+  const { auth = false, _retried = false, headers, ...rest } = options
+  const requestHeaders = new Headers(headers)
+
+  if (auth) {
+    const token = getAccessToken()
+    if (token) {
+      requestHeaders.set('Authorization', `Bearer ${token}`)
+    }
+  }
+
+  const response = await fetch(`${API_URL}${path}`, {
+    ...rest,
+    headers: requestHeaders,
+  })
+
+  if (response.status === 401 && auth && !_retried) {
+    const refreshToken = getRefreshToken()
+    if (refreshToken) {
+      try {
+        const tokens = await refreshAccessToken(refreshToken)
+        setTokens(tokens.accessToken, tokens.refreshToken)
+        return apiFetchBlobResponse(path, { ...options, _retried: true })
+      } catch {
+        clearTokens()
+        redirectToLogin()
+        throw new ApiError(401, 'Session expired')
+      }
+    }
+
+    clearTokens()
+    redirectToLogin()
+    throw new ApiError(401, await parseErrorMessage(response))
+  }
+
+  if (!response.ok) {
+    throw new ApiError(response.status, await parseErrorMessage(response))
+  }
+
+  return {
+    blob: await response.blob(),
+    filename: parseContentDisposition(response.headers.get('Content-Disposition')),
+    contentType: response.headers.get('Content-Type') ?? undefined,
+  }
+}

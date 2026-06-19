@@ -1,8 +1,10 @@
 import { Receipt, Scale, Settings, Users } from 'lucide-react'
-import { Outlet, useParams } from 'react-router-dom'
+import { useEffect } from 'react'
+import { Outlet, useLocation, useNavigate, useParams } from 'react-router-dom'
 
 import { PageLayout } from '../../../components/layout'
 import { BackLink, Skeleton, Tab, Tabs } from '../../../components/ui'
+import { EventTypeBanner } from '../components/EventTypeBanner'
 import { EventAccessError } from '../components/EventAccessError'
 import { EventRoleBadge } from '../components/EventRoleBadge'
 import { EventProvider } from '../context/EventContext'
@@ -12,17 +14,36 @@ import {
   EVENT_VISIBILITY_LABELS,
   formatEventDateRange,
 } from '../lib/event-labels'
+import { eventPath } from '../lib/event-routes'
 
 const tabs = [
-  { to: 'expenses', label: 'Expenses', icon: Receipt },
-  { to: 'members', label: 'Members', icon: Users },
-  { to: 'settlements', label: 'Settlements', icon: Scale },
-  { to: 'settings', label: 'Settings', icon: Settings },
+  { to: 'expenses', label: 'Expenses', shortLabel: 'Spend', icon: Receipt },
+  { to: 'members', label: 'Members', shortLabel: 'People', icon: Users },
+  { to: 'settlements', label: 'Settlements', shortLabel: 'Settle', icon: Scale },
+  { to: 'settings', label: 'Settings', shortLabel: 'Setup', icon: Settings },
 ] as const
 
 export function EventLayout() {
-  const { eventId } = useParams<{ eventId: string }>()
-  const eventQuery = useEvent(eventId)
+  const { eventCode } = useParams<{ eventCode: string }>()
+  const location = useLocation()
+  const navigate = useNavigate()
+  const eventQuery = useEvent(eventCode)
+
+  const event = eventQuery.data
+
+  useEffect(() => {
+    if (!event || !eventCode) return
+
+    const canonical = event.publicId
+    if (eventCode.toUpperCase() === canonical) return
+
+    const prefix = `/app/events/${eventCode}`
+    const suffix = location.pathname.startsWith(prefix)
+      ? location.pathname.slice(prefix.length)
+      : ''
+
+    navigate(`${eventPath(canonical)}${suffix}${location.search}`, { replace: true })
+  }, [event, eventCode, location.pathname, location.search, navigate])
 
   if (eventQuery.isLoading) {
     return (
@@ -37,48 +58,30 @@ export function EventLayout() {
     )
   }
 
-  if (eventQuery.isError || !eventQuery.data) {
+  if (eventQuery.isError || !event) {
     return <EventAccessError error={eventQuery.error} />
   }
 
-  const event = eventQuery.data
   const dateLabel = formatEventDateRange(event.startDate, event.endDate)
 
   return (
-    <EventProvider event={event} eventId={eventId!}>
+    <EventProvider event={event}>
       <PageLayout width="wide">
         <BackLink to="/app/events">All events</BackLink>
 
-        <header className="overflow-hidden rounded-xp-xl border border-border bg-surface-raised shadow-xp-sm">
-          <div className="relative aspect-[21/9] max-h-56 overflow-hidden bg-surface-subtle sm:aspect-[3/1]">
-            {event.coverImageUrl ? (
-              <img
-                src={event.coverImageUrl}
-                alt=""
-                className="h-full w-full object-cover"
-              />
-            ) : (
-              <div className="flex h-full items-center justify-center text-sm text-text-muted">
-                {EVENT_TYPE_LABELS[event.eventType]}
-              </div>
-            )}
-            {event.isArchived && (
-              <span className="absolute left-3 top-3 rounded-xp-md bg-surface-inverse px-2 py-0.5 text-xs font-medium text-text-inverse">
-                Archived
-              </span>
-            )}
-          </div>
+        <header className="overflow-hidden rounded-xp-lg border border-border bg-surface-raised shadow-xp-sm">
+          <EventTypeBanner eventType={event.eventType} variant="compact" archived={event.isArchived} />
 
-          <div className="p-4 sm:p-6">
-            <div className="flex flex-wrap items-start justify-between gap-3">
+          <div className="p-3 sm:p-4">
+            <div className="flex flex-wrap items-start justify-between gap-2">
               <div className="min-w-0">
-                <h1 className="text-xl font-semibold sm:text-2xl">{event.name}</h1>
-                <p className="mt-1 text-sm text-text-secondary">{dateLabel}</p>
+                <h1 className="text-lg font-semibold sm:text-xl">{event.name}</h1>
+                <p className="text-sm text-text-secondary">{dateLabel}</p>
               </div>
               <EventRoleBadge role={event.myRole} />
             </div>
 
-            <dl className="mt-4 flex flex-wrap gap-x-6 gap-y-2 text-sm">
+            <dl className="mt-3 grid grid-cols-2 gap-x-4 gap-y-2 text-sm sm:flex sm:flex-wrap sm:gap-x-5 sm:gap-y-1.5">
               <div>
                 <dt className="text-text-muted">Type</dt>
                 <dd className="font-medium">{EVENT_TYPE_LABELS[event.eventType]}</dd>
@@ -87,9 +90,9 @@ export function EventLayout() {
                 <dt className="text-text-muted">Visibility</dt>
                 <dd className="font-medium">{EVENT_VISIBILITY_LABELS[event.visibility]}</dd>
               </div>
-              <div>
+              <div className="col-span-2 sm:col-span-1">
                 <dt className="text-text-muted">Join code</dt>
-                <dd className="font-mono font-medium">{event.publicId}</dd>
+                <dd className="truncate font-mono font-medium">{event.publicId}</dd>
               </div>
               <div>
                 <dt className="text-text-muted">Members</dt>
@@ -101,15 +104,15 @@ export function EventLayout() {
           </div>
         </header>
 
-        <Tabs aria-label="Event sections" className="mt-6">
-          {tabs.map(({ to, label, icon }) => (
-            <Tab key={to} to={to} icon={icon}>
+        <Tabs aria-label="Event sections" className="mt-4">
+          {tabs.map(({ to, label, shortLabel, icon }) => (
+            <Tab key={to} to={to} icon={icon} shortLabel={shortLabel}>
               {label}
             </Tab>
           ))}
         </Tabs>
 
-        <div className="mt-6 sm:mt-8">
+        <div className="mt-4 sm:mt-5">
           <Outlet />
         </div>
       </PageLayout>

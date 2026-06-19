@@ -1,7 +1,6 @@
-import { Settings } from 'lucide-react'
+import { Archive } from 'lucide-react'
 
 import { Icon } from '../../../components/Icon'
-import { Card } from '../../../components/ui'
 import { useEventContext } from '../context/EventContext'
 import { canEditEvent } from '../lib/event-permissions'
 import { EditEventForm } from '../components/EditEventForm'
@@ -14,21 +13,25 @@ export function EventSettingsPage() {
 
   if (!canManage) {
     return (
-      <Card as="article">
-        <h2 className="text-lg font-semibold text-text-label">Settings</h2>
-        <p className="mt-2 text-sm text-text-secondary">
+      <section aria-labelledby="settings-denied-heading" className="xp-section-card">
+        <h2 id="settings-denied-heading" className="text-sm font-semibold text-text-label sm:text-base">
+          Settings
+        </h2>
+        <p className="mt-1.5 text-xs text-text-secondary sm:text-sm">
           Only the captain and vice captain can edit event details, archive, or delete the event.
         </p>
-      </Card>
+      </section>
     )
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center gap-2 text-sm text-text-muted">
-        <Icon icon={Settings} size={16} aria-hidden />
-        {event.isArchived ? 'This event is archived.' : 'Manage event details and lifecycle.'}
-      </div>
+    <div className="space-y-4">
+      {event.isArchived && (
+        <p className="flex items-center gap-1.5 text-xs text-text-muted" role="status">
+          <Icon icon={Archive} size={16} aria-hidden />
+          This event is archived.
+        </p>
+      )}
 
       <EditEventForm event={event} eventId={eventId} />
       <EventArchiveSection event={event} eventId={eventId} />

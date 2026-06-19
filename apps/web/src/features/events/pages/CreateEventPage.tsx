@@ -24,6 +24,7 @@ import {
   EVENT_TYPE_LABELS,
   EVENT_VISIBILITY_LABELS,
 } from '../lib/event-labels'
+import { eventPath } from '../lib/event-routes'
 import { EVENT_TYPES, EVENT_VISIBILITIES } from '../../../types/event'
 
 const createEventSchema = z
@@ -85,7 +86,7 @@ export function CreateEventPage() {
     onSuccess: async (event) => {
       toast.success('Event created.')
       await queryClient.invalidateQueries({ queryKey: eventKeys.list() })
-      navigate(`/app/events/${event.id}`, { replace: true })
+      navigate(eventPath(event.publicId), { replace: true })
     },
   })
 

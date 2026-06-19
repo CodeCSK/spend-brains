@@ -12,6 +12,7 @@ import type {
 } from './dto/settlement-response.dto';
 import { SettlementExportFormat } from './dto/export-query.dto';
 import {
+  buildExportFilename,
   buildSettlementPdf,
   buildSettlementSvg,
   type SettlementExportData,
@@ -217,19 +218,30 @@ export class SettlementsService {
     }
 
     const summary = await this.getSummary(eventId);
+    const statusLabels: Record<string, string> = {
+      unsettled: 'Unsettled',
+      partial: 'Partially settled',
+      settled: 'All settled',
+    };
     const data: SettlementExportData = {
       eventName: event.name,
       generatedAt: new Date(),
-      statusLabel: summary.status,
+      statusLabel: statusLabels[summary.status] ?? summary.status,
+      settledCount: summary.settledCount,
+      totalCount: summary.totalCount,
       totalSpent: summary.totalSpent,
       settledAmount: summary.settledAmount,
       outstandingAmount: summary.outstandingAmount,
       balances: summary.balances.map((b) => ({
         name: b.displayName ?? 'Member',
+        paid: b.totalPaid,
+        share: b.totalShare,
         net: b.netBalance,
       })),
       lines: summary.lines.map((l) => ({
-        text: `${l.fromDisplayName ?? 'Member'} pays ${l.toDisplayName ?? 'Member'} Rs. ${l.amount}`,
+        from: l.fromDisplayName ?? 'Member',
+        to: l.toDisplayName ?? 'Member',
+        amount: l.amount,
         settled: l.isSettled,
       })),
     };
@@ -238,13 +250,13 @@ export class SettlementsService {
       return {
         body: buildSettlementSvg(data),
         contentType: 'image/svg+xml',
-        filename: 'settlement.svg',
+        filename: buildExportFilename(event.name, 'image'),
       };
     }
     return {
       body: buildSettlementPdf(data),
       contentType: 'application/pdf',
-      filename: 'settlement.pdf',
+      filename: buildExportFilename(event.name, 'pdf'),
     };
   }
 

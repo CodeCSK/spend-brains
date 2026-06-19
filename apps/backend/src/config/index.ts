@@ -8,5 +8,6 @@ export type {
   Msg91Config,
   OtpConfig,
   TurnstileConfig,
+  SuperAdminConfig,
   RootConfig,
 } from './configuration';

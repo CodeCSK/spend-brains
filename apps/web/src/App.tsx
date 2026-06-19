@@ -2,6 +2,8 @@ import { Navigate, Route, Routes } from 'react-router-dom'
 import { AppShell } from './components/AppShell'
 import { ConfirmDialog, ToastContainer } from './components/ui'
 import { GuestRoute, ProtectedRoute } from './components/ProtectedRoute'
+import { SuperAdminRoute } from './components/SuperAdminRoute'
+import { DevConsolePage } from './features/dev-console/pages/DevConsolePage'
 import { CreateExpensePage } from './features/expenses/pages/CreateExpensePage'
 import { EditExpensePage } from './features/expenses/pages/EditExpensePage'
 import { EventExpensesPage } from './features/expenses/pages/EventExpensesPage'
@@ -31,7 +33,7 @@ export default function App() {
           <Route path="/app/events" element={<EventsPage />} />
           <Route path="/app/events/new" element={<CreateEventPage />} />
           <Route path="/app/join" element={<JoinEventPage />} />
-          <Route path="/app/events/:eventId" element={<EventLayout />}>
+          <Route path="/app/events/:eventCode" element={<EventLayout />}>
             <Route index element={<Navigate to="expenses" replace />} />
             <Route path="expenses/new" element={<CreateExpensePage />} />
             <Route path="expenses/:expenseId/edit" element={<EditExpensePage />} />
@@ -41,6 +43,9 @@ export default function App() {
             <Route path="settings" element={<EventSettingsPage />} />
           </Route>
           <Route path="/app/profile" element={<ProfilePage />} />
+          <Route element={<SuperAdminRoute />}>
+            <Route path="/app/dev-console" element={<DevConsolePage />} />
+          </Route>
         </Route>
       </Route>
 

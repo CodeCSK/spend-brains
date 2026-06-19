@@ -1,20 +1,21 @@
-const inrFormatter = new Intl.NumberFormat('en-IN', {
-  style: 'currency',
-  currency: 'INR',
+/** Indian Rupee symbol — use for inputs and with `formatInr` output. */
+export const INR_SYMBOL = '₹'
+
+const inrNumberFormatter = new Intl.NumberFormat('en-IN', {
   minimumFractionDigits: 0,
   maximumFractionDigits: 2,
 })
 
 /**
- * Format an API amount (number or decimal string) as Indian Rupees.
+ * Format an API amount (number or decimal string) as Indian Rupees with ₹ prefix.
  * Pair with `.tabular-amount` in JSX for aligned columns.
  */
 export function formatInr(amount: number | string): string {
   const value = typeof amount === 'string' ? Number.parseFloat(amount) : amount
   if (!Number.isFinite(value)) {
-    return '₹—'
+    return `${INR_SYMBOL}—`
   }
-  return inrFormatter.format(value)
+  return `${INR_SYMBOL}${inrNumberFormatter.format(Math.abs(value))}`
 }
 
 /** CSS class for rupee columns — tabular figures + slight tracking. */

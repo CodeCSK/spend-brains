@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import { Icon } from '../../../components/Icon'
-import { Alert, Button, Card } from '../../../components/ui'
+import { Alert, Button } from '../../../components/ui'
 import { ApiError, deleteEvent } from '../../../lib/api'
 import { useConfirm } from '../../../lib/store/useConfirm'
 import { useToast } from '../../../lib/store/useToast'
@@ -47,28 +47,37 @@ export function EventDeleteSection({ eventId, eventName }: EventDeleteSectionPro
   }
 
   return (
-    <Card as="article" className="border-error-bg">
-      <h2 className="text-lg font-semibold text-error-text-strong">Danger zone</h2>
-      <p className="mt-1 text-sm text-text-secondary">
-        Permanently delete this event. Only the captain can do this.
-      </p>
+    <section
+      aria-labelledby="event-delete-heading"
+      className="xp-section-card border-error-bg/60"
+    >
+      <div className="xp-settings-action-row">
+        <div className="min-w-0">
+          <h2 id="event-delete-heading" className="text-sm font-semibold text-error-text-strong sm:text-base">
+            Delete event
+          </h2>
+          <p className="mt-0.5 text-xs text-text-secondary">
+            Permanently remove this event and all its data. Captain only.
+          </p>
+        </div>
 
-      <Button
-        type="button"
-        variant="destructive"
-        className="mt-4"
-        loading={deleteMutation.isPending}
-        onClick={handleDelete}
-      >
-        <Icon icon={Trash2} size={20} aria-hidden />
-        {deleteMutation.isPending ? 'Deleting…' : 'Delete event'}
-      </Button>
+        <Button
+          type="button"
+          variant="destructive"
+          className="h-8 w-full shrink-0 px-2.5 text-xs sm:w-auto sm:text-sm"
+          loading={deleteMutation.isPending}
+          onClick={handleDelete}
+        >
+          <Icon icon={Trash2} size={16} aria-hidden />
+          {deleteMutation.isPending ? 'Deleting…' : 'Delete'}
+        </Button>
+      </div>
 
       {actionError && (
-        <Alert variant="error" className="mt-3">
+        <Alert variant="error" className="mt-2.5">
           {actionError}
         </Alert>
       )}
-    </Card>
+    </section>
   )
 }

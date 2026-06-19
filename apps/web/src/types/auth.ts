@@ -19,4 +19,5 @@ export type MessageResponse = {
 export type UserProfile = AuthUser & {
   phoneVerifiedAt: string | null
   createdAt: string
+  isSuperAdmin: boolean
 }

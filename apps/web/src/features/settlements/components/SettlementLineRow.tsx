@@ -1,11 +1,10 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { Check, RotateCcw } from 'lucide-react'
+import { ArrowRight, Check, RotateCcw } from 'lucide-react'
 import { useState } from 'react'
 
 import { Icon } from '../../../components/Icon'
-import { Badge, Button, Card } from '../../../components/ui'
+import { Amount, Badge } from '../../../components/ui'
 import { ApiError, settleLine, unsettleLine } from '../../../lib/api'
-import { formatInr, TABULAR_AMOUNT_CLASS } from '../../../lib/format-inr'
 import { settlementKeys } from '../../../lib/query-keys'
 import { useToast } from '../../../lib/store/useToast'
 import type { SettlementLine } from '../../../types/settlement'
@@ -55,58 +54,62 @@ export function SettlementLineRow({ eventId, line, canManage }: SettlementLineRo
   const toName = memberDisplayName(line.toDisplayName)
 
   return (
-    <Card
-      as="li"
-      className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5"
-    >
-      <div className="min-w-0">
-        <p className="font-medium">
-          {fromName} pays {toName}{' '}
-          <span className={`${TABULAR_AMOUNT_CLASS} text-primary`}>
-            {formatInr(line.amount)}
-          </span>
+    <li className="xp-compact-list-row flex-wrap sm:flex-nowrap">
+      <div className="flex min-w-0 flex-1 items-center gap-1.5">
+        <p className="min-w-0 truncate text-sm">
+          <span className="font-medium text-text-primary">{fromName}</span>
+          <Icon
+            icon={ArrowRight}
+            size={16}
+            className="mx-0.5 inline-block shrink-0 text-text-muted"
+            aria-hidden
+          />
+          <span className="font-medium text-text-primary">{toName}</span>
         </p>
-        {line.isSettled && line.settledAt && (
-          <p className="mt-1 text-xs text-text-muted">
-            Settled {new Date(line.settledAt).toLocaleString()}
-          </p>
-        )}
       </div>
 
-      <div className="flex flex-wrap items-center gap-2">
-        {line.isSettled ? (
-          <Badge variant="success">Settled</Badge>
-        ) : (
-          <Badge variant="info">Unsettled</Badge>
-        )}
+      <Amount value={line.amount} tone="neutral" className="shrink-0 text-sm" />
 
-        {canManage && !line.isSettled && (
-          <Button
-            type="button"
-            loading={settleMutation.isPending}
-            disabled={isPending}
-            onClick={() => settleMutation.mutate()}
-          >
-            <Icon icon={Check} size={20} aria-hidden />
-            {settleMutation.isPending ? 'Saving…' : 'Mark settled'}
-          </Button>
-        )}
+      {line.isSettled ? (
+        <Badge variant="success" className="shrink-0 px-1.5 py-0 text-[10px]">
+          Done
+        </Badge>
+      ) : (
+        <Badge variant="warning" className="shrink-0 px-1.5 py-0 text-[10px]">
+          Due
+        </Badge>
+      )}
 
-        {canManage && line.isSettled && (
-          <Button
-            type="button"
-            variant="secondary"
-            loading={unsettleMutation.isPending}
-            disabled={isPending}
-            onClick={() => unsettleMutation.mutate()}
-          >
-            <Icon icon={RotateCcw} size={20} aria-hidden />
-            {unsettleMutation.isPending ? 'Saving…' : 'Unsettle'}
-          </Button>
-        )}
-      </div>
+      {canManage && (
+        <div className="flex shrink-0 items-center gap-0.5">
+          {!line.isSettled && (
+            <button
+              type="button"
+              className="xp-icon-btn-sm text-success-text hover:bg-success-bg"
+              aria-label={`Mark ${fromName} pays ${toName} as settled`}
+              disabled={isPending}
+              onClick={() => settleMutation.mutate()}
+            >
+              <Icon icon={Check} size={16} aria-hidden />
+            </button>
+          )}
+          {line.isSettled && (
+            <button
+              type="button"
+              className="xp-icon-btn-sm"
+              aria-label={`Unsettle payment from ${fromName} to ${toName}`}
+              disabled={isPending}
+              onClick={() => unsettleMutation.mutate()}
+            >
+              <Icon icon={RotateCcw} size={16} aria-hidden />
+            </button>
+          )}
+        </div>
+      )}
 
-      {actionError && <p className="w-full text-sm text-error-text">{actionError}</p>}
-    </Card>
+      {actionError && (
+        <p className="w-full basis-full text-xs text-error-text">{actionError}</p>
+      )}
+    </li>
   )
 }

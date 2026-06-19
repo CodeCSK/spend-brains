@@ -3,15 +3,21 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { Prisma } from '@prisma/client';
 import type { User } from '@prisma/client';
+import { normalizeIndianPhone } from '../common/phone/normalize-indian-phone';
+import type { RootConfig } from '../config';
 import { PrismaService } from '../prisma/prisma.service';
 import type { UpdateUserProfileDto } from './dto/update-user-profile.dto';
 import type { UserProfileDto } from './dto/user-profile.dto';
 
 @Injectable()
 export class UsersService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly config: ConfigService<RootConfig, true>,
+  ) {}
 
   async getProfile(userId: string): Promise<UserProfileDto> {
     const user = await this.prisma.user.findUnique({ where: { id: userId } });
@@ -62,6 +68,17 @@ export class UsersService {
       avatarUrl: user.avatarUrl,
       phoneVerifiedAt: user.phoneVerifiedAt,
       createdAt: user.createdAt,
+      isSuperAdmin: this.isSuperAdminPhone(user.phone),
     };
+  }
+
+  private isSuperAdminPhone(phone: string): boolean {
+    const allowlist = this.config.get('superAdmin.phones', { infer: true });
+    if (allowlist.length === 0) return false;
+
+    const normalized = normalizeIndianPhone(phone);
+    return allowlist.some(
+      (allowed) => normalizeIndianPhone(allowed) === normalized,
+    );
   }
 }

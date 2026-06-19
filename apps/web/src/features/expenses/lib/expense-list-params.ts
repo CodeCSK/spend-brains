@@ -28,13 +28,19 @@ export function parseExpenseListParams(searchParams: URLSearchParams): ExpenseLi
 }
 
 export function hasActiveExpenseFilters(params: ExpenseListParams): boolean {
-  return Boolean(
-    params.categoryId ||
-      params.paidBy ||
-      params.dateFrom ||
-      params.dateTo ||
-      params.search,
-  )
+  return Boolean(params.categoryId || params.search)
+}
+
+export type ExpenseSortColumn = 'expenseDate' | 'amount'
+
+export function nextExpenseSortParams(
+  current: Pick<ExpenseListParams, 'sort' | 'order'>,
+  column: ExpenseSortColumn,
+): Pick<ExpenseListParams, 'sort' | 'order'> {
+  if (current.sort === column) {
+    return { sort: column, order: current.order === 'desc' ? 'asc' : 'desc' }
+  }
+  return { sort: column, order: 'desc' }
 }
 
 export function formatExpenseDate(date: string): string {

@@ -1,12 +1,13 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { CalendarDays, LogOut, User } from 'lucide-react'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { CalendarDays, LogOut, Terminal, User } from 'lucide-react'
 import { NavLink, Outlet, useNavigate } from 'react-router-dom'
 
 import { AppLogo } from './AppLogo'
 import { Icon } from './Icon'
 import { Button } from './ui'
-import { logout } from '../lib/api'
+import { logout, getMe } from '../lib/api'
 import { clearTokens, getRefreshToken } from '../lib/auth-storage'
+import { profileKeys } from '../lib/query-keys'
 
 function navLinkClass(isActive: boolean, compact = false) {
   return [
@@ -21,6 +22,11 @@ function navLinkClass(isActive: boolean, compact = false) {
 export function AppShell() {
   const navigate = useNavigate()
   const queryClient = useQueryClient()
+
+  const profileQuery = useQuery({
+    queryKey: profileKeys.me,
+    queryFn: getMe,
+  })
 
   const logoutMutation = useMutation({
     mutationFn: async () => {
@@ -54,6 +60,15 @@ export function AppShell() {
                 <Icon icon={User} size={20} />
                 Profile
               </NavLink>
+              {profileQuery.data?.isSuperAdmin && (
+                <NavLink
+                  to="/app/dev-console"
+                  className={({ isActive }) => navLinkClass(isActive)}
+                >
+                  <Icon icon={Terminal} size={20} />
+                  Dev
+                </NavLink>
+              )}
             </nav>
           </div>
           <Button
@@ -95,6 +110,15 @@ export function AppShell() {
             <Icon icon={User} size={20} />
             Profile
           </NavLink>
+          {profileQuery.data?.isSuperAdmin && (
+            <NavLink
+              to="/app/dev-console"
+              className={({ isActive }) => navLinkClass(isActive, true)}
+            >
+              <Icon icon={Terminal} size={20} />
+              Dev
+            </NavLink>
+          )}
         </div>
       </nav>
     </div>

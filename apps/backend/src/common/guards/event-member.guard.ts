@@ -6,6 +6,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
+import { resolveEventId } from '../ids/resolve-event-id';
 import type { RequestUser } from '../../auth/types/request-user';
 import type { EventMembership } from './event-membership.types';
 
@@ -27,14 +28,16 @@ export class EventMemberGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest<MembershipRequest>();
     const userId = request.user?.id;
-    const eventId = request.params.eventId ?? request.params.id;
+    const eventRef = request.params.eventId ?? request.params.id;
 
     if (!userId) {
       throw new ForbiddenException('Authentication required');
     }
-    if (!eventId) {
+    if (!eventRef) {
       throw new NotFoundException('Event not found');
     }
+
+    const eventId = await resolveEventId(this.prisma, eventRef);
 
     const event = await this.prisma.event.findUnique({
       where: { id: eventId },

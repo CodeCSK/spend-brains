@@ -64,8 +64,8 @@ export function joinEvent(publicId: string): Promise<JoinEventResult> {
   })
 }
 
-export function getEvent(id: string): Promise<Event> {
-  return apiFetch<Event>(`/v1/events/${encodeURIComponent(id)}`, {
+export function getEvent(eventRef: string): Promise<Event> {
+  return apiFetch<Event>(`/v1/events/${encodeURIComponent(eventRef)}`, {
     method: 'GET',
     auth: true,
   })

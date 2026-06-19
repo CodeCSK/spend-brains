@@ -1,5 +1,5 @@
 import type { MemberBalance, SettlementExportFormat, SettlementLine, SettlementSummary } from '../../types/settlement'
-import { apiFetch, apiFetchBlob } from './client'
+import { apiFetch, apiFetchBlobResponse } from './client'
 
 export function getMemberSummaries(eventId: string): Promise<MemberBalance[]> {
   return apiFetch<MemberBalance[]>(
@@ -46,17 +46,83 @@ function downloadBlob(blob: Blob, filename: string): void {
   const anchor = document.createElement('a')
   anchor.href = url
   anchor.download = filename
+  anchor.style.display = 'none'
+  document.body.appendChild(anchor)
   anchor.click()
-  URL.revokeObjectURL(url)
+  document.body.removeChild(anchor)
+  window.setTimeout(() => URL.revokeObjectURL(url), 1000)
+}
+
+function defaultExportFilename(format: SettlementExportFormat): string {
+  const date = new Date().toISOString().slice(0, 10)
+  return format === 'pdf' ? `settlement-${date}.pdf` : `settlement-${date}.png`
+}
+
+async function svgBlobToPng(svgBlob: Blob): Promise<Blob> {
+  const svgMarkup = await svgBlob.text()
+  const svgUrl = URL.createObjectURL(
+    new Blob([svgMarkup], { type: 'image/svg+xml;charset=utf-8' }),
+  )
+
+  try {
+    const image = await new Promise<HTMLImageElement>((resolve, reject) => {
+      const img = new Image()
+      img.onload = () => resolve(img)
+      img.onerror = () => reject(new Error('Failed to render settlement image'))
+      img.src = svgUrl
+    })
+
+    const width = image.naturalWidth || 720
+    const height = image.naturalHeight || 900
+    const scale = 2
+    const canvas = document.createElement('canvas')
+    canvas.width = width * scale
+    canvas.height = height * scale
+
+    const context = canvas.getContext('2d')
+    if (!context) {
+      throw new Error('Canvas is unavailable in this browser')
+    }
+
+    context.scale(scale, scale)
+    context.fillStyle = '#fafafa'
+    context.fillRect(0, 0, width, height)
+    context.drawImage(image, 0, 0, width, height)
+
+    return await new Promise<Blob>((resolve, reject) => {
+      canvas.toBlob((blob) => {
+        if (blob) {
+          resolve(blob)
+          return
+        }
+        reject(new Error('Failed to encode PNG'))
+      }, 'image/png')
+    })
+  } finally {
+    URL.revokeObjectURL(svgUrl)
+  }
+}
+
+function pngFilenameFromServerName(filename: string | undefined): string {
+  if (!filename) return defaultExportFilename('image')
+  if (filename.endsWith('.png')) return filename
+  return filename.replace(/\.svg$/i, '.png')
 }
 
 export async function exportSettlement(
   eventId: string,
   format: SettlementExportFormat,
 ): Promise<void> {
-  const blob = await apiFetchBlob(
+  const { blob, filename } = await apiFetchBlobResponse(
     `/v1/events/${encodeURIComponent(eventId)}/settlements/export?format=${format}`,
     { auth: true },
   )
-  downloadBlob(blob, format === 'pdf' ? 'settlement.pdf' : 'settlement.svg')
+
+  if (format === 'image') {
+    const pngBlob = await svgBlobToPng(blob)
+    downloadBlob(pngBlob, pngFilenameFromServerName(filename))
+    return
+  }
+
+  downloadBlob(blob, filename ?? defaultExportFilename('pdf'))
 }

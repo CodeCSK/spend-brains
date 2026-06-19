@@ -3,7 +3,7 @@ import { Transform } from 'class-transformer';
 import {
   IsOptional,
   IsString,
-  IsUrl,
+  Matches,
   MaxLength,
   ValidateIf,
 } from 'class-validator';
@@ -35,12 +35,14 @@ export class UpdateUserProfileDto {
 
   @ApiPropertyOptional({
     nullable: true,
-    example: 'https://api.dicebear.com/7.x/avataaars/svg?seed=1',
-    description: 'Set to null to clear',
+    example: 'preset:spark',
+    description: 'Preset id (preset:spark) or legacy HTTPS URL. Set to null to clear.',
   })
   @IsOptional()
   @ValidateIf((_, value) => value !== null)
   @IsString()
-  @IsUrl({ require_protocol: true })
+  @Matches(/^(https?:\/\/[^\s]+|preset:[a-z0-9-]+)$/, {
+    message: 'avatarUrl must be a valid URL or preset id (e.g. preset:spark)',
+  })
   avatarUrl?: string | null;
 }

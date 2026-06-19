@@ -26,6 +26,7 @@ import {
   formatEventDateRange,
 } from '../lib/event-labels'
 import { isLikelyEventUuid, normalizeJoinCode } from '../lib/join-code'
+import { eventPath } from '../lib/event-routes'
 
 const joinCodeSchema = z.object({
   publicId: z
@@ -131,10 +132,10 @@ export function JoinEventPage() {
     onSuccess: async (result) => {
       setJoinResult(result)
 
-      if (result.status === 'joined' && result.eventId) {
+      if (result.status === 'joined' && lookupCode) {
         toast.success('Joined event.')
         await queryClient.invalidateQueries({ queryKey: eventKeys.list() })
-        navigate(`/app/events/${result.eventId}`, { replace: true })
+        navigate(eventPath(lookupCode), { replace: true })
       } else if (result.status === 'requested') {
         toast.info('Join request sent.')
       }
