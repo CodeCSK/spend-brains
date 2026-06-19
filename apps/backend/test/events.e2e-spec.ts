@@ -213,13 +213,14 @@ describe('Events domain (e2e)', () => {
       .expect(403);
   });
 
-  it('settlement export returns a non-empty PDF', async () => {
+  it('settlement export returns a non-empty SVG image', async () => {
     const res = await request(app.getHttpServer())
-      .get(`/v1/events/${eventId}/settlements/export?format=pdf`)
+      .get(`/v1/events/${eventId}/settlements/export?format=image`)
       .set(auth(captain))
       .expect(200);
-    expect(res.headers['content-type']).toContain('application/pdf');
-    expect(res.body.length ?? res.text.length).toBeGreaterThan(0);
+    expect(res.headers['content-type']).toContain('image/svg+xml');
+    expect(res.text.length).toBeGreaterThan(0);
+    expect(res.text).toContain('<svg');
   });
 
   it('vice-captain promotion; vice-captain cannot remove a member', async () => {

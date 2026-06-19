@@ -5,14 +5,32 @@ node_modules/
 dist/
 build/
 
-# env — secrets gitignored; *.example templates are committed
+# --- Environment files ---
+# Committed (safe): apps/backend/.env.example, apps/backend/.env.staging.example
+# Committed (safe): apps/web/.env.development, apps/web/.env.staging (public URLs)
+# See apps/backend/README.md and apps/web/README.md
+
+# Backend secrets — never commit
+apps/backend/.env
+apps/backend/.env.staging
+
+# Web optional overrides (mode files above are committed)
+apps/web/.env.local
+apps/web/.env.development.local
+apps/web/.env.staging.local
+
+# Catch stray .env files anywhere else in the repo
 .env
 .env.local
-.env.staging
-.env.development.local
-.env.staging.local
+.env.*.local
+
+# Templates — always committed
 !.env.example
 !.env.*.example
+
+# Web Vite mode files — committed (negation in case a broad rule above matches)
+!apps/web/.env.development
+!apps/web/.env.staging
 
 # logs
 logs/

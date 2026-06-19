@@ -40,8 +40,8 @@ export const envValidationSchema = Joi.object({
       }),
     }),
   CORS_ORIGINS: Joi.string().optional(),
-  TURNSTILE_SECRET_KEY: Joi.string().optional(),
-  TURNSTILE_SITE_KEY: Joi.string().optional(),
+  TURNSTILE_SECRET_KEY: Joi.string().optional().allow(''),
+  TURNSTILE_SITE_KEY: Joi.string().optional().allow(''),
   TURNSTILE_ENABLED: Joi.boolean().default(false),
   SUPER_ADMIN_PHONES: Joi.string().optional().allow(''),
 });

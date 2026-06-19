@@ -79,17 +79,14 @@ export class SettlementsController {
   }
 
   @Get('settlements/export')
-  @ApiOperation({ summary: 'Export settlement details as PDF or image' })
-  @ApiProduces('application/pdf', 'image/svg+xml')
+  @ApiOperation({ summary: 'Export settlement details as a shareable image (SVG)' })
+  @ApiProduces('image/svg+xml')
   async export(
     @Param('eventId', ParseUUIDPipe) eventId: string,
     @Query() query: ExportQueryDto,
     @Res() res: Response,
   ) {
-    const result = await this.settlementsService.exportSettlement(
-      eventId,
-      query.format,
-    );
+    const result = await this.settlementsService.exportSettlement(eventId);
     res.setHeader('Content-Type', result.contentType);
     res.setHeader(
       'Content-Disposition',

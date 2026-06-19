@@ -11,6 +11,11 @@ node_modules
 dist
 dist-ssr
 storybook-static
+
+# Env — .env.development and .env.staging are committed (see README)
+# Personal overrides only:
+.env.local
+.env.*.local
 *.local
 
 # Editor directories and files

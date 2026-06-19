@@ -189,6 +189,10 @@ export class AuthService {
   }
 
   private async assertOtpRateLimits(phone: string, ipAddress: string) {
+    if (this.otpConfig.usePhoneSuffix) {
+      return;
+    }
+
     const since = new Date(Date.now() - 60 * 60 * 1000);
 
     const phoneCount = await this.prisma.otpCode.count({

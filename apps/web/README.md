@@ -24,13 +24,13 @@ OTP appears in the **backend terminal** (placeholder MSG91 key) or via SMS in pr
 From monorepo root:
 
 ```bash
-cp apps/web/.env.example apps/web/.env
+cp apps/backend/.env.example apps/backend/.env   # first time only — edit SUPER_ADMIN_PHONES
 npm install
-npm run start:dev -w backend   # terminal 1
-npm run dev -w web             # terminal 2
+npm run start:dev -w backend   # terminal 1 — reads apps/backend/.env
+npm run dev -w web             # terminal 2 — reads apps/web/.env.development
 ```
 
-Open **http://localhost:5173**. CORS must allow `http://localhost:5173` (default in backend `.env.example`).
+Open **http://localhost:5173**. CORS must allow `http://localhost:5173` (default in backend `.env`).
 
 | URL | Purpose |
 |-----|---------|
@@ -63,13 +63,24 @@ API details → [backend/docs/authentication.md](../backend/docs/authentication.
 
 ## Environment
 
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `VITE_API_URL` | `http://localhost:3000` | Backend base URL |
+Vite loads mode files automatically — no copy step for web.
 
-Super admin dev console: set your phone in backend `SUPER_ADMIN_PHONES` (see [apps/backend/.env.example](../backend/.env.example)), then open `/app/dev-console` after login.
+| File | When loaded | Purpose |
+|------|-------------|---------|
+| `apps/web/.env.development` | `npm run dev` | Local API (`VITE_API_URL`) — **committed** |
+| `apps/web/.env.staging` | `npm run dev:staging` | Beta Fly API + login hints — **committed** |
+| `apps/web/.env.local` | either mode | Optional personal overrides — **gitignored** |
 
-Do not commit `.env`.
+| Variable | Default (development) | Staging mode |
+|----------|----------------------|--------------|
+| `VITE_API_URL` | `http://localhost:3000` | `https://spendbrains-api-beta.fly.dev` |
+| `VITE_BETA_MODE` | unset | `true` (OTP hint on login) |
+
+Cloudflare Pages build sets the same `VITE_*` vars in the dashboard (not from these files).
+
+Super admin dev console: set your phone in **backend** `SUPER_ADMIN_PHONES` (`apps/backend/.env` locally, or Fly secret on staging). Then open `/app/dev-console` after login. The dev console shows `import.meta.env.MODE` and `VITE_API_URL`.
+
+Do not commit `apps/backend/.env` or `apps/backend/.env.staging`.
 
 ## Scripts
 

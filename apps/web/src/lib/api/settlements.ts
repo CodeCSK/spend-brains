@@ -1,4 +1,4 @@
-import type { MemberBalance, SettlementExportFormat, SettlementLine, SettlementSummary } from '../../types/settlement'
+import type { MemberBalance, SettlementLine, SettlementSummary } from '../../types/settlement'
 import { apiFetch, apiFetchBlobResponse } from './client'
 
 export function getMemberSummaries(eventId: string): Promise<MemberBalance[]> {
@@ -53,9 +53,9 @@ function downloadBlob(blob: Blob, filename: string): void {
   window.setTimeout(() => URL.revokeObjectURL(url), 1000)
 }
 
-function defaultExportFilename(format: SettlementExportFormat): string {
+function defaultExportFilename(): string {
   const date = new Date().toISOString().slice(0, 10)
-  return format === 'pdf' ? `settlement-${date}.pdf` : `settlement-${date}.png`
+  return `settlement-${date}.png`
 }
 
 async function svgBlobToPng(svgBlob: Blob): Promise<Blob> {
@@ -72,7 +72,7 @@ async function svgBlobToPng(svgBlob: Blob): Promise<Blob> {
       img.src = svgUrl
     })
 
-    const width = image.naturalWidth || 720
+    const width = image.naturalWidth || 640
     const height = image.naturalHeight || 900
     const scale = 2
     const canvas = document.createElement('canvas')
@@ -85,7 +85,7 @@ async function svgBlobToPng(svgBlob: Blob): Promise<Blob> {
     }
 
     context.scale(scale, scale)
-    context.fillStyle = '#fafafa'
+    context.fillStyle = '#f5f5f5'
     context.fillRect(0, 0, width, height)
     context.drawImage(image, 0, 0, width, height)
 
@@ -104,25 +104,17 @@ async function svgBlobToPng(svgBlob: Blob): Promise<Blob> {
 }
 
 function pngFilenameFromServerName(filename: string | undefined): string {
-  if (!filename) return defaultExportFilename('image')
+  if (!filename) return defaultExportFilename()
   if (filename.endsWith('.png')) return filename
   return filename.replace(/\.svg$/i, '.png')
 }
 
-export async function exportSettlement(
-  eventId: string,
-  format: SettlementExportFormat,
-): Promise<void> {
+export async function exportSettlement(eventId: string): Promise<void> {
   const { blob, filename } = await apiFetchBlobResponse(
-    `/v1/events/${encodeURIComponent(eventId)}/settlements/export?format=${format}`,
+    `/v1/events/${encodeURIComponent(eventId)}/settlements/export?format=image`,
     { auth: true },
   )
 
-  if (format === 'image') {
-    const pngBlob = await svgBlobToPng(blob)
-    downloadBlob(pngBlob, pngFilenameFromServerName(filename))
-    return
-  }
-
-  downloadBlob(blob, filename ?? defaultExportFilename('pdf'))
+  const pngBlob = await svgBlobToPng(blob)
+  downloadBlob(pngBlob, pngFilenameFromServerName(filename))
 }

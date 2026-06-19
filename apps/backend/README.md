@@ -15,6 +15,11 @@ Copy the example file and adjust values locally (`.env` is gitignored):
 cp .env.example .env
 ```
 
+| File | Command | Purpose |
+|------|---------|---------|
+| `.env` | `npm run start:dev` | Local Docker Postgres |
+| `.env.staging` | `npm run start:dev:staging` | Local backend against Neon (copy from `.env.staging.example`) |
+
 Required variables are validated at startup via `@nestjs/config` + Joi. See `.env.example` for `DATABASE_URL`, JWT secrets, and MSG91 placeholders.
 
 ## Development

@@ -1,0 +1,6 @@
+# Build output (root .gitignore also covers dist/)
+dist/
+
+# Local secrets — copy from .env.example or .env.staging.example
+.env
+.env.staging

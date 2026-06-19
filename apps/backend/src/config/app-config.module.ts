@@ -3,14 +3,14 @@ import { ConfigModule } from '@nestjs/config';
 import configuration from './configuration';
 import { envValidationSchema } from './env.validation';
 
-const appEnv = process.env.APP_ENV ?? 'local';
+const isStaging = process.env.APP_ENV === 'staging';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      // First match wins — mode file overrides shared .env
-      envFilePath: [`.env.${appEnv}`, '.env'],
+      // Local: .env | Staging DB locally: .env.staging then .env fallback
+      envFilePath: isStaging ? ['.env.staging', '.env'] : '.env',
       load: [configuration],
       validationSchema: envValidationSchema,
       validationOptions: {

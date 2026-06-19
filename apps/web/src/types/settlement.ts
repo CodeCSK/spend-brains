@@ -33,5 +33,3 @@ export type SettlementSummary = {
   lines: SettlementLine[]
   balances: MemberBalance[]
 }
-
-export type SettlementExportFormat = 'pdf' | 'image'

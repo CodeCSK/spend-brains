@@ -168,7 +168,7 @@ export function SettlementSummaryCard({ eventId, summary }: SettlementSummaryCar
 
       <div className="mt-4 flex flex-col gap-2 border-t border-border pt-3 sm:flex-row sm:items-center sm:justify-between">
         <p id="settlement-export-label" className="text-xs text-text-muted">
-          Download a shareable PDF or PNG snapshot
+          Save who pays who as PNG
         </p>
         <SettlementExportActions eventId={eventId} />
       </div>

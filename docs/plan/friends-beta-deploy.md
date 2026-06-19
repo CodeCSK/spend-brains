@@ -94,8 +94,11 @@ fly secrets set `
   MSG91_AUTH_KEY="your-msg91-auth-key" `
   MSG91_SENDER_ID="SPBRNS" `
   MSG91_OTP_TEMPLATE_ID="your-dlt-otp-template-id" `
-  CORS_ORIGINS="https://spendbrains-web-beta.pages.dev"
+  CORS_ORIGINS="https://spendbrains-web-beta.pages.dev" `
+  SUPER_ADMIN_PHONES="+919876543210"
 ```
+
+> Replace `SUPER_ADMIN_PHONES` with your E.164 login phone(s), comma-separated. Required for `/app/dev-console` on staging.
 
 > `NODE_ENV=staging`, `TURNSTILE_ENABLED=false`, and `OTP_USE_PHONE_SUFFIX=true` are already in `fly.toml`.  
 > Example: phone `+919876543210` → OTP `543210`.
@@ -164,7 +167,8 @@ fly secrets set CORS_ORIGINS="https://spendbrains-web-beta.pages.dev"
 2. Enter your phone → **Send OTP**
 3. Enter the **last 6 digits** of your phone (e.g. `9876543210` → `543210`) → lands on `/app/events`
 4. Create event → add expense → settlements tab loads
-5. Open the same URL on your phone (mobile browser)
+5. **Super admin:** if your phone is in `SUPER_ADMIN_PHONES`, open `/app/dev-console` — API URL and mode should match staging
+6. Open the same URL on your phone (mobile browser)
 
 **Two-user test:** second browser/profile, different phone, each uses their own last-6-digit OTP, join event by code.
 
@@ -194,6 +198,7 @@ Spendbrains beta: https://YOUR-PROJECT.pages.dev
 | OTP verify fails | Use last 6 digits of the **same** E.164 phone (+91…); `OTP_USE_PHONE_SUFFIX=true` in `fly.toml`; `NODE_ENV` must be `staging` |
 | 502 on API | `fly logs` — often DB URL or migrate failed; run `fly ssh console -C "npx prisma migrate deploy"` |
 | `/app/events` 404 on refresh | `_redirects` in `apps/web/public/` — redeploy Pages |
+| Dev console redirects to events | Add your login phone to `SUPER_ADMIN_PHONES` (local `.env` or `fly secrets set`); use E.164 `+91…` |
 | API cold start (~3s) | Fly free tier stops machines; first request wakes it |
 | Rate limit on OTP | Raised in `fly.toml` for beta; or wait 1 hour |
 
@@ -224,9 +229,10 @@ Spendbrains beta: https://YOUR-PROJECT.pages.dev
 |------|---------|
 | `apps/backend/Dockerfile` | Multi-stage API container |
 | `apps/backend/fly.toml` | Fly app config (Mumbai, health check, migrations) |
-| `apps/backend/.env.staging.example` | Secret template |
+| `apps/backend/.env.staging.example` | Secret template for local Neon backend |
 | `apps/web/public/_redirects` | SPA routing on Pages |
-| `apps/web/.env.staging.example` | Web env template |
+| `apps/web/.env.development` | Web local dev (Vite mode `development`) |
+| `apps/web/.env.staging` | Web local against Fly API (Vite mode `staging`) |
 | `npm run deploy:api` | Deploy API from repo root |
 
 ---
@@ -234,7 +240,7 @@ Spendbrains beta: https://YOUR-PROJECT.pages.dev
 ## Done checklist
 
 - [ ] Neon DB + migrations applied
-- [ ] Fly secrets set + `fly deploy` + `/health` OK
+- [ ] Fly secrets set (incl. `SUPER_ADMIN_PHONES`) + `fly deploy` + `/health` OK
 - [ ] Cloudflare Pages live + env vars set
 - [ ] CORS updated to Pages URL
 - [ ] Login + create event works on desktop and phone

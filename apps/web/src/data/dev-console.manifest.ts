@@ -138,7 +138,7 @@ export const NPM_SCRIPTS: NpmScriptEntry[] = [
     name: 'start:dev:staging',
     command: 'npm run start:dev:staging -w backend',
     group: 'Development',
-    description: 'NestJS watch with APP_ENV=staging (.env.staging).',
+    description: 'NestJS watch with APP_ENV=staging (reads .env.staging).',
     when: 'Local API against Neon staging DB.',
   },
   {
