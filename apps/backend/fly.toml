@@ -7,7 +7,6 @@ primary_region = 'bom'
 
 [build]
   dockerfile = 'Dockerfile'
-  context = '../..'
 
 [env]
   NODE_ENV = 'staging'

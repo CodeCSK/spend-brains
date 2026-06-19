@@ -1,17 +1,15 @@
-# Build from repository root — see fly.toml [build] context.
+# Self-contained backend image — build context is apps/backend (see fly.toml).
 # syntax=docker/dockerfile:1
 
 FROM node:20-alpine AS build
 WORKDIR /app
 
-COPY package.json package-lock.json ./
-COPY apps/backend/package.json ./apps/backend/
-RUN npm ci --workspace=backend
+COPY package.json ./
+RUN npm install
 
-WORKDIR /app/apps/backend
-COPY apps/backend/prisma ./prisma/
-COPY apps/backend/src ./src/
-COPY apps/backend/tsconfig.json apps/backend/tsconfig.build.json apps/backend/nest-cli.json ./
+COPY prisma ./prisma/
+COPY src ./src/
+COPY tsconfig.json tsconfig.build.json nest-cli.json ./
 
 RUN npx prisma generate
 RUN npm run build
@@ -24,17 +22,15 @@ ENV PORT=3000
 
 RUN addgroup -S spendbrains && adduser -S spendbrains -G spendbrains
 
-COPY package.json package-lock.json ./
-COPY apps/backend/package.json ./apps/backend/
-RUN npm ci --workspace=backend --omit=dev \
-  && npm install prisma@6.19.3 --workspace=backend --no-save \
+COPY package.json ./
+RUN npm install --omit=dev \
+  && npm install prisma@6.19.3 --no-save \
   && npm cache clean --force
 
-WORKDIR /app/apps/backend
-COPY --from=build /app/apps/backend/dist ./dist
-COPY --from=build /app/apps/backend/prisma ./prisma
-COPY --from=build /app/node_modules/.prisma /app/node_modules/.prisma
-COPY --from=build /app/node_modules/@prisma /app/node_modules/@prisma
+COPY --from=build /app/dist ./dist
+COPY --from=build /app/prisma ./prisma
+COPY --from=build /app/node_modules/.prisma ./node_modules/.prisma
+COPY --from=build /app/node_modules/@prisma ./node_modules/@prisma
 
 USER spendbrains
 EXPOSE 3000
