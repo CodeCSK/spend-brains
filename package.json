@@ -1,0 +1,21 @@
+{
+  "name": "spendbrains",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "engines": {
+    "node": ">=20",
+    "npm": ">=9"
+  },
+  "scripts": {
+    "build:web": "npm run build -w web",
+    "deploy:api": "npm run deploy -w backend"
+  },
+  "devDependencies": {
+    "@storybook/addon-docs": "^10.4.6",
+    "@storybook/react-vite": "^10.4.6",
+    "storybook": "^10.4.6"
+  }
+}

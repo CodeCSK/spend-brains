@@ -1,0 +1,7 @@
+# Keep Prisma migration checksums stable across OSes / editors.
+# Line-ending drift (CRLF<->LF) changes the file bytes, which makes
+# `prisma migrate dev` think an already-applied migration was modified.
+prisma/migrations/**/*.sql text eol=lf
+prisma/migrations/**/*.toml text eol=lf
+prisma/schema.prisma text eol=lf
+*.sql text eol=lf

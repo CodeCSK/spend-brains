@@ -1,0 +1,43 @@
+# Friends beta / staging API on Fly.io (Mumbai).
+# First-time setup: fly launch --no-deploy --copy-config --name spendbrains-api-beta
+# See docs/plan/friends-beta-deploy.md
+
+app = 'spendbrains-api-beta'
+primary_region = 'bom'
+
+[build]
+  dockerfile = 'Dockerfile'
+  context = '../..'
+
+[env]
+  NODE_ENV = 'staging'
+  PORT = '3000'
+  TURNSTILE_ENABLED = 'false'
+  OTP_USE_PHONE_SUFFIX = 'true'
+  OTP_TTL_MINUTES = '10'
+  OTP_MAX_ATTEMPTS = '10'
+  OTP_RATE_LIMIT_PHONE_PER_HOUR = '20'
+  OTP_RATE_LIMIT_IP_PER_HOUR = '50'
+
+[http_service]
+  internal_port = 3000
+  force_https = true
+  auto_stop_machines = 'stop'
+  auto_start_machines = true
+  min_machines_running = 0
+  processes = ['app']
+
+  [[http_service.checks]]
+    interval = '30s'
+    timeout = '5s'
+    grace_period = '20s'
+    method = 'GET'
+    path = '/health'
+
+[[vm]]
+  memory = '512mb'
+  cpu_kind = 'shared'
+  cpus = 1
+
+[deploy]
+  release_command = 'npx prisma migrate deploy'

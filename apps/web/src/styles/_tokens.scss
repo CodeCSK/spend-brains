@@ -1,0 +1,105 @@
+/**
+ * SCSS token aliases — values live ONLY in tokens.css.
+ * Usage: @use '../styles/tokens' as *;
+ */
+
+// Brand lavender purple
+$color-lavender-purple-50: var(--color-lavender-purple-50);
+$color-lavender-purple-100: var(--color-lavender-purple-100);
+$color-lavender-purple-200: var(--color-lavender-purple-200);
+$color-lavender-purple-300: var(--color-lavender-purple-300);
+$color-lavender-purple-400: var(--color-lavender-purple-400);
+$color-lavender-purple-500: var(--color-lavender-purple-500);
+$color-lavender-purple-600: var(--color-lavender-purple-600);
+$color-lavender-purple-700: var(--color-lavender-purple-700);
+$color-lavender-purple-800: var(--color-lavender-purple-800);
+$color-lavender-purple-900: var(--color-lavender-purple-900);
+$color-lavender-purple-950: var(--color-lavender-purple-950);
+
+// Neutrals (alias brand)
+$color-neutral-50: var(--color-neutral-50);
+$color-neutral-100: var(--color-neutral-100);
+$color-neutral-200: var(--color-neutral-200);
+$color-neutral-300: var(--color-neutral-300);
+$color-neutral-400: var(--color-neutral-400);
+$color-neutral-500: var(--color-neutral-500);
+$color-neutral-600: var(--color-neutral-600);
+$color-neutral-700: var(--color-neutral-700);
+$color-neutral-800: var(--color-neutral-800);
+$color-neutral-900: var(--color-neutral-900);
+$color-neutral-950: var(--color-neutral-950);
+
+// Accent
+$color-accent-50: var(--color-accent-50);
+$color-accent-100: var(--color-accent-100);
+$color-accent-500: var(--color-accent-500);
+$color-accent-600: var(--color-accent-600);
+$color-accent-700: var(--color-accent-700);
+
+// Semantic
+$color-success-bg: var(--color-success-bg);
+$color-success-text: var(--color-success-text);
+$color-error-bg: var(--color-error-bg);
+$color-error-text: var(--color-error-text);
+$color-error-text-strong: var(--color-error-text-strong);
+$color-warning-bg: var(--color-warning-bg);
+$color-warning-text: var(--color-warning-text);
+$color-info-bg: var(--color-info-bg);
+$color-info-text: var(--color-info-text);
+
+// Surfaces & text
+$color-surface-page: var(--color-surface-page);
+$color-surface-subtle: var(--color-surface-subtle);
+$color-surface-raised: var(--color-surface-raised);
+$color-surface-inverse: var(--color-surface-inverse);
+$color-text-primary: var(--color-text-primary);
+$color-text-secondary: var(--color-text-secondary);
+$color-text-muted: var(--color-text-muted);
+$color-text-label: var(--color-text-label);
+$color-text-inverse: var(--color-text-inverse);
+$color-text-on-primary: var(--color-text-on-primary);
+$color-border: var(--color-border);
+$color-border-input: var(--color-border-input);
+$color-border-focus: var(--color-border-focus);
+
+// Actions
+$color-primary: var(--color-primary);
+$color-primary-hover: var(--color-primary-hover);
+$color-primary-fg: var(--color-primary-fg);
+$color-secondary: var(--color-secondary);
+$color-secondary-hover: var(--color-secondary-hover);
+$color-secondary-fg: var(--color-secondary-fg);
+$color-secondary-border: var(--color-secondary-border);
+
+// Spacing
+$space-0: var(--space-0);
+$space-1: var(--space-1);
+$space-2: var(--space-2);
+$space-3: var(--space-3);
+$space-4: var(--space-4);
+$space-5: var(--space-5);
+$space-6: var(--space-6);
+$space-8: var(--space-8);
+$space-10: var(--space-10);
+$space-12: var(--space-12);
+$space-16: var(--space-16);
+
+// Radius
+$radius-sm: var(--radius-sm);
+$radius-md: var(--radius-md);
+$radius-lg: var(--radius-lg);
+$radius-xl: var(--radius-xl);
+$radius-full: var(--radius-full);
+
+// Elevation
+$shadow-sm: var(--shadow-sm);
+$shadow-md: var(--shadow-md);
+$shadow-lg: var(--shadow-lg);
+$shadow-focus: var(--shadow-focus);
+
+// Typography
+$font-sans: var(--font-sans);
+$font-weight-body: var(--font-weight-body);
+$font-weight-medium: var(--font-weight-medium);
+$font-weight-semibold: var(--font-weight-semibold);
+$font-weight-bold: var(--font-weight-bold);

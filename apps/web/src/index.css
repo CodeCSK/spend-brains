@@ -1,0 +1,206 @@
+@import './styles/tokens.css';
+@import 'tailwindcss';
+
+/**
+ * Tailwind theme — references tokens.css (no raw hex here).
+ */
+@theme inline {
+  /* Brand lavender purple */
+  --color-lavender-purple-50: var(--color-lavender-purple-50);
+  --color-lavender-purple-100: var(--color-lavender-purple-100);
+  --color-lavender-purple-200: var(--color-lavender-purple-200);
+  --color-lavender-purple-300: var(--color-lavender-purple-300);
+  --color-lavender-purple-400: var(--color-lavender-purple-400);
+  --color-lavender-purple-500: var(--color-lavender-purple-500);
+  --color-lavender-purple-600: var(--color-lavender-purple-600);
+  --color-lavender-purple-700: var(--color-lavender-purple-700);
+  --color-lavender-purple-800: var(--color-lavender-purple-800);
+  --color-lavender-purple-900: var(--color-lavender-purple-900);
+  --color-lavender-purple-950: var(--color-lavender-purple-950);
+
+  --color-neutral-50: var(--color-neutral-50);
+  --color-neutral-100: var(--color-neutral-100);
+  --color-neutral-200: var(--color-neutral-200);
+  --color-neutral-300: var(--color-neutral-300);
+  --color-neutral-400: var(--color-neutral-400);
+  --color-neutral-500: var(--color-neutral-500);
+  --color-neutral-600: var(--color-neutral-600);
+  --color-neutral-700: var(--color-neutral-700);
+  --color-neutral-800: var(--color-neutral-800);
+  --color-neutral-900: var(--color-neutral-900);
+  --color-neutral-950: var(--color-neutral-950);
+
+  --color-accent-500: var(--color-accent-500);
+  --color-accent-600: var(--color-accent-600);
+
+  --color-success-bg: var(--color-success-bg);
+  --color-success-text: var(--color-success-text);
+  --color-error-bg: var(--color-error-bg);
+  --color-error-text: var(--color-error-text);
+  --color-error-text-strong: var(--color-error-text-strong);
+  --color-warning-bg: var(--color-warning-bg);
+  --color-warning-text: var(--color-warning-text);
+  --color-info-bg: var(--color-info-bg);
+  --color-info-text: var(--color-info-text);
+
+  --color-surface-page: var(--color-surface-page);
+  --color-surface-subtle: var(--color-surface-subtle);
+  --color-surface-raised: var(--color-surface-raised);
+  --color-surface-inverse: var(--color-surface-inverse);
+  --color-text-primary: var(--color-text-primary);
+  --color-text-secondary: var(--color-text-secondary);
+  --color-text-muted: var(--color-text-muted);
+  --color-text-label: var(--color-text-label);
+  --color-text-inverse: var(--color-text-inverse);
+  --color-border: var(--color-border);
+  --color-border-input: var(--color-border-input);
+  --color-border-focus: var(--color-border-focus);
+  --color-primary: var(--color-primary);
+  --color-primary-hover: var(--color-primary-hover);
+  --color-primary-fg: var(--color-primary-fg);
+  --color-secondary: var(--color-secondary);
+  --color-secondary-hover: var(--color-secondary-hover);
+  --color-secondary-fg: var(--color-secondary-fg);
+  --color-secondary-border: var(--color-secondary-border);
+
+  --font-sans: var(--font-sans);
+
+  --radius-xp-sm: var(--radius-sm);
+  --radius-xp-md: var(--radius-md);
+  --radius-xp-lg: var(--radius-lg);
+  --radius-xp-xl: var(--radius-xl);
+  --radius-xp-full: var(--radius-full);
+
+  --shadow-xp-sm: var(--shadow-sm);
+  --shadow-xp-md: var(--shadow-md);
+}
+
+body {
+  @apply min-h-screen bg-surface-page font-sans text-text-primary antialiased;
+}
+
+.tabular-amount {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+
+.focus-ring {
+  &:focus-visible {
+    outline: none;
+    box-shadow: var(--shadow-focus);
+  }
+}
+
+/* ── Shared UI patterns (use on every screen) ─────────── */
+@layer components {
+  .xp-page {
+    @apply mx-auto w-full px-4 py-6 sm:px-6 sm:py-10;
+    max-width: var(--content-max-width-wide);
+  }
+
+  .xp-page-narrow {
+    @apply mx-auto w-full px-4 py-6 sm:px-6 sm:py-10;
+    max-width: var(--content-max-width);
+  }
+
+  .xp-auth-shell {
+    @apply mx-auto flex min-h-screen w-full max-w-md flex-col justify-center px-4 py-8 sm:px-6;
+  }
+
+  .xp-card {
+    @apply rounded-xp-xl border border-border bg-surface-raised p-4 shadow-xp-sm sm:p-6;
+  }
+
+  .xp-page-title {
+    @apply flex flex-wrap items-center gap-2 text-xl font-semibold sm:text-2xl;
+  }
+
+  .xp-page-subtitle {
+    @apply mt-1 text-sm text-text-secondary;
+  }
+
+  .xp-label {
+    @apply block text-sm font-medium text-text-label;
+  }
+
+  .xp-input {
+    @apply mt-1 w-full min-h-11 rounded-xp-lg border border-border-input bg-surface-raised px-3 py-2 text-sm text-text-primary outline-none placeholder:text-text-muted focus:border-border-focus focus-visible:shadow-[var(--shadow-focus)];
+  }
+
+  .xp-btn-primary {
+    @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-xp-lg px-4 py-2 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-60 bg-primary text-primary-fg hover:bg-primary-hover;
+  }
+
+  .xp-btn-secondary {
+    @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-xp-lg px-4 py-2 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-60 border border-secondary-border bg-secondary text-secondary-fg hover:bg-secondary-hover;
+  }
+
+  .xp-btn-ghost {
+    @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-xp-lg px-4 py-2 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-60 text-text-secondary hover:bg-surface-subtle hover:text-text-primary;
+  }
+
+  .xp-nav-link {
+    @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-xp-lg px-3 py-2 text-sm font-medium transition-colors;
+  }
+
+  .xp-nav-link-active {
+    @apply bg-surface-subtle text-primary;
+  }
+
+  .xp-nav-link-inactive {
+    @apply text-text-secondary hover:bg-surface-subtle hover:text-text-primary;
+  }
+
+  .xp-tab-link {
+    @apply inline-flex min-h-11 shrink-0 items-center gap-2 border-b-2 border-transparent px-3 py-2 text-sm font-medium transition-colors;
+  }
+
+  .xp-tab-link-active {
+    @apply border-primary text-primary;
+  }
+
+  .xp-tab-link-inactive {
+    @apply text-text-secondary hover:text-text-primary;
+  }
+
+  .xp-alert-success {
+    @apply rounded-xp-lg bg-success-bg px-3 py-2 text-sm text-success-text;
+  }
+
+  .xp-alert-error {
+    @apply rounded-xp-lg bg-error-bg px-3 py-2 text-sm text-error-text;
+  }
+
+  .xp-alert-warning {
+    @apply rounded-xp-lg bg-warning-bg px-3 py-2 text-sm text-warning-text;
+  }
+
+  .xp-skeleton {
+    @apply animate-pulse rounded-xp-md bg-surface-subtle;
+  }
+
+  .xp-skeleton-text {
+    @apply h-4 w-3/4 animate-pulse rounded-xp-md bg-surface-subtle;
+  }
+
+  .xp-skeleton-avatar {
+    @apply h-10 w-10 animate-pulse rounded-xp-full bg-surface-subtle;
+  }
+
+  .xp-skeleton-row {
+    @apply flex gap-4 py-3;
+  }
+
+  .xp-skeleton-card {
+    @apply min-h-32 animate-pulse rounded-xp-xl border border-transparent bg-surface-subtle p-4 shadow-none sm:p-6;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .xp-skeleton,
+  .xp-skeleton-text,
+  .xp-skeleton-avatar,
+  .xp-skeleton-card {
+    @apply animate-none;
+  }
+}

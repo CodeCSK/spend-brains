@@ -1,0 +1,2 @@
+-- Baseline migration: Prisma connected, domain tables added in later phases.
+-- See apps/backend/docs/database/schema.md

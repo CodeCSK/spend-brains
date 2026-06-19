@@ -1,0 +1,23 @@
+# Local PostgreSQL for development (matches Neon PostgreSQL in production).
+# Start: docker compose up -d
+# Stop:  docker compose down
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: spendbrains
+      POSTGRES_PASSWORD: spendbrains
+      POSTGRES_DB: spendbrains
+    ports:
+      - '5432:5432'
+    volumes:
+      - spendbrains_pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U spendbrains -d spendbrains']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  spendbrains_pg_data:
