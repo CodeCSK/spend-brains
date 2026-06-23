@@ -118,6 +118,17 @@ body {
   [aria-disabled='true'] {
     cursor: not-allowed;
   }
+
+  /* iOS Safari auto-zooms focused inputs below 16px — keep mobile fields at text-base */
+  @media (max-width: 639px) {
+    input:not([type='checkbox']):not([type='radio']):not([type='button']):not([type='submit']):not(
+        [type='reset']
+      ):not([type='hidden']):not([type='file']):not([type='image']),
+    select,
+    textarea {
+      font-size: 16px;
+    }
+  }
 }
 
 html {
@@ -173,7 +184,7 @@ html {
   }
 
   .xp-input {
-    @apply mt-1 w-full min-h-9 rounded-xp-md border border-border-input bg-surface-raised px-3 py-1.5 text-sm text-text-primary outline-none placeholder:text-text-muted focus:border-border-focus focus-visible:shadow-[var(--shadow-focus)];
+    @apply mt-1 w-full min-h-9 rounded-xp-md border border-border-input bg-surface-raised px-3 py-1.5 text-base text-text-primary outline-none placeholder:text-text-muted focus:border-border-focus focus-visible:shadow-[var(--shadow-focus)] sm:text-sm;
   }
 
   .xp-select-wrap {
@@ -181,7 +192,7 @@ html {
   }
 
   .xp-select {
-    @apply mt-1 w-full min-h-9 cursor-pointer appearance-none rounded-xp-md border border-border-input bg-surface-raised py-1.5 pl-3 pr-9 text-sm text-text-primary outline-none transition-[border-color,background-color] focus:border-border-focus focus-visible:shadow-[var(--shadow-focus)] disabled:cursor-not-allowed disabled:opacity-60;
+    @apply mt-1 w-full min-h-9 cursor-pointer appearance-none rounded-xp-md border border-border-input bg-surface-raised py-1.5 pl-3 pr-9 text-base text-text-primary outline-none transition-[border-color,background-color] focus:border-border-focus focus-visible:shadow-[var(--shadow-focus)] disabled:cursor-not-allowed disabled:opacity-60 sm:text-sm;
   }
 
   .xp-select:hover:not(:disabled) {
@@ -268,7 +279,7 @@ html {
   }
 
   .xp-select-compact {
-    @apply mt-0 min-h-8 py-1 pl-2.5 pr-8 text-xs sm:min-h-8 sm:text-sm;
+    @apply mt-0 min-h-8 py-1 pl-2.5 pr-8 text-base sm:min-h-8 sm:text-sm;
   }
 
   .xp-icon-btn-sm {
@@ -316,7 +327,7 @@ html {
   }
 
   .xp-form-dense .xp-input {
-    @apply min-h-8 py-1 text-base sm:text-sm;
+    @apply min-h-8 py-1;
   }
 
   .xp-settings-action-row {
