@@ -13,7 +13,12 @@ export { Dialog } from './Dialog'
 export { FormField } from './FormField'
 export { Input, type InputProps } from './Input'
 export { List, ListItem } from './List'
-export { Pagination } from './Pagination'
+export {
+  DEFAULT_PAGE_SIZE_OPTIONS,
+  PaginatedContent,
+  Pagination,
+  type PaginationProps,
+} from './Pagination'
 export { Progress } from './Progress'
 export { Select, type SelectProps } from './Select'
 export { SegmentedControl, type SegmentedOption } from './SegmentedControl'

@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query'
 
 import { Icon } from '../../../components/Icon'
 import { ProfileEditForm } from '../../../components/ProfileEditForm'
-import { PageHeader, PageLayout, PageSection } from '../../../components/layout'
+import { PageHeader, PageLayout, PageLoadingSkeleton, PageSection } from '../../../components/layout'
 import { Alert, Button, Card, Dialog } from '../../../components/ui'
 import { ApiError, getMe } from '../../../lib/api'
 import { profileKeys } from '../../../lib/query-keys'
@@ -29,13 +29,7 @@ export function ProfilePage() {
   })
 
   if (profileQuery.isLoading) {
-    return (
-      <PageLayout width="narrow">
-        <p className="text-sm text-text-secondary" role="status">
-          Loading profile…
-        </p>
-      </PageLayout>
-    )
+    return <PageLoadingSkeleton width="narrow" />
   }
 
   if (profileQuery.isError) {
@@ -70,7 +64,7 @@ export function ProfilePage() {
             Profile
           </>
         }
-        description="Account details and display name."
+        description="Account details."
         action={
           <Button type="button" variant="secondary" onClick={() => setEditOpen(true)}>
             <Icon icon={Pencil} size={16} aria-hidden />

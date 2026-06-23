@@ -165,7 +165,7 @@ export function ExpenseCard({
       <div className="xp-expense-card-meta mt-2">
         {category ? (
           <span className="inline-flex max-w-full items-center gap-1 truncate">
-            <CategoryIcon iconKey={category.icon} size={16} />
+            <CategoryIcon iconKey={category.icon} size={16} variant="badge" />
             <span className="truncate">{category.name}</span>
           </span>
         ) : null}
@@ -226,7 +226,7 @@ export function ExpenseRow({
       <td className="hidden md:table-cell">
         {category ? (
           <span className="inline-flex max-w-[8rem] items-center gap-1.5 truncate text-text-secondary">
-            <CategoryIcon iconKey={category.icon} size={16} />
+            <CategoryIcon iconKey={category.icon} size={16} variant="badge" />
             <span className="truncate">{category.name}</span>
           </span>
         ) : (
@@ -263,15 +263,29 @@ export function ExpenseRow({
   )
 }
 
-export function ExpenseListSkeleton() {
+export function ExpenseListSkeleton({ rows = 5 }: { rows?: number }) {
+  const rowKeys = Array.from({ length: Math.min(Math.max(rows, 3), 10) }, (_, index) => index)
+
   return (
     <>
       <ul className="space-y-3 md:hidden" aria-hidden>
-        {[0, 1, 2, 3].map((key) => (
-          <li key={key} className="xp-skeleton-card min-h-24" />
+        {rowKeys.map((key) => (
+          <li key={key} className="xp-skeleton-card min-h-24 space-y-2 p-3">
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0 flex-1 space-y-2">
+                <div className="xp-skeleton h-4 w-3/5 rounded-xp-md" />
+                <div className="xp-skeleton h-3 w-24 rounded-xp-md" />
+              </div>
+              <div className="xp-skeleton h-4 w-16 rounded-xp-md" />
+            </div>
+            <div className="flex gap-2">
+              <div className="xp-skeleton h-3 w-20 rounded-xp-md" />
+              <div className="xp-skeleton h-3 w-24 rounded-xp-md" />
+            </div>
+          </li>
         ))}
       </ul>
-      <div className="xp-data-table-wrap hidden overflow-x-auto md:block" aria-hidden>
+      <div className="xp-data-table-wrap hidden md:block" aria-hidden>
         <table className="xp-data-table">
           <thead>
             <tr>
@@ -285,10 +299,28 @@ export function ExpenseListSkeleton() {
             </tr>
           </thead>
           <tbody>
-            {[0, 1, 2, 3, 4].map((key) => (
+            {rowKeys.map((key) => (
               <tr key={key}>
-                <td colSpan={7}>
-                  <div className="xp-skeleton h-8 w-full rounded-xp-md" />
+                <td>
+                  <div className="xp-skeleton h-4 w-16 rounded-xp-md" />
+                </td>
+                <td>
+                  <div className="xp-skeleton h-4 w-40 max-w-full rounded-xp-md" />
+                </td>
+                <td className="hidden md:table-cell">
+                  <div className="xp-skeleton h-4 w-20 rounded-xp-md" />
+                </td>
+                <td>
+                  <div className="xp-skeleton h-4 w-24 rounded-xp-md" />
+                </td>
+                <td>
+                  <div className="xp-skeleton h-4 w-14 rounded-xp-md" />
+                </td>
+                <td className="text-right">
+                  <div className="xp-skeleton ml-auto h-4 w-16 rounded-xp-md" />
+                </td>
+                <td className="text-right">
+                  <div className="xp-skeleton ml-auto h-8 w-16 rounded-xp-md" />
                 </td>
               </tr>
             ))}
@@ -359,7 +391,7 @@ function SortableHeader({
 
 export function ExpenseTable({ children, sort, order, onSort }: ExpenseTableProps) {
   return (
-    <div className="xp-data-table-wrap hidden overflow-x-auto md:block">
+    <div className="xp-data-table-wrap hidden md:block">
       <table className="xp-data-table">
         <thead>
           <tr>

@@ -6,7 +6,7 @@ import { Icon } from '../Icon'
 type EmptyStateProps = {
   icon: LucideIcon
   title: string
-  description: string
+  description?: string
   action?: ReactNode
   hint?: string
   className?: string
@@ -36,9 +36,9 @@ export function EmptyState({
         <Icon icon={icon} size={24} className="text-primary" />
       </div>
       <h2 className="mt-4 text-lg font-semibold">{title}</h2>
-      <p className="mx-auto mt-2 max-w-sm text-sm text-text-secondary">
-        {description}
-      </p>
+      {description ? (
+        <p className="mx-auto mt-2 max-w-sm text-sm text-text-secondary">{description}</p>
+      ) : null}
       {action && <div className="mt-6 flex justify-center">{action}</div>}
       {hint && <p className="mt-3 text-xs text-text-muted">{hint}</p>}
     </div>

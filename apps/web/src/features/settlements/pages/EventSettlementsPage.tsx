@@ -87,7 +87,6 @@ export function EventSettlementsPage() {
             <EmptyState
               icon={Scale}
               title="No settlements yet"
-              description="Add expenses on the Expenses tab. Payment lines appear here once costs are split among members."
             />
           </div>
         )}

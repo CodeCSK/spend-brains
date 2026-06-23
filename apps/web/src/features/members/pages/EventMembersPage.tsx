@@ -3,7 +3,7 @@ import { Plus, Users } from 'lucide-react'
 import { useState } from 'react'
 
 import { Icon } from '../../../components/Icon'
-import { PageSection } from '../../../components/layout'
+import { EmptyState, ListRowsSkeleton, PageSection } from '../../../components/layout'
 import { Alert, Button } from '../../../components/ui'
 import { ApiError, listMembers } from '../../../lib/api'
 import { memberKeys } from '../../../lib/query-keys'
@@ -56,16 +56,7 @@ export function EventMembersPage() {
           )}
         </div>
 
-        {membersQuery.isLoading && (
-          <ul className="xp-compact-list mt-3" aria-hidden>
-            {[0, 1, 2].map((key) => (
-              <li key={key} className="xp-compact-list-row">
-                <div className="xp-skeleton h-8 w-8 rounded-xp-full" />
-                <div className="xp-skeleton h-4 flex-1 rounded-xp-md" />
-              </li>
-            ))}
-          </ul>
-        )}
+        {membersQuery.isLoading && <ListRowsSkeleton />}
 
         {membersQuery.isError && (
           <Alert variant="error" className="mt-3">
@@ -76,9 +67,11 @@ export function EventMembersPage() {
         )}
 
         {membersQuery.isSuccess && members.length === 0 && (
-          <p className="mt-3 text-xs text-text-secondary" role="status">
-            No members found.
-          </p>
+          <EmptyState
+            icon={Users}
+            title="No members yet"
+            className="mt-3 border-solid p-6 sm:p-8"
+          />
         )}
 
         {membersQuery.isSuccess && members.length > 0 && (
@@ -95,9 +88,8 @@ export function EventMembersPage() {
           </ul>
         )}
 
-        {!permissions.canManageMembers && membersQuery.isSuccess && (
-          <p className="mt-3 flex items-center gap-1.5 text-xs text-text-muted">
-            <Icon icon={Users} size={16} aria-hidden />
+        {!permissions.canManageMembers && membersQuery.isSuccess && members.length > 0 && (
+          <p className="mt-3 text-xs text-text-muted">
             Only captain and vice captain can add members.
           </p>
         )}

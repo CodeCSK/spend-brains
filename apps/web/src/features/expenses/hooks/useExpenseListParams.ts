@@ -15,6 +15,7 @@ export function useExpenseListParams(): [
     const updated = new URLSearchParams()
 
     if (merged.page && merged.page > 1) updated.set('page', String(merged.page))
+    if (merged.limit && merged.limit !== 20) updated.set('limit', String(merged.limit))
     if (merged.sort && merged.sort !== 'expenseDate') updated.set('sort', merged.sort)
     if (merged.order && merged.order !== 'desc') updated.set('order', merged.order)
     if (merged.categoryId) updated.set('categoryId', merged.categoryId)

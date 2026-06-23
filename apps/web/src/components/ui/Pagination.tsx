@@ -3,169 +3,288 @@ import type { ReactNode } from 'react'
 
 import { cn } from '../../lib/cn'
 import { Icon } from '../Icon'
-import { Button } from './Button'
 
-type PaginationProps = {
+export const DEFAULT_PAGE_SIZE_OPTIONS = [10, 20, 50] as const
+
+export type PaginationProps = {
   page: number
   totalPages: number
+  /** Total record count across all pages. */
+  totalItems?: number
+  /** @deprecated Prefer `totalItems`. */
   total?: number
+  pageSize?: number
+  /** @deprecated Prefer `pageSize`. */
   limit?: number
+  pageSizeOptions?: readonly number[]
   onPageChange: (page: number) => void
-  'aria-label'?: string
+  onPageSizeChange?: (pageSize: number) => void
+  loading?: boolean
+  disabled?: boolean
   itemLabel?: string
   className?: string
   summary?: ReactNode
-  /** Show count/range even when there is only one page. */
+  /** Show summary and page-size controls even when there is only one page. */
   alwaysShowSummary?: boolean
+  /** `toolbar` — compact nav above lists; `footer` — full controls below lists. */
+  variant?: 'footer' | 'toolbar'
+  'aria-label'?: string
 }
 
-function formatItemRange(page: number, limit: number, total: number): string {
-  const start = (page - 1) * limit + 1
-  const end = Math.min(page * limit, total)
-  return `${start}–${end} of ${total}`
+function formatShowingRange(page: number, pageSize: number, totalItems: number): string {
+  if (totalItems <= 0) {
+    return `Showing 0 of 0`
+  }
+
+  const start = (page - 1) * pageSize + 1
+  const end = Math.min(page * pageSize, totalItems)
+  return `Showing ${start}–${end} of ${totalItems}`
 }
 
-function getVisiblePages(current: number, totalPages: number): (number | 'gap')[] {
-  if (totalPages <= 5) {
-    return Array.from({ length: totalPages }, (_, index) => index + 1)
-  }
+type PaginationNavButtonProps = {
+  direction: 'previous' | 'next'
+  disabled?: boolean
+  onClick: () => void
+}
 
-  const pages: (number | 'gap')[] = [1]
-  const start = Math.max(2, current - 1)
-  const end = Math.min(totalPages - 1, current + 1)
+function PaginationNavButton({ direction, disabled, onClick }: PaginationNavButtonProps) {
+  const isPrevious = direction === 'previous'
+  const label = isPrevious ? 'Previous page' : 'Next page'
 
-  if (start > 2) {
-    pages.push('gap')
-  }
+  return (
+    <button
+      type="button"
+      className="xp-pagination-btn"
+      disabled={disabled}
+      aria-label={label}
+      onClick={onClick}
+    >
+      {isPrevious ? (
+        <>
+          <Icon icon={ChevronLeft} size={16} aria-hidden />
+          <span>Previous</span>
+        </>
+      ) : (
+        <>
+          <span>Next</span>
+          <Icon icon={ChevronRight} size={16} aria-hidden />
+        </>
+      )}
+    </button>
+  )
+}
 
-  for (let page = start; page <= end; page += 1) {
-    pages.push(page)
-  }
+type PageSizeSelectorProps = {
+  pageSize: number
+  options: readonly number[]
+  disabled?: boolean
+  onChange: (pageSize: number) => void
+}
 
-  if (end < totalPages - 1) {
-    pages.push('gap')
-  }
+function PageSizeSelector({ pageSize, options, disabled, onChange }: PageSizeSelectorProps) {
+  return (
+    <div className="flex flex-wrap items-center gap-2">
+      <span className="text-sm text-text-secondary" id="pagination-page-size-label">
+        Rows per page
+      </span>
+      <div
+        role="radiogroup"
+        aria-labelledby="pagination-page-size-label"
+        className="inline-flex items-center gap-1 rounded-xp-sm border border-border bg-surface-subtle/60 p-0.5"
+      >
+        {options.map((option) => {
+          const active = option === pageSize
 
-  pages.push(totalPages)
-  return pages
+          return (
+            <button
+              key={option}
+              type="button"
+              role="radio"
+              aria-checked={active}
+              disabled={disabled}
+              className={cn(
+                'xp-pagination-page-size-btn',
+                active && 'xp-pagination-page-size-btn-active',
+              )}
+              onClick={() => {
+                if (!active) {
+                  onChange(option)
+                }
+              }}
+            >
+              {option}
+            </button>
+          )
+        })}
+      </div>
+    </div>
+  )
 }
 
 export function Pagination({
   page,
   totalPages,
+  totalItems,
   total,
+  pageSize: pageSizeProp,
   limit,
+  pageSizeOptions = DEFAULT_PAGE_SIZE_OPTIONS,
   onPageChange,
-  'aria-label': ariaLabel = 'Pagination',
+  onPageSizeChange,
+  loading = false,
+  disabled = false,
   itemLabel = 'item',
   className,
   summary,
   alwaysShowSummary = false,
+  variant = 'footer',
+  'aria-label': ariaLabel = 'Pagination',
 }: PaginationProps) {
+  const resolvedTotal = totalItems ?? total
+  const pageSize = pageSizeProp ?? limit ?? pageSizeOptions[1] ?? 20
+  const isDisabled = disabled || loading
   const hasMultiplePages = totalPages > 1
-  const showNav = hasMultiplePages || alwaysShowSummary
+  const isToolbar = variant === 'toolbar'
+  const showFooter =
+    !isToolbar &&
+    (alwaysShowSummary ||
+      hasMultiplePages ||
+      (onPageSizeChange !== undefined && resolvedTotal !== undefined && resolvedTotal > 0))
 
-  if (!showNav) {
+  if (isToolbar && !hasMultiplePages) {
     return null
   }
 
+  if (!showFooter && !isToolbar) {
+    return null
+  }
+
+  const pluralLabel = resolvedTotal === 1 ? itemLabel : `${itemLabel}s`
   const defaultSummary =
-    total !== undefined && limit !== undefined ? (
+    resolvedTotal !== undefined ? (
       <>
-        {formatItemRange(page, limit, total)}{' '}
-        <span className="hidden sm:inline">
-          {itemLabel}
-          {total === 1 ? '' : 's'}
-        </span>
-      </>
-    ) : total !== undefined ? (
-      <>
-        Page {page} of {totalPages} · {total} {itemLabel}
-        {total === 1 ? '' : 's'}
+        {formatShowingRange(page, pageSize, resolvedTotal)}{' '}
+        <span className="text-text-primary">{pluralLabel}</span>
       </>
     ) : (
-      <>
-        Page {page} of {totalPages}
-      </>
+      <>Page {page} of {totalPages}</>
     )
 
-  const pageButtons = getVisiblePages(page, totalPages)
+  const canGoPrevious = page > 1 && !isDisabled
+  const canGoNext = page < totalPages && !isDisabled
 
   return (
     <nav
       aria-label={ariaLabel}
+      aria-busy={loading || undefined}
       className={cn(
-        'flex flex-col gap-2.5 rounded-xp-lg border border-border bg-surface-raised p-2.5 sm:flex-row sm:items-center sm:justify-between sm:gap-3 sm:p-3',
+        'xp-pagination',
+        isToolbar ? 'xp-pagination-toolbar' : 'xp-pagination-footer',
+        loading && 'xp-pagination-loading',
         className,
       )}
     >
-      <p className="text-center text-xs text-text-secondary sm:text-left sm:text-sm">
-        {summary ?? defaultSummary}
-        {hasMultiplePages && (
-          <span className="sm:hidden">
-            {' '}
-            · Page {page}/{totalPages}
-          </span>
-        )}
-      </p>
-
-      {hasMultiplePages && (
-        <div className="flex items-center justify-center gap-1 sm:gap-1.5">
-          <Button
-            type="button"
-            variant="secondary"
-            className="h-8 min-w-8 px-2 sm:min-w-9 sm:px-2.5"
-            disabled={page <= 1}
-            aria-label="Previous page"
+      {isToolbar ? (
+        <div className="xp-pagination-nav xp-pagination-nav-inline xp-pagination-nav-toolbar">
+          <PaginationNavButton
+            direction="previous"
+            disabled={!canGoPrevious}
             onClick={() => onPageChange(page - 1)}
-          >
-            <Icon icon={ChevronLeft} size={16} aria-hidden />
-            <span className="hidden sm:inline">Previous</span>
-          </Button>
+          />
 
-          <div className="hidden items-center gap-0.5 sm:flex">
-            {pageButtons.map((item, index) =>
-              item === 'gap' ? (
-                <span
-                  key={`gap-${index}`}
-                  className="px-1 text-sm text-text-muted"
-                  aria-hidden
-                >
-                  …
-                </span>
-              ) : (
-                <button
-                  key={item}
-                  type="button"
-                  aria-label={`Page ${item}`}
-                  aria-current={item === page ? 'page' : undefined}
-                  className={cn(
-                    'inline-flex h-8 min-w-8 items-center justify-center rounded-xp-md text-sm font-medium transition-colors',
-                    item === page
-                      ? 'bg-primary text-primary-fg'
-                      : 'text-text-secondary hover:bg-surface-subtle hover:text-text-primary',
-                  )}
-                  onClick={() => onPageChange(item)}
-                >
-                  {item}
-                </button>
-              ),
+          <div
+            className="xp-pagination-page-pill"
+            aria-current="page"
+            aria-label={`Page ${page} of ${totalPages}`}
+          >
+            Page {page} of {totalPages}
+          </div>
+
+          <PaginationNavButton
+            direction="next"
+            disabled={!canGoNext}
+            onClick={() => onPageChange(page + 1)}
+          />
+        </div>
+      ) : (
+        <>
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <p className="xp-pagination-summary text-center sm:text-left" aria-live="polite">
+              {summary ?? defaultSummary}
+            </p>
+
+            {onPageSizeChange && (
+              <PageSizeSelector
+                pageSize={pageSize}
+                options={pageSizeOptions}
+                disabled={isDisabled}
+                onChange={onPageSizeChange}
+              />
             )}
           </div>
 
-          <Button
-            type="button"
-            variant="secondary"
-            className="h-8 min-w-8 px-2 sm:min-w-9 sm:px-2.5"
-            disabled={page >= totalPages}
-            aria-label="Next page"
-            onClick={() => onPageChange(page + 1)}
-          >
-            <span className="hidden sm:inline">Next</span>
-            <Icon icon={ChevronRight} size={16} aria-hidden />
-          </Button>
-        </div>
+          {hasMultiplePages && (
+            <div className="xp-pagination-nav">
+              <PaginationNavButton
+                direction="previous"
+                disabled={!canGoPrevious}
+                onClick={() => onPageChange(page - 1)}
+              />
+
+              <div
+                className="xp-pagination-page-pill"
+                aria-current="page"
+                aria-label={`Page ${page} of ${totalPages}`}
+              >
+                Page {page} of {totalPages}
+              </div>
+
+              <PaginationNavButton
+                direction="next"
+                disabled={!canGoNext}
+                onClick={() => onPageChange(page + 1)}
+              />
+            </div>
+          )}
+        </>
+      )}
+
+      {hasMultiplePages && (
+        <p className="sr-only" aria-live="polite">
+          Page {page} of {totalPages}
+          {resolvedTotal !== undefined ? `, ${resolvedTotal} ${pluralLabel} total` : ''}
+        </p>
       )}
     </nav>
+  )
+}
+
+type PaginatedContentProps = {
+  children: ReactNode
+  loading?: boolean
+  fetching?: boolean
+  className?: string
+}
+
+/** Fade list content during page transitions without layout shift. */
+export function PaginatedContent({
+  children,
+  loading = false,
+  fetching = false,
+  className,
+}: PaginatedContentProps) {
+  const isTransitioning = fetching && !loading
+
+  return (
+    <div
+      className={cn(
+        'xp-paginated-content',
+        isTransitioning && 'xp-paginated-content-fetching',
+        className,
+      )}
+      aria-busy={loading || fetching || undefined}
+    >
+      {children}
+    </div>
   )
 }

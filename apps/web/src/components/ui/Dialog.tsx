@@ -82,7 +82,7 @@ export function Dialog({
 
   return createPortal(
     <div
-      className="fixed inset-0 z-[100] flex items-end justify-center sm:items-center sm:p-4"
+      className="fixed inset-0 z-[100] flex items-end justify-center p-4 sm:items-center sm:p-4"
       style={{ height: '100dvh', width: '100vw' }}
     >
       <button
@@ -98,10 +98,10 @@ export function Dialog({
         aria-labelledby={titleId}
         aria-describedby={description ? descriptionId : undefined}
         className={cn(
-          'relative z-10 flex w-full flex-col border border-border bg-surface-raised shadow-xp-md',
+          'relative z-10 flex w-full flex-col overflow-hidden border border-border bg-surface-raised shadow-xp-md',
           isForm
-            ? 'max-h-[min(92dvh,100dvh)] rounded-t-xp-xl sm:max-h-[min(88dvh,calc(100dvh-2rem))] sm:rounded-xp-lg'
-            : 'mx-4 max-h-[calc(100dvh-2rem)] rounded-xp-xl p-4 sm:mx-0 sm:p-5',
+            ? 'max-h-[min(calc(100dvh-2rem),92dvh)] rounded-xp-xl sm:max-h-[min(88dvh,calc(100dvh-2rem))] sm:rounded-xp-lg'
+            : 'max-h-[calc(100dvh-2rem)] rounded-xp-xl p-4 sm:p-5',
           sizeClass[size],
           className,
         )}

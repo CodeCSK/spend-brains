@@ -1,4 +1,4 @@
-import '@fontsource-variable/outfit/wght.css'
+import '@fontsource-variable/inter'
 import type { Preview } from '@storybook/react'
 
 import '../src/index.css'

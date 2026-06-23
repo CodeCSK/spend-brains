@@ -1,33 +1,34 @@
 /**
  * Spendbrains design tokens — SINGLE SOURCE OF TRUTH for all style values.
- * Console-inspired: neutral surfaces, tight density, brand purple accent.
+ * Premium minimal UI: Apple / Linear / Notion / Stripe inspired.
+ * Primary brand color #8453AC is fixed — do not replace.
  */
 :root {
-  /* ── Brand accent (lavender purple) ─────────────────── */
-  --color-lavender-purple-50: #f3eef7;
-  --color-lavender-purple-100: #e6ddee;
-  --color-lavender-purple-200: #cebade;
-  --color-lavender-purple-300: #b598cd;
+  /* ── Brand purple (500 = fixed primary) ─────────────── */
+  --color-lavender-purple-50: #f4eefa;
+  --color-lavender-purple-100: #e4d8f1;
+  --color-lavender-purple-200: #d4c0e8;
+  --color-lavender-purple-300: #b899d4;
   --color-lavender-purple-400: #9d75bd;
   --color-lavender-purple-500: #8453ac;
-  --color-lavender-purple-600: #6a428a;
-  --color-lavender-purple-700: #4f3267;
-  --color-lavender-purple-800: #352145;
-  --color-lavender-purple-900: #1a1122;
-  --color-lavender-purple-950: #120c18;
+  --color-lavender-purple-600: #74479a;
+  --color-lavender-purple-700: #653e87;
+  --color-lavender-purple-800: #4a2f63;
+  --color-lavender-purple-900: #2f1e3f;
+  --color-lavender-purple-950: #1a1122;
 
-  /* Neutrals — console-style gray scale for UI chrome */
-  --color-neutral-50: #fafafa;
-  --color-neutral-100: #f5f5f5;
-  --color-neutral-200: #e5e5e5;
-  --color-neutral-300: #d4d4d4;
-  --color-neutral-400: #a3a3a3;
-  --color-neutral-500: #737373;
-  --color-neutral-600: #525252;
-  --color-neutral-700: #404040;
-  --color-neutral-800: #262626;
-  --color-neutral-900: #171717;
-  --color-neutral-950: #0a0a0a;
+  /* Neutrals — soft gray scale (avoid pure black) */
+  --color-neutral-50: #f8f9fb;
+  --color-neutral-100: #fafafb;
+  --color-neutral-200: #f1f3f5;
+  --color-neutral-300: #e5e7eb;
+  --color-neutral-400: #9ca3af;
+  --color-neutral-500: #6b7280;
+  --color-neutral-600: #4b5563;
+  --color-neutral-700: #374151;
+  --color-neutral-800: #252830;
+  --color-neutral-900: #16181d;
+  --color-neutral-950: #0f1114;
 
   --color-accent-50: var(--color-lavender-purple-50);
   --color-accent-100: var(--color-lavender-purple-100);
@@ -36,41 +37,57 @@
   --color-accent-700: var(--color-lavender-purple-700);
 
   /* ── Semantic status ────────────────────────────────── */
-  --color-success-bg: #ecfdf5;
-  --color-success-text: #065f46;
+  --color-success: #22c55e;
+  --color-success-bg: #ecfdf3;
+  --color-success-text: #15803d;
+  --color-error: #ef4444;
   --color-error-bg: #fef2f2;
-  --color-error-text: #991b1b;
-  --color-error-text-strong: #7f1d1d;
+  --color-error-text: #b91c1c;
+  --color-error-text-strong: #991b1b;
+  --color-warning: #f59e0b;
   --color-warning-bg: #fffbeb;
-  --color-warning-text: #92400e;
-  --color-info-bg: #eef2ff;
-  --color-info-text: #3730a3;
+  --color-warning-text: #b45309;
+  --color-info: #0ea5e9;
+  --color-info-bg: #eff6ff;
+  --color-info-text: #0369a1;
 
-  /* ── Surfaces & text (Neon-like neutral shell) ──────── */
-  --color-surface-page: var(--color-neutral-50);
-  --color-surface-subtle: var(--color-neutral-100);
+  /* ── Chart palette (harmonious, no rainbow) ─────────── */
+  --color-chart-primary: #8453ac;
+  --color-chart-secondary: #3b82f6;
+  --color-chart-success: #22c55e;
+  --color-chart-warning: #f59e0b;
+  --color-chart-rose: #fb7185;
+  --color-chart-cyan: #06b6d4;
+
+  /* ── Surfaces & text ────────────────────────────────── */
+  --color-surface-page: #f8f9fb;
+  --color-surface-subtle: #fafafb;
   --color-surface-raised: #ffffff;
-  --color-surface-inverse: var(--color-neutral-900);
-  --color-text-primary: var(--color-neutral-900);
-  --color-text-secondary: var(--color-neutral-600);
-  --color-text-muted: var(--color-neutral-500);
-  --color-text-label: var(--color-neutral-800);
+  --color-surface-inverse: #16181d;
+  --color-text-primary: #16181d;
+  --color-text-secondary: #6b7280;
+  --color-text-muted: #9ca3af;
+  --color-text-label: #374151;
   --color-text-inverse: #ffffff;
   --color-text-on-primary: #ffffff;
-  --color-border: var(--color-neutral-200);
-  --color-border-input: var(--color-neutral-300);
+  --color-border: #e5e7eb;
+  --color-divider: #f1f3f5;
+  --color-border-input: #e5e7eb;
   --color-border-focus: var(--color-lavender-purple-500);
 
-  /* ── Actions ────────────────────────────────────────── */
-  --color-primary: var(--color-lavender-purple-600);
-  --color-primary-hover: var(--color-lavender-purple-700);
+  /* ── Actions (primary #8453AC fixed) ────────────────── */
+  --color-primary: #8453ac;
+  --color-primary-hover: #74479a;
+  --color-primary-active: #653e87;
+  --color-primary-surface: #f4eefa;
+  --color-primary-border: #e4d8f1;
   --color-primary-fg: var(--color-text-on-primary);
   --color-secondary: #ffffff;
   --color-secondary-hover: var(--color-neutral-50);
   --color-secondary-fg: var(--color-neutral-700);
   --color-secondary-border: var(--color-neutral-300);
 
-  /* ── Spacing (4px base, tighter defaults) ─────────── */
+  /* ── Spacing (4px base) ─────────────────────────────── */
   --space-0: 0;
   --space-1: 0.25rem;
   --space-2: 0.5rem;
@@ -83,36 +100,40 @@
   --space-12: 3rem;
   --space-16: 4rem;
 
-  /* ── Border radius (console: subtle corners) ────────── */
-  --radius-sm: 4px;
-  --radius-md: 6px;
-  --radius-lg: 8px;
-  --radius-xl: 10px;
+  /* ── Border radius (soft, modern) ───────────────────── */
+  --radius-sm: 12px;
+  --radius-md: 16px;
+  --radius-lg: 20px;
+  --radius-xl: 20px;
   --radius-full: 9999px;
 
-  /* ── Elevation (minimal — borders do most of the work) */
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
-  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
-  --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.12);
+  /* ── Elevation (subtle — lightweight cards) ─────────── */
+  --shadow-sm: 0 1px 2px rgba(22, 24, 29, 0.04);
+  --shadow-md: 0 4px 12px rgba(22, 24, 29, 0.06);
+  --shadow-lg: 0 8px 24px rgba(22, 24, 29, 0.08);
   --shadow-focus: 0 0 0 2px rgba(132, 83, 172, 0.35);
 
-  /* ── Typography ─────────────────────────────────────── */
-  --font-sans: 'Outfit Variable', 'Outfit', system-ui, -apple-system, 'Segoe UI', Roboto,
+  /* ── Motion ─────────────────────────────────────────── */
+  --transition-fast: 150ms ease;
+
+  /* ── Typography (Inter) ─────────────────────────────── */
+  --font-sans: 'Inter Variable', 'Inter', 'SF Pro Display', system-ui, -apple-system,
     sans-serif;
   --font-weight-body: 400;
   --font-weight-medium: 500;
   --font-weight-semibold: 600;
   --font-weight-bold: 700;
   --font-weight-regular: 400;
-  --text-display: 1.75rem;
-  --text-h1: 1.375rem;
-  --text-h2: 1.125rem;
-  --text-h3: 1rem;
-  --text-body: 0.875rem;
-  --text-body-sm: 0.8125rem;
-  --text-caption: 0.75rem;
-  --text-amount-lg: 1rem;
-  --text-amount: 0.875rem;
+  --text-display: 3.5rem;
+  --text-h1: 2.5rem;
+  --text-h2: 2rem;
+  --text-h3: 1.5rem;
+  --text-title: 1.25rem;
+  --text-body: 1rem;
+  --text-body-sm: 0.875rem;
+  --text-caption: 0.8125rem;
+  --text-amount-lg: 1.25rem;
+  --text-amount: 1rem;
 
   /* ── Layout ─────────────────────────────────────────── */
   --content-max-width: 720px;

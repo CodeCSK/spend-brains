@@ -2,7 +2,7 @@ import { Plus, Tags } from 'lucide-react'
 import { useState } from 'react'
 
 import { Icon } from '../../../components/Icon'
-import { PageSection } from '../../../components/layout'
+import { ListRowsSkeleton, PageSection } from '../../../components/layout'
 import { Alert, Button } from '../../../components/ui'
 import { ApiError } from '../../../lib/api'
 import type { Category } from '../../../types/category'
@@ -62,16 +62,7 @@ export function EventCategoriesSection({ eventId }: EventCategoriesSectionProps)
         category={dialogState?.mode === 'edit' ? dialogState.category : undefined}
       />
 
-      {categoriesQuery.isLoading && (
-        <ul className="xp-compact-list mt-3" aria-hidden>
-          {[0, 1, 2].map((key) => (
-            <li key={key} className="xp-compact-list-row">
-              <div className="xp-skeleton h-8 w-8 rounded-xp-full" />
-              <div className="xp-skeleton h-4 flex-1 rounded-xp-md" />
-            </li>
-          ))}
-        </ul>
-      )}
+      {categoriesQuery.isLoading && <ListRowsSkeleton />}
 
       {categoriesQuery.isError && (
         <Alert variant="error" className="mt-3">

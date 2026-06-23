@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { Navigate, Outlet } from 'react-router-dom'
 
-import { PageLayout } from '../components/layout'
+import { PageLoadingSkeleton } from '../components/layout'
 import { getMe } from '../lib/api/users'
 import { profileKeys } from '../lib/query-keys'
 
@@ -12,13 +12,7 @@ export function SuperAdminRoute() {
   })
 
   if (profileQuery.isLoading) {
-    return (
-      <PageLayout width="wide">
-        <p className="text-sm text-text-secondary" role="status">
-          Checking access…
-        </p>
-      </PageLayout>
-    )
+    return <PageLoadingSkeleton width="wide" />
   }
 
   if (profileQuery.isError || !profileQuery.data?.isSuperAdmin) {

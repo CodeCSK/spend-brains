@@ -3,6 +3,7 @@ import {
   Activity,
   BookOpen,
   ExternalLink,
+  Rocket,
   Server,
   Sparkles,
   Terminal,
@@ -12,14 +13,16 @@ import { useMemo, useState } from 'react'
 
 import { Icon } from '../../../components/Icon'
 import { EmptyState, PageHeader, PageLayout, PageSection } from '../../../components/layout'
-import { Alert, Badge, Card, CardBody, SegmentedControl } from '../../../components/ui'
+import { Alert, Badge, Button, Card, CardBody, SegmentedControl } from '../../../components/ui'
 import {
   AI_PROMPT_SAMPLES,
+  DEPLOYMENT_GUIDE_SECTIONS,
   DEV_CONSOLE_TABS,
   DOC_CATALOG,
   DOC_CATEGORY_LABELS,
   NPM_SCRIPTS,
   OPS_CONFIG,
+  STAGING_URLS,
   WORKFLOW_RECIPES,
   WORKSPACE_LABELS,
   type DevConsoleTab,
@@ -60,8 +63,22 @@ function StatusBadge({
 function CommandRow({ command }: { command: string }) {
   return (
     <div className="flex items-start gap-2 rounded-xp-md bg-surface-subtle px-3 py-2">
-      <code className="min-w-0 flex-1 break-all text-sm text-text-primary">{command}</code>
+      <code className="min-w-0 flex-1 break-all whitespace-pre-wrap text-sm text-text-primary">
+        {command}
+      </code>
       <CopyButton value={command} className="shrink-0 px-2" />
+    </div>
+  )
+}
+
+function CopyValueRow({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="space-y-1">
+      <p className="text-sm font-medium text-text-primary">{label}</p>
+      <div className="flex items-start gap-2 rounded-xp-md bg-surface-subtle px-3 py-2">
+        <code className="min-w-0 flex-1 break-all text-sm text-text-primary">{value}</code>
+        <CopyButton value={value} className="shrink-0 px-2" />
+      </div>
     </div>
   )
 }
@@ -166,6 +183,10 @@ export function DevConsolePage() {
   const apiUrl = getApiBaseUrl()
   const webMode = import.meta.env.MODE
   const isDev = import.meta.env.DEV
+  const currentWebUrl =
+    typeof window !== 'undefined' ? window.location.origin : STAGING_URLS.web
+  const corsOrigins = `${currentWebUrl},http://localhost:5173`
+  const corsFlyCommand = `fly secrets set CORS_ORIGINS="${corsOrigins}"`
 
   return (
     <PageLayout width="wide">
@@ -251,6 +272,32 @@ export function DevConsolePage() {
           </Card>
 
           <Card>
+            <CardBody className="space-y-4">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <div className="flex items-center gap-2">
+                  <Icon icon={Rocket} size={20} aria-hidden />
+                  <h3 className="text-lg font-semibold">Staging deploy</h3>
+                </div>
+                <Button type="button" variant="secondary" onClick={() => setTab('deploy')}>
+                  Full deploy guide
+                </Button>
+              </div>
+              <p className="text-sm text-text-secondary">
+                Repeatable checklist for Cloudflare Pages + Fly.io. CORS is one-time unless the web
+                URL changes.
+              </p>
+              <div className="grid gap-3 sm:grid-cols-2">
+                <CopyValueRow label="Web (this browser)" value={currentWebUrl} />
+                <CopyValueRow label="API" value={apiUrl} />
+              </div>
+              <CommandRow command="git push origin main && npm run deploy:api" />
+              <p className="text-xs text-text-muted">
+                Canonical URLs: {STAGING_URLS.web} · {STAGING_URLS.api}
+              </p>
+            </CardBody>
+          </Card>
+
+          <Card>
             <CardBody className="space-y-3">
               <div className="flex items-center gap-2">
                 <Icon icon={Server} size={20} aria-hidden />
@@ -288,6 +335,106 @@ export function DevConsolePage() {
               </CardBody>
             </Card>
           )}
+        </PageSection>
+      )}
+
+      {tab === 'deploy' && (
+        <PageSection aria-labelledby="deploy-heading" className="mt-8 space-y-6">
+          <div className="flex items-center gap-2">
+            <Icon icon={Rocket} size={20} aria-hidden />
+            <h2 id="deploy-heading" className="text-lg font-semibold">
+              Staging deployment guide
+            </h2>
+          </div>
+          <p className="text-sm text-text-secondary">
+            Friends beta stack: Cloudflare Pages (web) · Fly.io Mumbai (API) · Neon Postgres.
+            Full runbook: <code>docs/plan/friends-beta-deploy.md</code>
+          </p>
+
+          <Card>
+            <CardBody className="space-y-4">
+              <h3 className="font-semibold text-text-primary">Live URLs</h3>
+              <div className="grid gap-3 sm:grid-cols-2">
+                <CopyValueRow label="Web — current browser" value={currentWebUrl} />
+                <CopyValueRow label="Web — production default" value={STAGING_URLS.web} />
+                <CopyValueRow label="API (VITE_API_URL)" value={apiUrl} />
+                <CopyValueRow label="Fly app" value={STAGING_URLS.flyApp} />
+              </div>
+              <div className="flex flex-wrap gap-3">
+                <a
+                  href={STAGING_URLS.web}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-1 text-sm text-primary hover:underline"
+                >
+                  Open web
+                  <Icon icon={ExternalLink} size={16} aria-hidden />
+                </a>
+                <a
+                  href={`${apiUrl}/health`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-1 text-sm text-primary hover:underline"
+                >
+                  API /health
+                  <Icon icon={ExternalLink} size={16} aria-hidden />
+                </a>
+                <a
+                  href={STAGING_URLS.githubRepo}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-1 text-sm text-primary hover:underline"
+                >
+                  GitHub repo
+                  <Icon icon={ExternalLink} size={16} aria-hidden />
+                </a>
+              </div>
+            </CardBody>
+          </Card>
+
+          <Alert variant="info">
+            <strong>CORS</strong> uses your current web origin:{' '}
+            <code className="text-sm">{corsOrigins}</code>. Set once on Fly — not on every deploy.
+          </Alert>
+
+          <ul className="space-y-4">
+            {DEPLOYMENT_GUIDE_SECTIONS.map((section) => (
+              <li key={section.id}>
+                <Card>
+                  <CardBody className="space-y-3">
+                    <div>
+                      <h3 className="font-semibold text-text-primary">{section.title}</h3>
+                      {section.summary && (
+                        <p className="mt-1 text-sm text-text-secondary">{section.summary}</p>
+                      )}
+                    </div>
+                    <ol className="space-y-3">
+                      {section.steps.map((step, index) => {
+                        const command =
+                          step.command &&
+                          section.id === 'cors' &&
+                          step.command.startsWith('fly secrets set CORS_ORIGINS')
+                            ? corsFlyCommand
+                            : step.command
+
+                        return (
+                          <li key={`${section.id}-${index}`} className="space-y-1">
+                            <p className="text-sm font-medium text-text-primary">
+                              {index + 1}. {step.label}
+                            </p>
+                            {command && <CommandRow command={command} />}
+                            {step.note && (
+                              <p className="text-xs text-text-muted">{step.note}</p>
+                            )}
+                          </li>
+                        )
+                      })}
+                    </ol>
+                  </CardBody>
+                </Card>
+              </li>
+            ))}
+          </ul>
         </PageSection>
       )}
 

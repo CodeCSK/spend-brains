@@ -1,5 +1,6 @@
 export type DevConsoleTab =
   | 'overview'
+  | 'deploy'
   | 'workflows'
   | 'scripts'
   | 'docs'
@@ -43,8 +44,197 @@ export type OpsConfigEntry = {
   highlights: string[]
 }
 
+export type DeploymentStep = {
+  label: string
+  command?: string
+  note?: string
+}
+
+export type DeploymentGuideSection = {
+  id: string
+  title: string
+  summary?: string
+  steps: DeploymentStep[]
+}
+
+/** Canonical staging URLs — web may differ if Cloudflare project name changes. */
+export const STAGING_URLS = {
+  web: 'https://spend-brains.pages.dev',
+  api: 'https://spendbrains-api-beta.fly.dev',
+  flyApp: 'spendbrains-api-beta',
+  githubRepo: 'https://github.com/CodeCSK/spend-brains',
+} as const
+
+export const DEPLOYMENT_GUIDE_SECTIONS: DeploymentGuideSection[] = [
+  {
+    id: 'every-release',
+    title: 'Every release (web + API changed)',
+    summary: 'Typical flow after merging features that touch both apps.',
+    steps: [
+      {
+        label: 'Commit and push to main',
+        command: 'git add -A && git status',
+        note: 'Do not commit apps/backend/.env or apps/backend/.env.staging.',
+      },
+      {
+        label: 'Push triggers Cloudflare Pages build automatically',
+        command: 'git push origin main',
+      },
+      {
+        label: 'Deploy API to Fly.io (from repo root)',
+        command: 'npm run deploy:api',
+      },
+      {
+        label: 'Verify API health',
+        command: 'curl https://spendbrains-api-beta.fly.dev/health',
+        note: 'Expect {"status":"OK"}. Migrations run via fly.toml release_command.',
+      },
+      {
+        label: 'Smoke test production web',
+        note: 'Open web URL → login (OTP = last 6 digits of phone) → event → expense → settlements export.',
+      },
+    ],
+  },
+  {
+    id: 'web-only',
+    title: 'Web-only release',
+    summary: 'UI changes with no backend API changes.',
+    steps: [
+      { label: 'Push to main', command: 'git push origin main' },
+      {
+        label: 'Cloudflare rebuilds automatically',
+        note: 'Check deploy log: npm ci → npm run build → apps/web/dist.',
+      },
+      {
+        label: 'No Fly deploy needed',
+        note: 'CORS and API secrets unchanged.',
+      },
+    ],
+  },
+  {
+    id: 'api-only',
+    title: 'API-only release',
+    summary: 'Backend changes without web bundle changes.',
+    steps: [
+      { label: 'Push code (optional but recommended)', command: 'git push origin main' },
+      { label: 'Deploy API', command: 'npm run deploy:api' },
+      {
+        label: 'Verify health',
+        command: 'curl https://spendbrains-api-beta.fly.dev/health',
+      },
+    ],
+  },
+  {
+    id: 'cors',
+    title: 'CORS (one-time or when web URL changes)',
+    summary:
+      'CORS_ORIGINS must match the browser origin exactly. Secrets persist — not needed on every deploy.',
+    steps: [
+      {
+        label: 'Set Fly secret (use your real Pages URL)',
+        command:
+          'fly secrets set CORS_ORIGINS="https://spend-brains.pages.dev,http://localhost:5173"',
+        note: 'Run from apps/backend after fly auth login. No redeploy required.',
+      },
+      {
+        label: 'Test preflight',
+        command:
+          'curl -I -X OPTIONS "https://spendbrains-api-beta.fly.dev/v1/auth/otp/send" -H "Origin: https://spend-brains.pages.dev" -H "Access-Control-Request-Method: POST"',
+        note: 'Look for access-control-allow-origin in response headers.',
+      },
+      {
+        label: 'Also in fly.toml',
+        note: 'apps/backend/fly.toml [env] CORS_ORIGINS — committed fallback if secret unset.',
+      },
+    ],
+  },
+  {
+    id: 'cloudflare-pages',
+    title: 'Cloudflare Pages settings',
+    summary: 'Production branch deploy from GitHub main.',
+    steps: [
+      { label: 'Root directory', note: '/ (repo root)' },
+      { label: 'Build command', note: 'npm run build' },
+      { label: 'Build output directory', note: 'apps/web/dist' },
+      { label: 'Node version env', note: 'NODE_VERSION=20' },
+      {
+        label: 'Production env: VITE_API_URL',
+        note: 'https://spendbrains-api-beta.fly.dev',
+      },
+      { label: 'Production env: VITE_BETA_MODE', note: 'true' },
+      {
+        label: 'Pages URL is stable',
+        note: 'https://spend-brains.pages.dev does not change on each deploy — only if project renamed.',
+      },
+    ],
+  },
+  {
+    id: 'fly-secrets',
+    title: 'Fly secrets (first-time setup)',
+    summary: 'Set once via fly secrets set — survives redeploys. See apps/backend/.env.staging.example.',
+    steps: [
+      { label: 'Login', command: 'fly auth login' },
+      {
+        label: 'Set secrets (replace placeholders)',
+        command:
+          'fly secrets set DATABASE_URL="postgresql://..." JWT_ACCESS_SECRET="..." JWT_REFRESH_SECRET="..." MSG91_AUTH_KEY="..." MSG91_SENDER_ID="SPBRNS" MSG91_OTP_TEMPLATE_ID="..." CORS_ORIGINS="https://spend-brains.pages.dev,http://localhost:5173" SUPER_ADMIN_PHONES="+91XXXXXXXXXX"',
+        note: 'From apps/backend. OTP_USE_PHONE_SUFFIX=true is in fly.toml.',
+      },
+      { label: 'Deploy', command: 'npm run deploy:api' },
+    ],
+  },
+  {
+    id: 'super-admin',
+    title: 'Super admin / dev console access',
+    steps: [
+      {
+        label: 'Local API',
+        note: 'apps/backend/.env → SUPER_ADMIN_PHONES=+91… (same phone you login with)',
+      },
+      {
+        label: 'Staging API (Fly)',
+        command: 'fly secrets set SUPER_ADMIN_PHONES="+91XXXXXXXXXX"',
+        note: 'Required for /app/dev-console when web points at Fly API.',
+      },
+      {
+        label: 'Local web → staging API',
+        command: 'npm run dev:staging -w web',
+        note: 'Uses apps/web/.env.staging — super admin still from Fly secret.',
+      },
+    ],
+  },
+  {
+    id: 'smoke-test',
+    title: 'Staging smoke test',
+    steps: [
+      { label: 'Open web', note: 'https://spend-brains.pages.dev/login' },
+      {
+        label: 'Login',
+        note: 'Phone +91… → Send OTP → enter last 6 digits of your number.',
+      },
+      { label: 'Create or join event → add expense' },
+      { label: 'Settlements tab → export image' },
+      { label: 'Dev console', note: '/app/dev-console — super admin only' },
+      { label: 'Mobile browser', note: 'Repeat login flow on phone.' },
+    ],
+  },
+  {
+    id: 'share-friends',
+    title: 'Share with friends (WhatsApp)',
+    steps: [
+      {
+        label: 'Message template',
+        command:
+          'Hey! SpendBrains beta for splitting group expenses.\n\nhttps://spend-brains.pages.dev\n\n1. Open link\n2. Sign in with your phone (+91)\n3. Send OTP\n4. OTP = last 6 digits of your number\n   (e.g. 9876543210 → 543210)\n\nJoin event code: XXXXXX\n\nPrivate beta — small group only.',
+        note: 'Replace XXXXXX with your event join code.',
+      },
+    ],
+  },
+]
+
 export const DEV_CONSOLE_TABS: { value: DevConsoleTab; label: string }[] = [
   { value: 'overview', label: 'Overview' },
+  { value: 'deploy', label: 'Deploy' },
   { value: 'workflows', label: 'Workflows' },
   { value: 'scripts', label: 'npm scripts' },
   { value: 'docs', label: 'Docs' },
@@ -53,6 +243,14 @@ export const DEV_CONSOLE_TABS: { value: DevConsoleTab; label: string }[] = [
 ]
 
 export const NPM_SCRIPTS: NpmScriptEntry[] = [
+  {
+    workspace: 'root',
+    name: 'build',
+    command: 'npm run build',
+    group: 'Build',
+    description: 'Production web build (alias for build -w web).',
+    when: 'Cloudflare Pages CI uses this at repo root.',
+  },
   {
     workspace: 'root',
     name: 'build:web',
@@ -512,6 +710,26 @@ export const OPS_CONFIG: OpsConfigEntry[] = [
     ],
   },
   {
+    title: 'Cloudflare Pages (staging web)',
+    location: 'Dashboard → Workers & Pages → spend-brains',
+    purpose: 'Auto-deploy on push to main; SPA from apps/web/dist.',
+    highlights: [
+      'Build: npm run build · Output: apps/web/dist',
+      'Env: VITE_API_URL, VITE_BETA_MODE=true',
+      'URL: https://spend-brains.pages.dev (stable across deploys)',
+    ],
+  },
+  {
+    title: 'CORS (Fly ↔ Pages)',
+    location: 'fly secrets · apps/backend/fly.toml',
+    purpose: 'API allows browser origin from Cloudflare Pages exactly.',
+    highlights: [
+      'CORS_ORIGINS must match Pages URL — not updated every deploy',
+      'fly secrets set CORS_ORIGINS="https://spend-brains.pages.dev,http://localhost:5173"',
+      'Wrong example URL spendbrains-web-beta.pages.dev will break login',
+    ],
+  },
+  {
     title: 'Fly.io (staging API)',
     location: 'apps/backend/fly.toml',
     purpose: 'Friends beta API — spendbrains-api-beta, Mumbai (bom), 512MB.',
@@ -535,7 +753,7 @@ export const OPS_CONFIG: OpsConfigEntry[] = [
     location: 'apps/web/vite.config.ts',
     purpose: 'Dev server port 5173; Tailwind v4 via @tailwindcss/vite.',
     highlights: [
-      'Env: VITE_* from .env / .env.staging',
+      'Env: VITE_* from .env.development / .env.staging (committed)',
       'Build: tsc -b && vite build',
     ],
   },

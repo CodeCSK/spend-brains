@@ -2,21 +2,17 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Save } from 'lucide-react'
 import { useEffect } from 'react'
-import { useForm } from 'react-hook-form'
+import { Controller, useForm } from 'react-hook-form'
 import { z } from 'zod'
 
 import { Icon } from '../../../components/Icon'
-import { Alert, Button, Card, FormField, Input, Select } from '../../../components/ui'
+import { Alert, Button, Card, FormField, Input } from '../../../components/ui'
 import { ApiError, createCategory, updateCategory } from '../../../lib/api'
 import { categoryKeys } from '../../../lib/query-keys'
 import { useToast } from '../../../lib/store/useToast'
 import type { Category } from '../../../types/category'
-import {
-  CATEGORY_ICON_KEYS,
-  CATEGORY_ICON_LABELS,
-  isCategoryIconKey,
-  type CategoryIconKey,
-} from '../lib/category-icons'
+import { CATEGORY_ICON_KEYS, normalizeCategoryIconKey, type CategoryIconKey } from '../lib/category-icons'
+import { CategoryIconPicker } from './CategoryIconPicker'
 
 const categoryFormSchema = z.object({
   name: z
@@ -32,7 +28,7 @@ export type CategoryFormValues = z.infer<typeof categoryFormSchema>
 export const CATEGORY_FORM_ID = 'category-form'
 
 function toIconKey(icon: string): CategoryIconKey {
-  return isCategoryIconKey(icon) ? icon : 'other'
+  return normalizeCategoryIconKey(icon)
 }
 
 type CategoryFormProps = {
@@ -59,14 +55,14 @@ export function CategoryForm({
     resolver: zodResolver(categoryFormSchema),
     defaultValues: {
       name: category?.name ?? '',
-      icon: category ? toIconKey(category.icon) : 'other',
+      icon: category ? toIconKey(category.icon) : 'sparkles',
     },
   })
 
   useEffect(() => {
     form.reset({
       name: category?.name ?? '',
-      icon: category ? toIconKey(category.icon) : 'other',
+      icon: category ? toIconKey(category.icon) : 'sparkles',
     })
   }, [category, mode, form])
 
@@ -128,13 +124,17 @@ export function CategoryForm({
       </FormField>
 
       <FormField id="category-icon" label="Icon" error={form.formState.errors.icon?.message}>
-        <Select {...form.register('icon')}>
-          {CATEGORY_ICON_KEYS.map((key) => (
-            <option key={key} value={key}>
-              {CATEGORY_ICON_LABELS[key]}
-            </option>
-          ))}
-        </Select>
+        <Controller
+          control={form.control}
+          name="icon"
+          render={({ field }) => (
+            <CategoryIconPicker
+              name={field.name}
+              value={field.value}
+              onChange={field.onChange}
+            />
+          )}
+        />
       </FormField>
 
       {saveError && <Alert variant="error">{saveError}</Alert>}

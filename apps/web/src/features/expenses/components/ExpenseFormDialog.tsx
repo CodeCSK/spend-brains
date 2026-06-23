@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { useCallback } from 'react'
 
+import { FormLoadingSkeleton } from '../../../components/layout'
 import { Alert, Dialog } from '../../../components/ui'
 import { ApiError, getExpense, getMe } from '../../../lib/api'
 import { expenseKeys, profileKeys } from '../../../lib/query-keys'
@@ -42,10 +43,7 @@ export function ExpenseFormDialog({
   }, [onClose])
 
   const title = mode === 'create' ? 'Add expense' : 'Edit expense'
-  const description =
-    mode === 'create'
-      ? 'Log a shared cost. Amounts split equally among selected members.'
-      : expenseQuery.data?.description
+  const description = mode === 'edit' ? expenseQuery.data?.description : undefined
 
   const expense = expenseQuery.data
   const isOwner = expense != null && expense.createdBy === profileQuery.data?.id
@@ -57,11 +55,7 @@ export function ExpenseFormDialog({
 
   if (mode === 'edit') {
     if (expenseQuery.isLoading || profileQuery.isLoading) {
-      body = (
-        <p className="px-4 py-6 text-sm text-text-secondary sm:px-5" role="status">
-          Loading expense…
-        </p>
-      )
+      body = <FormLoadingSkeleton />
     } else if (expenseQuery.isError || !expense) {
       body = (
         <div className="px-4 py-4 sm:px-5">
@@ -76,8 +70,7 @@ export function ExpenseFormDialog({
       body = (
         <div className="px-4 py-4 sm:px-5">
           <Alert variant="warning">
-            Members can only edit their own expenses. Captain and vice captain can edit any
-            expense.
+            You can only edit your own expenses.
           </Alert>
         </div>
       )

@@ -37,15 +37,27 @@ $color-accent-600: var(--color-accent-600);
 $color-accent-700: var(--color-accent-700);
 
 // Semantic
+$color-success: var(--color-success);
 $color-success-bg: var(--color-success-bg);
 $color-success-text: var(--color-success-text);
+$color-error: var(--color-error);
 $color-error-bg: var(--color-error-bg);
 $color-error-text: var(--color-error-text);
 $color-error-text-strong: var(--color-error-text-strong);
+$color-warning: var(--color-warning);
 $color-warning-bg: var(--color-warning-bg);
 $color-warning-text: var(--color-warning-text);
+$color-info: var(--color-info);
 $color-info-bg: var(--color-info-bg);
 $color-info-text: var(--color-info-text);
+
+// Chart
+$color-chart-primary: var(--color-chart-primary);
+$color-chart-secondary: var(--color-chart-secondary);
+$color-chart-success: var(--color-chart-success);
+$color-chart-warning: var(--color-chart-warning);
+$color-chart-rose: var(--color-chart-rose);
+$color-chart-cyan: var(--color-chart-cyan);
 
 // Surfaces & text
 $color-surface-page: var(--color-surface-page);
@@ -59,12 +71,16 @@ $color-text-label: var(--color-text-label);
 $color-text-inverse: var(--color-text-inverse);
 $color-text-on-primary: var(--color-text-on-primary);
 $color-border: var(--color-border);
+$color-divider: var(--color-divider);
 $color-border-input: var(--color-border-input);
 $color-border-focus: var(--color-border-focus);
 
 // Actions
 $color-primary: var(--color-primary);
 $color-primary-hover: var(--color-primary-hover);
+$color-primary-active: var(--color-primary-active);
+$color-primary-surface: var(--color-primary-surface);
+$color-primary-border: var(--color-primary-border);
 $color-primary-fg: var(--color-primary-fg);
 $color-secondary: var(--color-secondary);
 $color-secondary-hover: var(--color-secondary-hover);

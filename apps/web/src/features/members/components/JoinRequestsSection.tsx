@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query'
 import { UserCheck } from 'lucide-react'
 
 import { Icon } from '../../../components/Icon'
-import { PageSection } from '../../../components/layout'
+import { ListRowsSkeleton, PageSection } from '../../../components/layout'
 import { Alert, Badge } from '../../../components/ui'
 import { ApiError, listJoinRequests } from '../../../lib/api'
 import { eventKeys } from '../../../lib/query-keys'
@@ -41,14 +41,7 @@ export function JoinRequestsSection({ eventId }: JoinRequestsSectionProps) {
         )}
       </div>
 
-      {requestsQuery.isLoading && (
-        <ul className="xp-compact-list mt-3" aria-hidden>
-          <li className="xp-compact-list-row">
-            <div className="xp-skeleton h-8 w-8 rounded-xp-full" />
-            <div className="xp-skeleton h-4 flex-1 rounded-xp-md" />
-          </li>
-        </ul>
-      )}
+      {requestsQuery.isLoading && <ListRowsSkeleton rows={1} />}
 
       {requestsQuery.isError && (
         <Alert variant="error" className="mt-3">

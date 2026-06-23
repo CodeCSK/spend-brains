@@ -2,8 +2,8 @@ import { Receipt, Scale, Settings, Users } from 'lucide-react'
 import { useEffect } from 'react'
 import { Outlet, useLocation, useNavigate, useParams } from 'react-router-dom'
 
-import { PageLayout } from '../../../components/layout'
-import { BackLink, Skeleton, Tab, Tabs } from '../../../components/ui'
+import { PageLayout, EventPageLoadingSkeleton } from '../../../components/layout'
+import { BackLink, Tab, Tabs } from '../../../components/ui'
 import { EventTypeBanner } from '../components/EventTypeBanner'
 import { EventAccessError } from '../components/EventAccessError'
 import { EventRoleBadge } from '../components/EventRoleBadge'
@@ -46,16 +46,7 @@ export function EventLayout() {
   }, [event, eventCode, location.pathname, location.search, navigate])
 
   if (eventQuery.isLoading) {
-    return (
-      <PageLayout width="wide">
-        <Skeleton variant="rect" className="h-48 rounded-xp-xl" />
-        <Skeleton variant="text" className="mt-6" />
-        <Skeleton variant="text" className="mt-2 w-1/2" />
-        <p className="mt-6 text-sm text-text-secondary" role="status">
-          Loading event…
-        </p>
-      </PageLayout>
-    )
+    return <EventPageLoadingSkeleton />
   }
 
   if (eventQuery.isError || !event) {

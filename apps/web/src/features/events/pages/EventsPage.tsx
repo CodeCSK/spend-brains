@@ -19,12 +19,12 @@ export function EventsPage() {
   })
 
   const headerActions = (
-    <div className="flex flex-wrap gap-2">
-      <Button as="link" to="/app/join" variant="secondary">
+    <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:flex-wrap">
+      <Button as="link" to="/app/join" variant="secondary" className="w-full sm:w-auto">
         <Icon icon={UserPlus} size={20} aria-hidden />
         Join event
       </Button>
-      <Button as="link" to="/app/events/new" variant="primary">
+      <Button as="link" to="/app/events/new" variant="primary" className="w-full sm:w-auto">
         <Icon icon={Plus} size={20} aria-hidden />
         Create event
       </Button>
@@ -48,7 +48,6 @@ export function EventsPage() {
             Events
           </>
         }
-        description="Trips, roommates, and group expenses in one place."
         action={headerActions}
       />
 
@@ -85,7 +84,7 @@ export function EventsPage() {
           <EmptyState
             icon={CalendarDays}
             title="No events yet"
-            description="Create an event to start tracking shared expenses with your group."
+            description="Create an event to start tracking shared expenses."
             action={
               <Button as="link" to="/app/events/new" variant="primary">
                 <Icon icon={Plus} size={20} aria-hidden />
@@ -99,7 +98,7 @@ export function EventsPage() {
           <EmptyState
             icon={CalendarDays}
             title="No archived events"
-            description="When you archive a finished trip, it will appear here."
+            description="Archived events appear here."
             action={
               <Button type="button" variant="secondary" onClick={() => setArchivedFilter(false)}>
                 View active events

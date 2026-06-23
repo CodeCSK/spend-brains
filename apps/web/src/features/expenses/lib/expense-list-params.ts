@@ -1,18 +1,25 @@
+import { DEFAULT_PAGE_SIZE_OPTIONS } from '../../../components/ui'
 import type { ExpenseListParams } from '../../../types/expense'
 
 const SORT_FIELDS = ['expenseDate', 'amount', 'createdAt', 'description'] as const
 const SORT_ORDERS = ['asc', 'desc'] as const
+const PAGE_SIZE_OPTIONS = DEFAULT_PAGE_SIZE_OPTIONS
 
 export function parseExpenseListParams(searchParams: URLSearchParams): ExpenseListParams {
   const pageRaw = Number(searchParams.get('page') ?? '1')
   const page = Number.isFinite(pageRaw) && pageRaw >= 1 ? pageRaw : 1
+
+  const limitRaw = Number(searchParams.get('limit') ?? '20')
+  const limit = PAGE_SIZE_OPTIONS.includes(limitRaw as (typeof PAGE_SIZE_OPTIONS)[number])
+    ? limitRaw
+    : 20
 
   const sortParam = searchParams.get('sort')
   const orderParam = searchParams.get('order')
 
   return {
     page,
-    limit: 20,
+    limit,
     sort: SORT_FIELDS.includes(sortParam as (typeof SORT_FIELDS)[number])
       ? (sortParam as ExpenseListParams['sort'])
       : 'expenseDate',

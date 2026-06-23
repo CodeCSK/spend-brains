@@ -50,7 +50,7 @@ export function SegmentedControl<T extends string>({
               sizeClass[size],
               stretch && 'flex-1 sm:flex-none',
               isActive
-                ? 'bg-surface-subtle text-primary'
+                ? 'bg-primary-surface text-primary'
                 : 'text-text-secondary hover:text-text-primary',
             )}
           >

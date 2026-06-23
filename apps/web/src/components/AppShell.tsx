@@ -1,27 +1,30 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { CalendarDays, LogOut, Terminal, User } from 'lucide-react'
-import { NavLink, Outlet, useNavigate } from 'react-router-dom'
+import { Menu } from 'lucide-react'
+import { useCallback, useEffect, useState } from 'react'
+import { Outlet, useLocation, useNavigate } from 'react-router-dom'
 
+import {
+  AppSidebarContent,
+  DEV_NAV,
+  MAIN_NAV,
+} from './AppSidebarContent'
 import { AppLogo } from './AppLogo'
 import { Icon } from './Icon'
 import { Button } from './ui'
 import { logout, getMe } from '../lib/api'
 import { clearTokens, getRefreshToken } from '../lib/auth-storage'
+import { lockBodyScroll, unlockBodyScroll } from '../lib/body-scroll-lock'
+import { cn } from '../lib/cn'
 import { profileKeys } from '../lib/query-keys'
 
-function navLinkClass(isActive: boolean, compact = false) {
-  return [
-    'xp-nav-link',
-    isActive ? 'xp-nav-link-active' : 'xp-nav-link-inactive',
-    compact ? 'h-[var(--bottom-nav-height)] flex-1 flex-col gap-1 py-2 text-xs' : '',
-  ]
-    .filter(Boolean)
-    .join(' ')
-}
+const MOBILE_NAV_MS = 240
 
 export function AppShell() {
   const navigate = useNavigate()
+  const location = useLocation()
   const queryClient = useQueryClient()
+  const [mobileNavMounted, setMobileNavMounted] = useState(false)
+  const [mobileNavVisible, setMobileNavVisible] = useState(false)
 
   const profileQuery = useQuery({
     queryKey: profileKeys.me,
@@ -42,85 +45,144 @@ export function AppShell() {
     },
   })
 
+  const navItems = profileQuery.data?.isSuperAdmin
+    ? [...MAIN_NAV, DEV_NAV]
+    : MAIN_NAV
+
+  const openMobileNav = useCallback(() => {
+    setMobileNavMounted(true)
+    setMobileNavVisible(false)
+  }, [])
+
+  const closeMobileNav = useCallback(() => {
+    setMobileNavVisible(false)
+  }, [])
+
+  const toggleMobileNav = useCallback(() => {
+    if (mobileNavMounted && mobileNavVisible) {
+      closeMobileNav()
+    } else {
+      openMobileNav()
+    }
+  }, [closeMobileNav, mobileNavMounted, mobileNavVisible, openMobileNav])
+
+  useEffect(() => {
+    closeMobileNav()
+  }, [location.pathname, closeMobileNav])
+
+  useEffect(() => {
+    if (!mobileNavMounted) {
+      return
+    }
+
+    const frame = requestAnimationFrame(() => {
+      setMobileNavVisible(true)
+    })
+
+    return () => cancelAnimationFrame(frame)
+  }, [mobileNavMounted])
+
+  useEffect(() => {
+    if (mobileNavMounted && !mobileNavVisible) {
+      const timeout = window.setTimeout(() => {
+        setMobileNavMounted(false)
+      }, MOBILE_NAV_MS)
+
+      return () => window.clearTimeout(timeout)
+    }
+  }, [mobileNavMounted, mobileNavVisible])
+
+  useEffect(() => {
+    if (!mobileNavMounted) {
+      return
+    }
+
+    lockBodyScroll()
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        closeMobileNav()
+      }
+    }
+
+    window.addEventListener('keydown', onKeyDown)
+
+    return () => {
+      unlockBodyScroll()
+      window.removeEventListener('keydown', onKeyDown)
+    }
+  }, [closeMobileNav, mobileNavMounted])
+
   return (
-    <div className="flex min-h-screen flex-col bg-surface-page pb-[calc(var(--bottom-nav-height)+env(safe-area-inset-bottom,0px))] md:pb-0">
-      <header className="sticky top-0 z-20 border-b border-border bg-surface-raised/95 backdrop-blur-sm">
-        <div className="mx-auto flex h-[var(--header-height)] max-w-[var(--content-max-width-wide)] items-center justify-between gap-3 px-4 sm:px-6">
-          <div className="flex min-w-0 items-center gap-4 md:gap-8">
-            <AppLogo size="sm" href="/app/events" />
-            <nav
-              aria-label="Main"
-              className="hidden items-center gap-1 md:flex"
-            >
-              <NavLink to="/app/events" className={({ isActive }) => navLinkClass(isActive)}>
-                <Icon icon={CalendarDays} size={20} />
-                Events
-              </NavLink>
-              <NavLink to="/app/profile" className={({ isActive }) => navLinkClass(isActive)}>
-                <Icon icon={User} size={20} />
-                Profile
-              </NavLink>
-              {profileQuery.data?.isSuperAdmin && (
-                <NavLink
-                  to="/app/dev-console"
-                  className={({ isActive }) => navLinkClass(isActive)}
-                >
-                  <Icon icon={Terminal} size={20} />
-                  Dev
-                </NavLink>
-              )}
-            </nav>
-          </div>
-          <Button
-            type="button"
-            variant="secondary"
-            loading={logoutMutation.isPending}
-            className="shrink-0 px-3"
-            aria-label="Log out"
-            onClick={() => logoutMutation.mutate()}
-          >
-            <Icon icon={LogOut} size={20} label="Log out" />
-            <span className="hidden sm:inline">
-              {logoutMutation.isPending ? 'Logging out…' : 'Logout'}
-            </span>
-          </Button>
-        </div>
-      </header>
-
-      <main className="flex-1">
-        <Outlet />
-      </main>
-
-      <nav
-        aria-label="Mobile"
-        className="fixed inset-x-0 bottom-0 z-20 border-t border-border bg-surface-raised pb-[env(safe-area-inset-bottom,0px)] md:hidden"
+    <div className="flex min-h-screen bg-surface-page">
+      <aside
+        aria-label="App navigation"
+        className="xp-sidebar fixed inset-y-0 left-0 z-30 hidden w-[var(--sidebar-width)] flex-col md:flex"
       >
-        <div className="mx-auto flex max-w-lg">
-          <NavLink
-            to="/app/events"
-            className={({ isActive }) => navLinkClass(isActive, true)}
+        <AppSidebarContent
+          navItems={navItems}
+          logoutPending={logoutMutation.isPending}
+          onLogout={() => logoutMutation.mutate()}
+        />
+      </aside>
+
+      {mobileNavMounted && (
+        <>
+          <button
+            type="button"
+            className={cn(
+              'xp-mobile-nav-overlay fixed inset-0 z-40 md:hidden',
+              mobileNavVisible && 'xp-mobile-nav-overlay-visible',
+            )}
+            aria-label="Close menu"
+            onClick={closeMobileNav}
+          />
+          <aside
+            id="mobile-app-nav"
+            aria-label="App navigation"
+            aria-modal="true"
+            aria-hidden={!mobileNavVisible}
+            className={cn(
+              'xp-mobile-nav-drawer fixed inset-y-0 left-0 z-50 flex flex-col md:hidden',
+              mobileNavVisible && 'xp-mobile-nav-drawer-visible',
+            )}
           >
-            <Icon icon={CalendarDays} size={20} />
-            Events
-          </NavLink>
-          <NavLink
-            to="/app/profile"
-            className={({ isActive }) => navLinkClass(isActive, true)}
-          >
-            <Icon icon={User} size={20} />
-            Profile
-          </NavLink>
-          {profileQuery.data?.isSuperAdmin && (
-            <NavLink
-              to="/app/dev-console"
-              className={({ isActive }) => navLinkClass(isActive, true)}
+            <AppSidebarContent
+              navItems={navItems}
+              logoutPending={logoutMutation.isPending}
+              onLogout={() => logoutMutation.mutate()}
+              onNavigate={closeMobileNav}
+              showClose
+              onClose={closeMobileNav}
+            />
+          </aside>
+        </>
+      )}
+
+      <div className="flex min-h-screen flex-1 flex-col md:pl-[var(--sidebar-width)]">
+        <header className="sticky top-0 z-20 border-b border-border bg-surface-raised/95 backdrop-blur-sm md:hidden">
+          <div className="flex h-[var(--header-height)] items-center gap-2 px-3 sm:px-4">
+            <Button
+              type="button"
+              variant="ghost"
+              className="xp-icon-btn shrink-0"
+              aria-label={mobileNavVisible ? 'Close menu' : 'Open menu'}
+              aria-expanded={mobileNavVisible}
+              aria-controls="mobile-app-nav"
+              onClick={toggleMobileNav}
             >
-              <Icon icon={Terminal} size={20} />
-              Dev
-            </NavLink>
-          )}
-        </div>
-      </nav>
+              <Icon icon={Menu} size={20} label={mobileNavVisible ? 'Close menu' : 'Open menu'} />
+            </Button>
+            <div className="min-w-0 flex-1">
+              <AppLogo size="sm" href="/app/events" />
+            </div>
+          </div>
+        </header>
+
+        <main className="flex-1">
+          <Outlet />
+        </main>
+      </div>
     </div>
   )
 }

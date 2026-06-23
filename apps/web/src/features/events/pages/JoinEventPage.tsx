@@ -15,6 +15,7 @@ import {
   Card,
   FormField,
   Input,
+  Skeleton,
 } from '../../../components/ui'
 import { ApiError, joinEvent, lookupEvent } from '../../../lib/api'
 import { eventKeys } from '../../../lib/query-keys'
@@ -242,9 +243,7 @@ export function JoinEventPage() {
         </Card>
 
         {lookupCode && lookupQuery.isFetching && (
-          <p className="mt-6 text-sm text-text-secondary" role="status">
-            Looking up event…
-          </p>
+          <Skeleton variant="card" className="mt-6 min-h-32" aria-hidden />
         )}
 
         {lookupCode && lookupQuery.isError && (

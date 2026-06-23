@@ -6,6 +6,7 @@ import { Controller, useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
 
 import { Icon } from '../../../components/Icon'
+import { FormLoadingSkeleton } from '../../../components/layout'
 import { Alert, AmountInput, Button, Card, FormField, Input, Select, Textarea } from '../../../components/ui'
 import {
   ApiError,
@@ -186,11 +187,7 @@ export function ExpenseForm({
   }
 
   if (isLoadingDeps) {
-    return (
-      <p className="py-6 text-sm text-text-secondary" role="status">
-        Loading form…
-      </p>
-    )
+    return <FormLoadingSkeleton />
   }
 
   if (members.length === 0 || categories.length === 0) {

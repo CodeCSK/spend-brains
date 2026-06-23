@@ -33,15 +33,26 @@
   --color-accent-500: var(--color-accent-500);
   --color-accent-600: var(--color-accent-600);
 
+  --color-success: var(--color-success);
   --color-success-bg: var(--color-success-bg);
   --color-success-text: var(--color-success-text);
+  --color-error: var(--color-error);
   --color-error-bg: var(--color-error-bg);
   --color-error-text: var(--color-error-text);
   --color-error-text-strong: var(--color-error-text-strong);
+  --color-warning: var(--color-warning);
   --color-warning-bg: var(--color-warning-bg);
   --color-warning-text: var(--color-warning-text);
+  --color-info: var(--color-info);
   --color-info-bg: var(--color-info-bg);
   --color-info-text: var(--color-info-text);
+
+  --color-chart-primary: var(--color-chart-primary);
+  --color-chart-secondary: var(--color-chart-secondary);
+  --color-chart-success: var(--color-chart-success);
+  --color-chart-warning: var(--color-chart-warning);
+  --color-chart-rose: var(--color-chart-rose);
+  --color-chart-cyan: var(--color-chart-cyan);
 
   --color-surface-page: var(--color-surface-page);
   --color-surface-subtle: var(--color-surface-subtle);
@@ -53,10 +64,14 @@
   --color-text-label: var(--color-text-label);
   --color-text-inverse: var(--color-text-inverse);
   --color-border: var(--color-border);
+  --color-divider: var(--color-divider);
   --color-border-input: var(--color-border-input);
   --color-border-focus: var(--color-border-focus);
   --color-primary: var(--color-primary);
   --color-primary-hover: var(--color-primary-hover);
+  --color-primary-active: var(--color-primary-active);
+  --color-primary-surface: var(--color-primary-surface);
+  --color-primary-border: var(--color-primary-border);
   --color-primary-fg: var(--color-primary-fg);
   --color-secondary: var(--color-secondary);
   --color-secondary-hover: var(--color-secondary-hover);
@@ -77,6 +92,32 @@
 
 body {
   @apply min-h-screen bg-surface-page font-sans text-text-primary antialiased;
+}
+
+/* Tailwind preflight sets cursor:default on buttons — restore pointer on interactive elements */
+@layer base {
+  a[href],
+  button:not(:disabled),
+  input[type='button']:not(:disabled),
+  input[type='submit']:not(:disabled),
+  input[type='reset']:not(:disabled),
+  input[type='checkbox']:not(:disabled),
+  input[type='radio']:not(:disabled),
+  label[for],
+  select:not(:disabled),
+  summary,
+  [role='button']:not([aria-disabled='true']),
+  [role='tab']:not([aria-disabled='true']),
+  [role='menuitem']:not([aria-disabled='true']) {
+    cursor: pointer;
+  }
+
+  button:disabled,
+  input:disabled,
+  select:disabled,
+  [aria-disabled='true'] {
+    cursor: not-allowed;
+  }
 }
 
 html {
@@ -113,6 +154,10 @@ html {
 
   .xp-card {
     @apply rounded-xp-lg border border-border bg-surface-raised p-3 shadow-xp-sm sm:p-4;
+  }
+
+  a.xp-card {
+    @apply cursor-pointer;
   }
 
   .xp-page-title {
@@ -152,15 +197,15 @@ html {
   }
 
   .xp-btn-primary {
-    @apply inline-flex min-h-9 items-center justify-center gap-1.5 rounded-xp-md px-3 py-1.5 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-60 bg-primary text-primary-fg hover:bg-primary-hover;
+    @apply inline-flex min-h-9 items-center justify-center gap-1.5 rounded-xp-md px-3 py-1.5 text-sm font-medium transition-[background-color,transform,box-shadow] duration-150 ease-out disabled:cursor-not-allowed disabled:opacity-60 bg-primary text-primary-fg hover:bg-primary-hover hover:-translate-y-0.5 hover:shadow-xp-md active:scale-[0.98] active:bg-primary-active;
   }
 
   .xp-btn-secondary {
-    @apply inline-flex min-h-9 items-center justify-center gap-1.5 rounded-xp-md px-3 py-1.5 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-60 border border-secondary-border bg-secondary text-secondary-fg hover:bg-secondary-hover;
+    @apply inline-flex min-h-9 items-center justify-center gap-1.5 rounded-xp-md px-3 py-1.5 text-sm font-medium transition-[background-color,border-color,transform,box-shadow] duration-150 ease-out disabled:cursor-not-allowed disabled:opacity-60 border border-secondary-border bg-secondary text-secondary-fg hover:bg-secondary-hover hover:-translate-y-0.5 hover:shadow-xp-sm active:scale-[0.98];
   }
 
   .xp-btn-ghost {
-    @apply inline-flex min-h-9 items-center justify-center gap-1.5 rounded-xp-md px-3 py-1.5 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-60 text-text-secondary hover:bg-surface-subtle hover:text-text-primary;
+    @apply inline-flex min-h-9 items-center justify-center gap-1.5 rounded-xp-md px-3 py-1.5 text-sm font-medium transition-[background-color,color,transform] duration-150 ease-out disabled:cursor-not-allowed disabled:opacity-60 text-text-secondary hover:bg-surface-subtle hover:text-text-primary active:scale-[0.98];
   }
 
   .xp-icon-btn {
@@ -172,7 +217,7 @@ html {
   }
 
   .xp-data-table-wrap {
-    @apply overflow-hidden rounded-xp-lg border border-border bg-surface-raised;
+    @apply max-h-[min(70vh,42rem)] overflow-auto rounded-xp-lg border border-border bg-surface-raised;
   }
 
   .xp-data-table {
@@ -283,19 +328,99 @@ html {
   }
 
   .xp-data-table thead {
-    @apply border-b border-border bg-surface-subtle text-left text-xs font-medium uppercase tracking-wide text-text-muted;
+    @apply sticky top-0 z-10 border-b border-border bg-surface-subtle text-left text-xs font-medium uppercase tracking-wide text-text-muted;
   }
 
   .xp-data-table th {
-    @apply px-3 py-2 font-medium;
+    @apply h-10 px-3 py-2 font-medium;
   }
 
   .xp-data-table tbody tr {
-    @apply border-b border-border transition-colors last:border-b-0 hover:bg-surface-subtle/80;
+    @apply h-11 border-b border-border transition-[background-color,transform,opacity] duration-150 ease-out last:border-b-0 odd:bg-surface-raised even:bg-surface-subtle/30 hover:bg-primary-surface/40;
   }
 
   .xp-data-table td {
-    @apply px-3 py-2 align-middle;
+    @apply h-11 px-3 py-2 align-middle;
+  }
+
+  .xp-pagination {
+    @apply flex flex-col gap-4;
+  }
+
+  .xp-pagination-footer {
+    @apply border-t border-border pt-4;
+  }
+
+  .xp-pagination-toolbar {
+    @apply border-b border-border pb-4;
+  }
+
+  .xp-pagination-loading {
+    @apply pointer-events-none opacity-70;
+  }
+
+  .xp-pagination-summary {
+    @apply text-sm text-text-secondary;
+  }
+
+  .xp-pagination-nav {
+    @apply grid grid-cols-1 gap-2 sm:grid-cols-[1fr_auto_1fr] sm:items-center sm:gap-3;
+  }
+
+  .xp-pagination-nav .xp-pagination-btn:first-child {
+    @apply sm:justify-self-end;
+  }
+
+  .xp-pagination-nav .xp-pagination-btn:last-child {
+    @apply sm:justify-self-start;
+  }
+
+  .xp-pagination-nav-inline {
+    @apply grid grid-cols-[1fr_auto_1fr] items-center gap-2;
+  }
+
+  .xp-pagination-nav-inline .xp-pagination-btn:first-child {
+    @apply justify-self-end;
+  }
+
+  .xp-pagination-nav-inline .xp-pagination-btn:last-child {
+    @apply justify-self-start;
+  }
+
+  .xp-pagination-nav-inline .xp-pagination-page-pill {
+    @apply min-h-11 w-auto px-3 py-2;
+  }
+
+  .xp-pagination-nav-inline .xp-pagination-btn {
+    @apply min-h-11 w-auto px-3 py-2.5;
+  }
+
+  .xp-pagination-nav-toolbar {
+    @apply w-full sm:max-w-md sm:ml-auto;
+  }
+
+  .xp-pagination-btn {
+    @apply inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xp-sm border border-border bg-surface-raised px-4 py-3 text-sm font-medium text-text-primary shadow-xp-sm transition-[background-color,border-color,transform,box-shadow,opacity] duration-150 ease-out hover:-translate-y-px hover:border-primary-border hover:bg-surface-subtle hover:shadow-xp-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/35 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0 disabled:hover:shadow-xp-sm sm:w-auto;
+  }
+
+  .xp-pagination-page-pill {
+    @apply inline-flex min-h-11 w-full items-center justify-center rounded-xp-full border border-primary-border bg-primary-surface px-4 py-2.5 text-sm font-medium text-primary sm:w-auto;
+  }
+
+  .xp-pagination-page-size-btn {
+    @apply inline-flex min-h-9 min-w-9 items-center justify-center rounded-xp-sm px-2.5 text-sm font-medium text-text-secondary transition-[background-color,color,transform] duration-150 ease-out hover:bg-surface-raised hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/35 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50;
+  }
+
+  .xp-pagination-page-size-btn-active {
+    @apply bg-surface-raised text-primary shadow-xp-sm;
+  }
+
+  .xp-paginated-content {
+    @apply transition-opacity duration-200 ease-out;
+  }
+
+  .xp-paginated-content-fetching {
+    @apply opacity-60;
   }
 
   .xp-nav-link {
@@ -303,10 +428,27 @@ html {
   }
 
   .xp-nav-link-active {
-    @apply bg-surface-subtle text-primary;
+    @apply bg-primary-surface text-primary;
   }
 
   .xp-nav-link-inactive {
+    @apply text-text-secondary hover:bg-surface-subtle hover:text-text-primary;
+  }
+
+  .xp-sidebar {
+    @apply border-r border-border;
+    background-color: var(--color-surface-raised);
+  }
+
+  .xp-sidebar-nav-link {
+    @apply flex min-h-10 w-full items-center gap-3 rounded-xp-md px-3 py-2 text-sm font-medium transition-colors;
+  }
+
+  .xp-sidebar-nav-link-active {
+    @apply bg-primary-surface text-primary;
+  }
+
+  .xp-sidebar-nav-link-inactive {
     @apply text-text-secondary hover:bg-surface-subtle hover:text-text-primary;
   }
 
@@ -353,6 +495,174 @@ html {
   .xp-skeleton-card {
     @apply min-h-10 animate-pulse rounded-xp-lg border border-transparent bg-surface-subtle p-3 shadow-none;
   }
+
+  .xp-summary-hero {
+    @apply rounded-xp-xl border border-border bg-surface-raised p-4 shadow-xp-sm sm:p-5;
+  }
+
+  .xp-summary-hero-header {
+    @apply flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between;
+  }
+
+  .xp-summary-hero-title {
+    @apply text-lg font-semibold tracking-tight text-text-primary sm:text-xl;
+  }
+
+  .xp-summary-hero-subtitle {
+    @apply mt-1 text-sm text-text-secondary;
+  }
+
+  .xp-summary-panel {
+    @apply rounded-xp-xl border border-border bg-surface-raised p-4 shadow-xp-sm sm:p-5;
+  }
+
+  .xp-summary-panel-header {
+    @apply space-y-1;
+  }
+
+  .xp-summary-panel-title {
+    @apply text-base font-semibold text-text-primary;
+  }
+
+  .xp-summary-panel-subtitle {
+    @apply text-sm text-text-secondary;
+  }
+
+  .xp-summary-metric-card {
+    @apply min-h-0 cursor-default rounded-xp-xl border border-border bg-surface-raised p-4 shadow-xp-sm transition-[transform,box-shadow,border-color] duration-150 ease-out focus-visible:outline-none focus-visible:shadow-[var(--shadow-focus)] hover:-translate-y-0.5 hover:border-primary-border hover:shadow-xp-md active:scale-[0.98];
+  }
+
+  .xp-summary-metric-card-featured {
+    @apply border-primary-border bg-primary-surface/50;
+  }
+
+  .xp-summary-metric-label {
+    @apply text-[11px] font-medium uppercase tracking-wider text-text-muted;
+  }
+
+  .xp-summary-metric-value {
+    @apply mt-2 block text-lg font-semibold sm:text-xl;
+  }
+
+  .xp-summary-metric-value-featured {
+    @apply text-2xl sm:text-3xl;
+  }
+
+  .xp-summary-metric-hint {
+    @apply mt-1.5 text-xs text-text-muted;
+  }
+
+  .xp-summary-chart-shell {
+    @apply relative;
+  }
+
+  .xp-summary-chart-empty {
+    @apply mx-auto h-56 w-56 rounded-full border border-dashed border-border bg-surface-subtle/80;
+  }
+
+  .xp-summary-chart-tooltip {
+    @apply rounded-xp-lg border border-border bg-surface-raised px-3 py-2 text-left shadow-xp-md;
+  }
+
+  .xp-summary-legend-item {
+    @apply flex min-h-11 cursor-pointer items-center gap-3 rounded-xp-lg border border-transparent px-3 py-2 text-sm transition-[background-color,border-color,transform,box-shadow] duration-150 ease-out hover:border-border hover:bg-surface-subtle/80 hover:shadow-xp-sm focus-visible:outline-none focus-visible:shadow-[var(--shadow-focus)] active:scale-[0.98];
+  }
+
+  .xp-summary-legend-item-active {
+    @apply border-border bg-surface-subtle/90 shadow-xp-sm;
+  }
+
+  .xp-summary-progress-track {
+    @apply h-2 overflow-hidden rounded-xp-full bg-surface-subtle;
+  }
+
+  .xp-summary-progress-fill {
+    @apply h-full rounded-xp-full transition-[width] duration-500 ease-out;
+  }
+
+  .xp-summary-member-card {
+    @apply min-h-[8.5rem] rounded-xp-xl border border-border bg-surface-raised p-4 shadow-xp-sm transition-[transform,box-shadow,border-color,background-color] duration-150 ease-out focus-visible:outline-none focus-visible:shadow-[var(--shadow-focus)] hover:-translate-y-0.5 hover:border-primary-border hover:bg-surface-subtle/30 hover:shadow-xp-md active:scale-[0.98];
+  }
+
+  .xp-summary-member-card-current {
+    @apply border-primary-border bg-primary-surface/40;
+  }
+
+  .xp-summary-balance-pill {
+    @apply inline-flex min-h-7 items-center rounded-xp-full px-2.5 text-[11px] font-semibold uppercase tracking-wide;
+  }
+
+  .xp-summary-balance-pill-positive {
+    @apply bg-success-bg text-success-text;
+  }
+
+  .xp-summary-balance-pill-negative {
+    @apply bg-error-bg text-error-text-strong;
+  }
+
+  .xp-summary-balance-pill-neutral {
+    @apply bg-surface-subtle text-text-muted;
+  }
+
+  .xp-chart-enter {
+    animation: xp-chart-enter 0.45s ease-out both;
+  }
+
+  .xp-category-chip {
+    @apply flex min-h-11 flex-wrap items-center justify-between gap-x-2 gap-y-2 rounded-xp-lg border border-border bg-surface-raised px-3 py-2.5 shadow-xp-sm transition-[transform,box-shadow] duration-150 ease-out hover:-translate-y-0.5 hover:shadow-xp-md active:scale-[0.98];
+  }
+
+  .xp-category-icon-badge {
+    @apply shadow-xp-sm;
+  }
+
+  .xp-category-icon-option {
+    @apply flex aspect-square cursor-pointer items-center justify-center rounded-xp-md border border-border bg-surface-raised p-2 transition-[border-color,background-color,box-shadow,transform] duration-150 ease-out hover:border-primary/30 hover:bg-surface-subtle active:scale-[0.97];
+  }
+
+  .xp-category-icon-option-selected {
+    @apply border-primary bg-primary-surface shadow-xp-sm ring-1 ring-primary/20;
+  }
+}
+
+/* Mobile nav drawer — outside @layer so backgrounds and transitions stay reliable */
+.xp-mobile-nav-overlay {
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  background-color: rgba(22, 24, 29, 0.58);
+  backdrop-filter: blur(4px);
+  opacity: 0;
+  transition: opacity 240ms ease;
+}
+
+.xp-mobile-nav-overlay-visible {
+  opacity: 1;
+}
+
+.xp-mobile-nav-drawer {
+  width: min(var(--sidebar-width), min(85vw, 20rem));
+  border-right: 1px solid var(--color-border);
+  background-color: var(--color-surface-raised);
+  box-shadow: var(--shadow-lg);
+  transform: translateX(-100%);
+  transition: transform 240ms ease;
+}
+
+.xp-mobile-nav-drawer-visible {
+  transform: translateX(0);
+}
+
+@keyframes xp-chart-enter {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.985);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -361,5 +671,21 @@ html {
   .xp-skeleton-avatar,
   .xp-skeleton-card {
     @apply animate-none;
+  }
+
+  .xp-chart-enter {
+    animation: none;
+  }
+
+  .xp-mobile-nav-overlay,
+  .xp-mobile-nav-drawer {
+    transition: none;
+  }
+
+  .xp-summary-metric-card,
+  .xp-summary-member-card,
+  .xp-summary-legend-item,
+  .xp-summary-progress-fill {
+    transition: none;
   }
 }
