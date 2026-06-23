@@ -38,6 +38,11 @@ function formatShowingRange(page: number, pageSize: number, totalItems: number):
 
   const start = (page - 1) * pageSize + 1
   const end = Math.min(page * pageSize, totalItems)
+
+  if (start > totalItems) {
+    return `Showing 0 of ${totalItems}`
+  }
+
   return `Showing ${start}–${end} of ${totalItems}`
 }
 

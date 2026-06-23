@@ -1,6 +1,6 @@
 import { keepPreviousData, useQuery } from '@tanstack/react-query'
 import { Plus, Receipt, Sparkles } from 'lucide-react'
-import { useCallback } from 'react'
+import { useCallback, useEffect } from 'react'
 import { useSearchParams } from 'react-router-dom'
 
 import { Icon } from '../../../components/Icon'
@@ -178,6 +178,12 @@ export function EventExpensesPage() {
   const groupSummaryExpenses = groupSummaryQuery.data?.data ?? []
   const memberSummaryExpenses = memberSummaryQuery.data?.data ?? []
   const meta = expensesQuery.data?.meta
+  const totalItems = meta?.total ?? 0
+  const currentPage = params.page ?? 1
+  const showPagination = Boolean(expensesQuery.isSuccess && meta && totalItems > 0)
+  const showToolbar = showPagination && (meta?.totalPages ?? 0) > 1
+  const isTrulyEmpty = expensesQuery.isSuccess && totalItems === 0
+  const isEmptyPage = expensesQuery.isSuccess && totalItems > 0 && expenses.length === 0
   const members = membersQuery.data ?? []
 
   const getMemberLabel = useCallback(
@@ -207,6 +213,14 @@ export function EventExpensesPage() {
     },
     [setParams],
   )
+
+  useEffect(() => {
+    if (!expensesQuery.isSuccess || !meta) return
+
+    if (currentPage > meta.totalPages) {
+      setParams({ page: Math.max(1, meta.totalPages) }, { replace: true })
+    }
+  }, [currentPage, expensesQuery.isSuccess, meta, setParams])
 
   return (
     <div className="space-y-5">
@@ -297,7 +311,7 @@ export function EventExpensesPage() {
           </Alert>
         )}
 
-        {expensesQuery.isSuccess && expenses.length === 0 && !filtersActive && (
+        {isTrulyEmpty && !filtersActive && (
           <EmptyState
             icon={isMemberView ? Sparkles : Receipt}
             title={isMemberView ? 'No payments yet' : 'No expenses found'}
@@ -315,7 +329,7 @@ export function EventExpensesPage() {
           />
         )}
 
-        {!isMemberView && expensesQuery.isSuccess && expenses.length === 0 && filtersActive && (
+        {!isMemberView && isTrulyEmpty && filtersActive && (
           <EmptyState
             icon={Receipt}
             title="No expenses found"
@@ -335,7 +349,7 @@ export function EventExpensesPage() {
           />
         )}
 
-        {expenses.length > 0 && meta && meta.totalPages > 1 && (
+        {showToolbar && meta && (
           <ExpensePagination
             meta={meta}
             variant="toolbar"
@@ -345,38 +359,14 @@ export function EventExpensesPage() {
         )}
 
         {expenses.length > 0 && (
-          <>
-            <PaginatedContent
-              loading={expensesQuery.isLoading}
-              fetching={expensesQuery.isFetching}
-            >
-              <ul className="space-y-3 md:hidden" aria-label="Expense list">
-                {expenses.map((expense) => (
-                  <li key={expense.id}>
-                    <ExpenseCard
-                      eventId={eventId}
-                      expense={expense}
-                      category={categoryById.get(expense.categoryId)}
-                      paidByLabel={getMemberLabel(expense.paidBy)}
-                      getMemberLabel={getMemberLabel}
-                      myRole={myRole}
-                      currentUserId={currentUserId}
-                      onEdit={openEditDialog}
-                    />
-                  </li>
-                ))}
-              </ul>
-
-              <ExpenseTable
-                sort={params.sort}
-                order={params.order}
-                onSort={(column) =>
-                  setParams({ ...nextExpenseSortParams(params, column), page: 1 })
-                }
-              >
-                {expenses.map((expense) => (
-                  <ExpenseRow
-                    key={expense.id}
+          <PaginatedContent
+            loading={expensesQuery.isLoading}
+            fetching={expensesQuery.isFetching}
+          >
+            <ul className="space-y-3 md:hidden" aria-label="Expense list">
+              {expenses.map((expense) => (
+                <li key={expense.id}>
+                  <ExpenseCard
                     eventId={eventId}
                     expense={expense}
                     category={categoryById.get(expense.categoryId)}
@@ -386,20 +376,60 @@ export function EventExpensesPage() {
                     currentUserId={currentUserId}
                     onEdit={openEditDialog}
                   />
-                ))}
-              </ExpenseTable>
-            </PaginatedContent>
+                </li>
+              ))}
+            </ul>
 
-            {meta && (
-              <ExpensePagination
-                meta={meta}
-                className="mt-3 sm:mt-4"
-                loading={expensesQuery.isFetching}
-                onPageChange={handlePageChange}
-                onPageSizeChange={handlePageSizeChange}
-              />
-            )}
-          </>
+            <ExpenseTable
+              sort={params.sort}
+              order={params.order}
+              onSort={(column) =>
+                setParams({ ...nextExpenseSortParams(params, column), page: 1 })
+              }
+            >
+              {expenses.map((expense) => (
+                <ExpenseRow
+                  key={expense.id}
+                  eventId={eventId}
+                  expense={expense}
+                  category={categoryById.get(expense.categoryId)}
+                  paidByLabel={getMemberLabel(expense.paidBy)}
+                  getMemberLabel={getMemberLabel}
+                  myRole={myRole}
+                  currentUserId={currentUserId}
+                  onEdit={openEditDialog}
+                />
+              ))}
+            </ExpenseTable>
+          </PaginatedContent>
+        )}
+
+        {isEmptyPage && (
+          <EmptyState
+            icon={Receipt}
+            title="No expenses on this page"
+            description="This page is empty. Go back to see your expenses."
+            action={
+              <Button
+                type="button"
+                variant="secondary"
+                className="min-h-11"
+                onClick={() => setParams({ page: Math.max(1, currentPage - 1) })}
+              >
+                Go to previous page
+              </Button>
+            }
+          />
+        )}
+
+        {showPagination && meta && (
+          <ExpensePagination
+            meta={meta}
+            className="mt-3 sm:mt-4"
+            loading={expensesQuery.isFetching}
+            onPageChange={handlePageChange}
+            onPageSizeChange={handlePageSizeChange}
+          />
         )}
       </PageSection>
       )}
