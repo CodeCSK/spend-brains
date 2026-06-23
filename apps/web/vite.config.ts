@@ -10,17 +10,10 @@ const repoRoot = path.resolve(webRoot, '../..')
 
 export default defineConfig({
   plugins: [react(), tailwindcss()],
-  resolve: {
-    // npm workspaces hoist deps to the repo root — ensure Vite can find them
-    modules: [
-      path.join(repoRoot, 'node_modules'),
-      path.join(webRoot, 'node_modules'),
-      'node_modules',
-    ],
-  },
   server: {
     port: 5173,
     fs: {
+      // npm workspaces hoist deps to repo root — allow Vite to read them in dev
       allow: [repoRoot, webRoot],
     },
   },
