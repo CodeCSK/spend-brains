@@ -44,6 +44,10 @@ export function EventExpensesPage() {
 
   const setViewMode = useCallback(
     (nextView: ExpenseViewMode) => {
+      if (nextView === 'member') {
+        setParams({ search: undefined, categoryId: undefined, page: 1 }, { replace: true })
+      }
+
       setSearchParams(
         (current) => {
           const next = new URLSearchParams(current)
@@ -51,9 +55,6 @@ export function EventExpensesPage() {
             next.set('view', 'all')
           } else {
             next.delete('view')
-            next.delete('page')
-            next.delete('search')
-            next.delete('categoryId')
             if (!next.get('paidBy') && currentUserId) {
               next.set('paidBy', currentUserId)
             }
@@ -63,7 +64,7 @@ export function EventExpensesPage() {
         { replace: true },
       )
     },
-    [currentUserId, setSearchParams],
+    [currentUserId, setParams, setSearchParams],
   )
 
   const setSelectedMember = useCallback(
@@ -201,15 +202,14 @@ export function EventExpensesPage() {
 
   const handlePageChange = useCallback(
     (page: number) => {
-      setParams({ page })
-      window.scrollTo({ top: 0, behavior: 'smooth' })
+      setParams({ page }, { replace: true })
     },
     [setParams],
   )
 
   const handlePageSizeChange = useCallback(
     (limit: number) => {
-      setParams({ limit, page: 1 })
+      setParams({ limit, page: 1 }, { replace: true })
     },
     [setParams],
   )
@@ -292,7 +292,7 @@ export function EventExpensesPage() {
           <ExpenseFilters
             params={params}
             categories={categoriesQuery.data ?? []}
-            onApply={(filters) => setParams(filters)}
+            onApply={(filters) => setParams(filters, { replace: true })}
             onClear={() =>
               setParams({ search: undefined, categoryId: undefined, page: 1 }, { replace: true })
             }
@@ -384,7 +384,7 @@ export function EventExpensesPage() {
               sort={params.sort}
               order={params.order}
               onSort={(column) =>
-                setParams({ ...nextExpenseSortParams(params, column), page: 1 })
+                setParams({ ...nextExpenseSortParams(params, column), page: 1 }, { replace: true })
               }
             >
               {expenses.map((expense) => (
@@ -414,7 +414,7 @@ export function EventExpensesPage() {
                 type="button"
                 variant="secondary"
                 className="min-h-11"
-                onClick={() => setParams({ page: Math.max(1, currentPage - 1) })}
+                onClick={() => setParams({ page: Math.max(1, currentPage - 1) }, { replace: true })}
               >
                 Go to previous page
               </Button>
