@@ -41,13 +41,13 @@ type PageHeaderProps = {
 
 export function PageHeader({ title, description, action }: PageHeaderProps) {
   return (
-    <header className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
+    <header className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between md:gap-6">
       <div className="min-w-0 flex-1">
         <h1 className="xp-page-title">{title}</h1>
         {description && <p className="xp-page-subtitle">{description}</p>}
       </div>
       {action && (
-        <div className="flex w-full shrink-0 flex-col gap-2 sm:w-auto sm:flex-row sm:flex-wrap [&_.xp-btn-primary]:w-full [&_.xp-btn-secondary]:w-full [&_.xp-btn-ghost]:w-full sm:[&_.xp-btn-primary]:w-auto sm:[&_.xp-btn-secondary]:w-auto sm:[&_.xp-btn-ghost]:w-auto">
+        <div className="flex w-full shrink-0 flex-col gap-3 md:w-auto md:flex-row md:flex-wrap [&_.xp-btn-primary]:w-full [&_.xp-btn-secondary]:w-full [&_.xp-btn-ghost]:w-full md:[&_.xp-btn-primary]:w-auto md:[&_.xp-btn-secondary]:w-auto md:[&_.xp-btn-ghost]:w-auto">
           {action}
         </div>
       )}

@@ -71,7 +71,7 @@ export function CategorySpendBreakdown({ categories }: { categories: CategorySpe
   }
 
   return (
-    <ul className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3" aria-label="Category breakdown">
+    <ul className="grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-3" aria-label="Category breakdown">
       {categories.map((category, index) => {
         const color = getCategoryChartColor(index)
 

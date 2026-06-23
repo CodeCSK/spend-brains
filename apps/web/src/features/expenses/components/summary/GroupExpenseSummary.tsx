@@ -56,7 +56,7 @@ export function GroupExpenseSummary({
               categories={categoryStats}
               totalLabel="Group total"
               centerLabel="Total"
-              className="w-full max-w-[15rem] sm:max-w-[16rem] lg:max-w-[18rem]"
+              className="w-full max-w-[15rem] sm:max-w-[16rem] md:max-w-[18rem] xl:max-w-[20rem]"
             />
           ) : (
             <CategorySpendEmpty title="No expenses yet" />
@@ -68,7 +68,7 @@ export function GroupExpenseSummary({
       {memberStats.length > 0 && (
         <div className="xp-summary-panel">
           <h3 className="xp-summary-panel-title">Paid by member</h3>
-          <ul className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3" aria-label="Member payments">
+          <ul className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-3" aria-label="Member payments">
             {memberStats.map((member, index) => (
               <li key={member.userId}>
                 <div className="xp-category-chip">

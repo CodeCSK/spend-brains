@@ -17,14 +17,14 @@ import { lockBodyScroll, unlockBodyScroll } from '../lib/body-scroll-lock'
 import { cn } from '../lib/cn'
 import { profileKeys } from '../lib/query-keys'
 
-const MOBILE_NAV_MS = 240
+const NAV_DRAWER_MS = 240
 
 export function AppShell() {
   const navigate = useNavigate()
   const location = useLocation()
   const queryClient = useQueryClient()
-  const [mobileNavMounted, setMobileNavMounted] = useState(false)
-  const [mobileNavVisible, setMobileNavVisible] = useState(false)
+  const [navDrawerMounted, setNavDrawerMounted] = useState(false)
+  const [navDrawerVisible, setNavDrawerVisible] = useState(false)
 
   const profileQuery = useQuery({
     queryKey: profileKeys.me,
@@ -49,51 +49,51 @@ export function AppShell() {
     ? [...MAIN_NAV, DEV_NAV]
     : MAIN_NAV
 
-  const openMobileNav = useCallback(() => {
-    setMobileNavMounted(true)
-    setMobileNavVisible(false)
+  const openNavDrawer = useCallback(() => {
+    setNavDrawerMounted(true)
+    setNavDrawerVisible(false)
   }, [])
 
-  const closeMobileNav = useCallback(() => {
-    setMobileNavVisible(false)
+  const closeNavDrawer = useCallback(() => {
+    setNavDrawerVisible(false)
   }, [])
 
-  const toggleMobileNav = useCallback(() => {
-    if (mobileNavMounted && mobileNavVisible) {
-      closeMobileNav()
+  const toggleNavDrawer = useCallback(() => {
+    if (navDrawerMounted && navDrawerVisible) {
+      closeNavDrawer()
     } else {
-      openMobileNav()
+      openNavDrawer()
     }
-  }, [closeMobileNav, mobileNavMounted, mobileNavVisible, openMobileNav])
+  }, [closeNavDrawer, navDrawerMounted, navDrawerVisible, openNavDrawer])
 
   useEffect(() => {
-    closeMobileNav()
-  }, [location.pathname, closeMobileNav])
+    closeNavDrawer()
+  }, [location.pathname, closeNavDrawer])
 
   useEffect(() => {
-    if (!mobileNavMounted) {
+    if (!navDrawerMounted) {
       return
     }
 
     const frame = requestAnimationFrame(() => {
-      setMobileNavVisible(true)
+      setNavDrawerVisible(true)
     })
 
     return () => cancelAnimationFrame(frame)
-  }, [mobileNavMounted])
+  }, [navDrawerMounted])
 
   useEffect(() => {
-    if (mobileNavMounted && !mobileNavVisible) {
+    if (navDrawerMounted && !navDrawerVisible) {
       const timeout = window.setTimeout(() => {
-        setMobileNavMounted(false)
-      }, MOBILE_NAV_MS)
+        setNavDrawerMounted(false)
+      }, NAV_DRAWER_MS)
 
       return () => window.clearTimeout(timeout)
     }
-  }, [mobileNavMounted, mobileNavVisible])
+  }, [navDrawerMounted, navDrawerVisible])
 
   useEffect(() => {
-    if (!mobileNavMounted) {
+    if (!navDrawerMounted) {
       return
     }
 
@@ -101,7 +101,7 @@ export function AppShell() {
 
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
-        closeMobileNav()
+        closeNavDrawer()
       }
     }
 
@@ -111,13 +111,14 @@ export function AppShell() {
       unlockBodyScroll()
       window.removeEventListener('keydown', onKeyDown)
     }
-  }, [closeMobileNav, mobileNavMounted])
+  }, [closeNavDrawer, navDrawerMounted])
 
   return (
-    <div className="flex min-h-screen bg-surface-page">
+    <div className="xp-app-shell flex bg-surface-page">
+      {/* Desktop — full persistent sidebar */}
       <aside
         aria-label="App navigation"
-        className="xp-sidebar fixed inset-y-0 left-0 z-30 hidden w-[var(--sidebar-width)] flex-col md:flex"
+        className="xp-sidebar xp-shell-desktop-sidebar fixed inset-y-0 left-0 z-30 w-[var(--sidebar-width)] flex-col"
       >
         <AppSidebarContent
           navItems={navItems}
@@ -126,52 +127,69 @@ export function AppShell() {
         />
       </aside>
 
-      {mobileNavMounted && (
+      {/* Tablet landscape — collapsed icon rail */}
+      <aside
+        aria-label="App navigation"
+        className="xp-sidebar xp-shell-tablet-rail fixed inset-y-0 left-0 z-30 w-[var(--sidebar-width-collapsed)] flex-col"
+      >
+        <AppSidebarContent
+          navItems={navItems}
+          logoutPending={logoutMutation.isPending}
+          onLogout={() => logoutMutation.mutate()}
+          variant="rail"
+          showLogo={false}
+          onExpand={openNavDrawer}
+        />
+      </aside>
+
+      {/* Mobile + tablet portrait — overlay drawer */}
+      {navDrawerMounted && (
         <>
           <button
             type="button"
             className={cn(
-              'xp-mobile-nav-overlay fixed inset-0 z-40 md:hidden',
-              mobileNavVisible && 'xp-mobile-nav-overlay-visible',
+              'xp-shell-nav-overlay fixed inset-0 z-40',
+              navDrawerVisible && 'xp-shell-nav-overlay-visible',
             )}
             aria-label="Close menu"
-            onClick={closeMobileNav}
+            onClick={closeNavDrawer}
           />
           <aside
-            id="mobile-app-nav"
+            id="app-nav-drawer"
             aria-label="App navigation"
             aria-modal="true"
-            aria-hidden={!mobileNavVisible}
+            aria-hidden={!navDrawerVisible}
             className={cn(
-              'xp-mobile-nav-drawer fixed inset-y-0 left-0 z-50 flex flex-col md:hidden',
-              mobileNavVisible && 'xp-mobile-nav-drawer-visible',
+              'xp-shell-nav-drawer fixed inset-y-0 left-0 z-50 flex flex-col',
+              navDrawerVisible && 'xp-shell-nav-drawer-visible',
             )}
           >
             <AppSidebarContent
               navItems={navItems}
               logoutPending={logoutMutation.isPending}
               onLogout={() => logoutMutation.mutate()}
-              onNavigate={closeMobileNav}
+              onNavigate={closeNavDrawer}
               showClose
-              onClose={closeMobileNav}
+              onClose={closeNavDrawer}
+              variant="drawer"
             />
           </aside>
         </>
       )}
 
-      <div className="flex min-h-screen flex-1 flex-col md:pl-[var(--sidebar-width)]">
-        <header className="sticky top-0 z-20 border-b border-border bg-surface-raised/95 backdrop-blur-sm md:hidden">
-          <div className="flex h-[var(--header-height)] items-center gap-2 px-3 sm:px-4">
+      <div className="xp-shell-main flex min-h-0 min-w-0 flex-1 flex-col">
+        <header className="xp-shell-topbar sticky top-0 z-20 shrink-0 border-b border-border bg-surface-raised/95 backdrop-blur-sm">
+          <div className="flex h-[var(--header-height-tablet)] items-center gap-3 px-4 md:px-6">
             <Button
               type="button"
               variant="ghost"
-              className="xp-icon-btn shrink-0"
-              aria-label={mobileNavVisible ? 'Close menu' : 'Open menu'}
-              aria-expanded={mobileNavVisible}
-              aria-controls="mobile-app-nav"
-              onClick={toggleMobileNav}
+              className="xp-icon-btn h-11 w-11 shrink-0"
+              aria-label={navDrawerVisible ? 'Close menu' : 'Open menu'}
+              aria-expanded={navDrawerVisible}
+              aria-controls="app-nav-drawer"
+              onClick={toggleNavDrawer}
             >
-              <Icon icon={Menu} size={20} label={mobileNavVisible ? 'Close menu' : 'Open menu'} />
+              <Icon icon={Menu} size={24} label={navDrawerVisible ? 'Close menu' : 'Open menu'} />
             </Button>
             <div className="min-w-0 flex-1">
               <AppLogo size="sm" href="/app/events" />
@@ -179,7 +197,7 @@ export function AppShell() {
           </div>
         </header>
 
-        <main className="flex-1">
+        <main className="xp-shell-content flex-1">
           <Outlet />
         </main>
       </div>

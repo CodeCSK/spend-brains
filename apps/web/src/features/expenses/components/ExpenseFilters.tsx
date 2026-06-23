@@ -33,7 +33,7 @@ function ExpenseFiltersForm({ params, categories, onApply, onClear }: ExpenseFil
 
   return (
     <form
-      className="rounded-xp-lg border border-border bg-surface-subtle/60 p-2 sm:border-0 sm:bg-transparent sm:p-0"
+      className="rounded-xp-lg border border-border bg-surface-subtle/60 p-3 md:border-0 md:bg-transparent md:p-0"
       onSubmit={(event) => {
         event.preventDefault()
         applySearchAndCategory()
@@ -60,7 +60,7 @@ function ExpenseFiltersForm({ params, categories, onApply, onClear }: ExpenseFil
           id="expense-category"
           aria-label="Filter by category"
           value={categoryId}
-          wrapperClassName="w-[7.75rem] shrink-0 sm:w-44"
+          wrapperClassName="w-[9rem] shrink-0 md:w-48"
           className="mt-0"
           onChange={(event) => {
             const value = event.target.value

@@ -150,12 +150,12 @@ html {
 /* ── Shared UI patterns (use on every screen) ─────────── */
 @layer components {
   .xp-page {
-    @apply mx-auto w-full px-4 py-4 sm:px-5 sm:py-6;
+    @apply mx-auto w-full px-4 py-4 sm:px-5 sm:py-6 md:px-6 md:py-6 xl:px-8;
     max-width: var(--content-max-width-wide);
   }
 
   .xp-page-narrow {
-    @apply mx-auto w-full px-4 py-4 sm:px-5 sm:py-6;
+    @apply mx-auto w-full px-4 py-4 sm:px-5 sm:py-6 md:px-6 md:py-6 xl:px-8;
     max-width: var(--content-max-width);
   }
 
@@ -172,7 +172,7 @@ html {
   }
 
   .xp-page-title {
-    @apply flex flex-wrap items-center gap-2 text-lg font-semibold sm:text-xl;
+    @apply flex flex-wrap items-center gap-2 text-lg font-bold sm:text-xl md:text-[1.25rem];
   }
 
   .xp-page-subtitle {
@@ -208,15 +208,15 @@ html {
   }
 
   .xp-btn-primary {
-    @apply inline-flex min-h-9 items-center justify-center gap-1.5 rounded-xp-md px-3 py-1.5 text-sm font-medium transition-[background-color,transform,box-shadow] duration-150 ease-out disabled:cursor-not-allowed disabled:opacity-60 bg-primary text-primary-fg hover:bg-primary-hover hover:-translate-y-0.5 hover:shadow-xp-md active:scale-[0.98] active:bg-primary-active;
+    @apply inline-flex min-h-9 items-center justify-center gap-1.5 rounded-xp-md px-3 py-1.5 text-sm font-medium transition-[background-color,transform,box-shadow] duration-150 ease-out disabled:cursor-not-allowed disabled:opacity-60 bg-primary text-primary-fg hover:bg-primary-hover hover:-translate-y-0.5 hover:shadow-xp-md active:scale-[0.98] active:bg-primary-active md:min-h-11 md:px-4 md:py-2.5 md:text-base;
   }
 
   .xp-btn-secondary {
-    @apply inline-flex min-h-9 items-center justify-center gap-1.5 rounded-xp-md px-3 py-1.5 text-sm font-medium transition-[background-color,border-color,transform,box-shadow] duration-150 ease-out disabled:cursor-not-allowed disabled:opacity-60 border border-secondary-border bg-secondary text-secondary-fg hover:bg-secondary-hover hover:-translate-y-0.5 hover:shadow-xp-sm active:scale-[0.98];
+    @apply inline-flex min-h-9 items-center justify-center gap-1.5 rounded-xp-md px-3 py-1.5 text-sm font-medium transition-[background-color,border-color,transform,box-shadow] duration-150 ease-out disabled:cursor-not-allowed disabled:opacity-60 border border-secondary-border bg-secondary text-secondary-fg hover:bg-secondary-hover hover:-translate-y-0.5 hover:shadow-xp-sm active:scale-[0.98] md:min-h-11 md:px-4 md:py-2.5 md:text-base;
   }
 
   .xp-btn-ghost {
-    @apply inline-flex min-h-9 items-center justify-center gap-1.5 rounded-xp-md px-3 py-1.5 text-sm font-medium transition-[background-color,color,transform] duration-150 ease-out disabled:cursor-not-allowed disabled:opacity-60 text-text-secondary hover:bg-surface-subtle hover:text-text-primary active:scale-[0.98];
+    @apply inline-flex min-h-9 items-center justify-center gap-1.5 rounded-xp-md px-3 py-1.5 text-sm font-medium transition-[background-color,color,transform] duration-150 ease-out disabled:cursor-not-allowed disabled:opacity-60 text-text-secondary hover:bg-surface-subtle hover:text-text-primary active:scale-[0.98] md:min-h-11 md:px-4 md:py-2.5 md:text-base;
   }
 
   .xp-icon-btn {
@@ -235,7 +235,7 @@ html {
     @apply w-full border-collapse text-sm;
   }
 
-  @media (min-width: 768px) {
+  @media (min-width: 1280px) {
     .xp-data-table {
       min-width: 640px;
     }
@@ -255,11 +255,11 @@ html {
   }
 
   .xp-tab-link-mobile {
-    @apply flex-col gap-0.5 px-1 py-2 text-[11px] leading-tight sm:gap-1.5 sm:px-2.5 sm:py-1.5 sm:text-sm;
+    @apply flex-col gap-0.5 px-1 py-2 text-[11px] leading-tight sm:gap-1.5 sm:px-2.5 sm:py-1.5 sm:text-sm md:flex-row md:gap-2 md:px-4 md:py-2.5 md:text-sm;
   }
 
   .xp-expense-card {
-    @apply rounded-xp-lg border border-border bg-surface-raised p-3 shadow-xp-sm;
+    @apply rounded-xp-xl border border-border bg-surface-raised p-4 shadow-xp-sm transition-[transform,box-shadow,border-color] duration-150 ease-out hover:-translate-y-0.5 hover:border-primary-border hover:shadow-xp-md active:scale-[0.98] md:p-5;
   }
 
   .xp-expense-card-meta {
@@ -452,7 +452,11 @@ html {
   }
 
   .xp-sidebar-nav-link {
-    @apply flex min-h-10 w-full items-center gap-3 rounded-xp-md px-3 py-2 text-sm font-medium transition-colors;
+    @apply flex min-h-11 w-full items-center gap-3 rounded-xp-md px-3 py-2.5 text-sm font-medium transition-[background-color,color,transform,box-shadow] duration-150 ease-out active:scale-[0.98];
+  }
+
+  .xp-sidebar-nav-link-rail {
+    @apply h-11 w-11 min-h-11 min-w-11;
   }
 
   .xp-sidebar-nav-link-active {
@@ -464,7 +468,7 @@ html {
   }
 
   .xp-tab-link {
-    @apply inline-flex min-h-9 shrink-0 items-center justify-center gap-1.5 border-b-2 border-transparent px-2.5 py-1.5 text-sm font-medium transition-colors;
+    @apply inline-flex min-h-11 shrink-0 items-center justify-center gap-1.5 border-b-2 border-transparent px-3 py-2 text-sm font-medium transition-[color,border-color,transform] duration-150 ease-out active:scale-[0.98];
   }
 
   .xp-tab-link-active {
@@ -524,7 +528,7 @@ html {
   }
 
   .xp-summary-panel {
-    @apply rounded-xp-xl border border-border bg-surface-raised p-4 shadow-xp-sm sm:p-5;
+    @apply rounded-xp-xl border border-border bg-surface-raised p-4 shadow-xp-sm sm:p-5 md:p-6;
   }
 
   .xp-summary-panel-header {
@@ -532,7 +536,7 @@ html {
   }
 
   .xp-summary-panel-title {
-    @apply text-base font-semibold text-text-primary;
+    @apply text-base font-bold text-text-primary md:text-2xl;
   }
 
   .xp-summary-panel-subtitle {
@@ -548,15 +552,15 @@ html {
   }
 
   .xp-summary-metric-label {
-    @apply text-[11px] font-medium uppercase tracking-wider text-text-muted;
+    @apply text-xs font-medium uppercase tracking-wider text-text-muted md:text-[11px];
   }
 
   .xp-summary-metric-value {
-    @apply mt-2 block text-lg font-semibold sm:text-xl;
+    @apply mt-2 block text-xl font-semibold sm:text-xl md:text-2xl;
   }
 
   .xp-summary-metric-value-featured {
-    @apply text-2xl sm:text-3xl;
+    @apply text-2xl sm:text-3xl md:text-[2rem];
   }
 
   .xp-summary-metric-hint {
@@ -634,9 +638,112 @@ html {
   .xp-category-icon-option-selected {
     @apply border-primary bg-primary-surface shadow-xp-sm ring-1 ring-primary/20;
   }
+
+  .xp-form-tablet {
+    @apply mx-auto w-full max-w-[var(--content-max-width)];
+  }
 }
 
-/* Mobile nav drawer — outside @layer so backgrounds and transitions stay reliable */
+/* App shell — fixed viewport; only content area scrolls */
+.xp-app-shell {
+  height: 100dvh;
+  overflow: hidden;
+}
+
+.xp-shell-main {
+  min-height: 0;
+  min-width: 0;
+}
+
+.xp-shell-content {
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Desktop sidebar (1280px+) */
+.xp-shell-desktop-sidebar {
+  display: none;
+}
+
+@media (min-width: 1280px) {
+  .xp-shell-desktop-sidebar {
+    display: flex;
+  }
+
+  .xp-shell-main {
+    padding-left: var(--sidebar-width);
+  }
+}
+
+/* Tablet landscape — persistent icon rail */
+.xp-shell-tablet-rail {
+  display: none;
+}
+
+@media (min-width: 768px) and (max-width: 1279px) and (orientation: landscape) {
+  .xp-shell-tablet-rail {
+    display: flex;
+  }
+
+  .xp-shell-main {
+    padding-left: var(--sidebar-width-collapsed);
+  }
+}
+
+/* Top bar — phone + tablet portrait */
+.xp-shell-topbar {
+  display: flex;
+}
+
+@media (min-width: 768px) and (max-width: 1279px) and (orientation: landscape) {
+  .xp-shell-topbar {
+    display: none;
+  }
+}
+
+@media (min-width: 1280px) {
+  .xp-shell-topbar {
+    display: none;
+  }
+}
+
+/* Nav drawer overlay — phone + tablet portrait (+ landscape expand) */
+.xp-shell-nav-overlay {
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  background-color: rgba(22, 24, 29, 0.58);
+  backdrop-filter: blur(4px);
+  opacity: 0;
+  transition: opacity 240ms ease;
+}
+
+.xp-shell-nav-overlay-visible {
+  opacity: 1;
+}
+
+.xp-shell-nav-drawer {
+  width: min(var(--sidebar-width), min(88vw, 22rem));
+  border-right: 1px solid var(--color-border);
+  background-color: var(--color-surface-raised);
+  box-shadow: var(--shadow-lg);
+  transform: translateX(-100%);
+  transition: transform 240ms ease;
+}
+
+.xp-shell-nav-drawer-visible {
+  transform: translateX(0);
+}
+
+@media (min-width: 768px) {
+  .xp-shell-nav-drawer {
+    width: min(var(--sidebar-width), min(42vw, 20rem));
+  }
+}
+
+/* Legacy aliases — keep for stories/tests */
 .xp-mobile-nav-overlay {
   border: 0;
   padding: 0;

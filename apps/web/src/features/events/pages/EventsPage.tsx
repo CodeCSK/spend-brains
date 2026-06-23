@@ -65,7 +65,7 @@ export function EventsPage() {
 
       <PageSection aria-label="Your events" className="mt-6 sm:mt-8">
         {eventsQuery.isLoading && (
-          <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3" aria-hidden>
+          <ul className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3" aria-hidden>
             {[0, 1, 2].map((key) => (
               <li key={key} className="xp-skeleton-card" />
             ))}
@@ -108,7 +108,7 @@ export function EventsPage() {
         )}
 
         {eventsQuery.isSuccess && eventsQuery.data.length > 0 && (
-          <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <ul className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
             {eventsQuery.data.map((event) => (
               <li key={event.id}>
                 <EventCard event={event} />

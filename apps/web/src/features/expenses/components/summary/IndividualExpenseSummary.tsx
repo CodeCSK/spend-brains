@@ -81,7 +81,7 @@ export function IndividualExpenseSummary({
             categories={categoryStats}
             totalLabel="Total paid"
             centerLabel="Paid"
-            className="w-full max-w-[15rem] sm:max-w-[16rem] lg:max-w-[18rem]"
+            className="w-full max-w-[15rem] sm:max-w-[16rem] md:max-w-[18rem] xl:max-w-[20rem]"
           />
         ) : (
           <CategorySpendEmpty title="No payments yet" />

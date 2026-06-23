@@ -223,7 +223,7 @@ export function EventExpensesPage() {
   }, [currentPage, expensesQuery.isSuccess, meta, setParams])
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-6 md:space-y-8">
       <ExpenseFormDialog open={createOpen} onClose={closeFormDialog} mode="create" />
       <ExpenseFormDialog
         open={!!editExpenseId}
@@ -232,11 +232,11 @@ export function EventExpensesPage() {
         expenseId={editExpenseId}
       />
 
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <h2 className="text-lg font-semibold tracking-tight text-text-primary sm:text-xl">
+      <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+        <h2 className="text-xl font-bold tracking-tight text-text-primary md:text-2xl">
           Expenses
         </h2>
-        <Button type="button" className="w-full min-h-11 shrink-0 sm:w-auto" onClick={openCreateDialog}>
+        <Button type="button" className="w-full min-h-12 shrink-0 md:w-auto" onClick={openCreateDialog}>
           <Icon icon={Plus} size={20} aria-hidden />
           Add expense
         </Button>
@@ -363,7 +363,7 @@ export function EventExpensesPage() {
             loading={expensesQuery.isLoading}
             fetching={expensesQuery.isFetching}
           >
-            <ul className="space-y-3 md:hidden" aria-label="Expense list">
+            <ul className="space-y-3 xl:hidden" aria-label="Expense list">
               {expenses.map((expense) => (
                 <li key={expense.id}>
                   <ExpenseCard

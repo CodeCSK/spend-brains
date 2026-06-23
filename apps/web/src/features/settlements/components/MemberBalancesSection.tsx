@@ -10,7 +10,7 @@ type MemberBalancesSectionProps = {
   balances: MemberBalance[]
 }
 
-const amountColClass = 'text-right md:min-w-[5.5rem] md:max-w-[7rem]'
+const amountColClass = 'text-right xl:min-w-[5.5rem] xl:max-w-[7rem]'
 
 function BalanceStat({
   label,
@@ -27,7 +27,7 @@ function BalanceStat({
     const net = parseNetBalance(value)
     return (
       <div className={cn(amountColClass, className)}>
-        <p className="xp-amount-label md:hidden">{net.label}</p>
+        <p className="xp-amount-label xl:hidden">{net.label}</p>
         {net.kind === 'even' ? (
           <p className={cn(amountToneClass('muted', 'mt-0.5 text-xs sm:text-sm'))}>Even</p>
         ) : (
@@ -43,7 +43,7 @@ function BalanceStat({
 
   return (
     <div className={cn(amountColClass, className)}>
-      <p className="xp-amount-label md:hidden">{label}</p>
+      <p className="xp-amount-label xl:hidden">{label}</p>
       <Amount value={value} tone={tone} className="mt-0.5 block text-xs sm:text-sm" />
     </div>
   )
@@ -60,9 +60,9 @@ export function MemberBalancesSection({ balances }: MemberBalancesSectionProps) 
         Member balances
       </h2>
 
-      <div className="xp-compact-list mt-3 overflow-x-auto md:overflow-visible">
+      <div className="xp-compact-list mt-3 overflow-x-auto xl:overflow-visible">
         <div
-          className="hidden grid-cols-[minmax(0,1fr)_5.5rem_5.5rem_6rem] items-center gap-3 border-b border-border bg-surface-subtle/50 px-3 py-2 text-right md:grid"
+          className="hidden grid-cols-[minmax(0,1fr)_5.5rem_5.5rem_6rem] items-center gap-3 border-b border-border bg-surface-subtle/50 px-3 py-2 text-right xl:grid"
           aria-hidden
         >
           <span className="text-left text-[10px] font-medium uppercase tracking-wide text-text-muted">
@@ -77,7 +77,7 @@ export function MemberBalancesSection({ balances }: MemberBalancesSectionProps) 
           {balances.map((balance) => (
             <li
               key={balance.userId}
-              className="px-2 py-2 sm:px-3 sm:py-2.5 md:grid md:grid-cols-[minmax(0,1fr)_5.5rem_5.5rem_6rem] md:items-center md:gap-3"
+              className="px-2 py-2 sm:px-3 sm:py-2.5 xl:grid xl:grid-cols-[minmax(0,1fr)_5.5rem_5.5rem_6rem] xl:items-center xl:gap-3"
             >
               <div className="flex min-w-0 items-center gap-2">
                 <Avatar src={balance.avatarUrl} size="sm" />
@@ -86,7 +86,7 @@ export function MemberBalancesSection({ balances }: MemberBalancesSectionProps) 
                 </p>
               </div>
 
-              <div className="mt-2 grid grid-cols-3 gap-2 md:contents">
+              <div className="mt-2 grid grid-cols-3 gap-2 xl:contents">
                 <BalanceStat label="Paid" value={balance.totalPaid} tone="neutral" />
                 <BalanceStat label="Share" value={balance.totalShare} tone="muted" />
                 <BalanceStat label="Net" value={balance.netBalance} tone="neutral" />

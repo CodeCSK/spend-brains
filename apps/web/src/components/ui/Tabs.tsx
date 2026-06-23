@@ -41,7 +41,7 @@ export function Tab({ to, children, shortLabel, icon }: TabProps) {
 
   return (
     <NavLink to={to} className={({ isActive }) => tabLinkClass(isActive)}>
-      {icon && <Icon icon={icon} size={16} className="md:h-5 md:w-5" aria-hidden />}
+      {icon && <Icon icon={icon} size={20} className="md:h-5 md:w-5" aria-hidden />}
       <span className="truncate md:hidden">{mobileLabel}</span>
       <span className="hidden truncate md:inline">{children}</span>
     </NavLink>

@@ -9,7 +9,7 @@ import { Icon } from '../Icon'
 const sizeClass = {
   sm: 'max-w-md',
   md: 'max-w-lg',
-  lg: 'max-w-xl',
+  lg: 'max-w-[var(--content-max-width)]',
 } as const
 
 type DialogProps = {
@@ -82,7 +82,7 @@ export function Dialog({
 
   return createPortal(
     <div
-      className="fixed inset-0 z-[100] flex items-end justify-center p-4 sm:items-center sm:p-4"
+      className="fixed inset-0 z-[100] flex items-end justify-center p-4 md:p-6 xl:items-center xl:p-6"
       style={{ height: '100dvh', width: '100vw' }}
     >
       <button
@@ -100,16 +100,16 @@ export function Dialog({
         className={cn(
           'relative z-10 flex w-full flex-col overflow-hidden border border-border bg-surface-raised shadow-xp-md',
           isForm
-            ? 'max-h-[min(calc(100dvh-2rem),92dvh)] rounded-xp-xl sm:max-h-[min(88dvh,calc(100dvh-2rem))] sm:rounded-xp-lg'
-            : 'max-h-[calc(100dvh-2rem)] rounded-xp-xl p-4 sm:p-5',
+            ? 'max-h-[min(calc(100dvh-2rem),92dvh)] rounded-t-xp-xl md:max-h-[min(88dvh,calc(100dvh-3rem))] md:rounded-xp-xl xl:rounded-xp-lg'
+            : 'max-h-[calc(100dvh-2rem)] rounded-t-xp-xl p-4 md:rounded-xp-xl md:p-6 xl:rounded-xp-lg xl:p-6',
           sizeClass[size],
           className,
         )}
       >
         {isForm ? (
-          <div className="flex shrink-0 items-start justify-between gap-3 border-b border-border px-4 py-4 sm:px-5">
+          <div className="flex shrink-0 items-start justify-between gap-3 border-b border-border px-4 py-4 md:px-6 md:py-5">
             <div className="min-w-0 flex-1">
-              <h2 id={titleId} className="text-base font-semibold text-text-label sm:text-lg">
+              <h2 id={titleId} className="text-lg font-bold text-text-label md:text-xl">
                 {title}
               </h2>
               {description && (
@@ -129,7 +129,7 @@ export function Dialog({
           </div>
         ) : (
           <>
-            <h2 id={titleId} className="text-base font-semibold text-text-label sm:text-lg">
+            <h2 id={titleId} className="text-lg font-bold text-text-label md:text-xl">
               {title}
             </h2>
             {description && (
@@ -155,7 +155,7 @@ export function Dialog({
             className={cn(
               'flex flex-col-reverse gap-2 sm:flex-row sm:justify-end',
               isForm
-                ? 'shrink-0 border-t border-border px-4 py-3 sm:px-5 sm:py-4'
+                ? 'shrink-0 border-t border-border px-4 py-3 md:px-6 md:py-4'
                 : 'mt-4',
             )}
           >

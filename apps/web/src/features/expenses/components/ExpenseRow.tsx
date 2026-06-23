@@ -223,7 +223,7 @@ export function ExpenseRow({
       <td className="max-w-[12rem]">
         <p className="truncate font-medium text-text-primary">{expense.description}</p>
       </td>
-      <td className="hidden md:table-cell">
+      <td className="hidden xl:table-cell">
         {category ? (
           <span className="inline-flex max-w-[8rem] items-center gap-1.5 truncate text-text-secondary">
             <CategoryIcon iconKey={category.icon} size={16} variant="badge" />
@@ -268,7 +268,7 @@ export function ExpenseListSkeleton({ rows = 5 }: { rows?: number }) {
 
   return (
     <>
-      <ul className="space-y-3 md:hidden" aria-hidden>
+      <ul className="space-y-3 xl:hidden" aria-hidden>
         {rowKeys.map((key) => (
           <li key={key} className="xp-skeleton-card min-h-24 space-y-2 p-3">
             <div className="flex items-start justify-between gap-3">
@@ -285,13 +285,13 @@ export function ExpenseListSkeleton({ rows = 5 }: { rows?: number }) {
           </li>
         ))}
       </ul>
-      <div className="xp-data-table-wrap hidden md:block" aria-hidden>
+      <div className="xp-data-table-wrap hidden xl:block" aria-hidden>
         <table className="xp-data-table">
           <thead>
             <tr>
               <th>Date</th>
               <th>Description</th>
-              <th className="hidden md:table-cell">Category</th>
+              <th className="hidden xl:table-cell">Category</th>
               <th>Paid by</th>
               <th className="w-[6.5rem]">Split</th>
               <th className="text-right">Amount</th>
@@ -307,7 +307,7 @@ export function ExpenseListSkeleton({ rows = 5 }: { rows?: number }) {
                 <td>
                   <div className="xp-skeleton h-4 w-40 max-w-full rounded-xp-md" />
                 </td>
-                <td className="hidden md:table-cell">
+                <td className="hidden xl:table-cell">
                   <div className="xp-skeleton h-4 w-20 rounded-xp-md" />
                 </td>
                 <td>
@@ -391,7 +391,7 @@ function SortableHeader({
 
 export function ExpenseTable({ children, sort, order, onSort }: ExpenseTableProps) {
   return (
-    <div className="xp-data-table-wrap hidden md:block">
+    <div className="xp-data-table-wrap hidden xl:block">
       <table className="xp-data-table">
         <thead>
           <tr>
@@ -404,7 +404,7 @@ export function ExpenseTable({ children, sort, order, onSort }: ExpenseTableProp
               onSort={onSort}
             />
             <th>Description</th>
-            <th className="hidden w-[7rem] md:table-cell">Category</th>
+            <th className="hidden w-[7rem] xl:table-cell">Category</th>
             <th className="w-[7rem]">Paid by</th>
             <th className="w-[6.5rem]">Split</th>
             <SortableHeader

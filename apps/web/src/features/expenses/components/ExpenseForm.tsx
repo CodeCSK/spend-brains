@@ -359,12 +359,12 @@ export function ExpenseForm({
       <div className="flex min-h-0 flex-1 flex-col">
         <form
           id={formId}
-          className="min-h-0 flex-1 space-y-5 overflow-y-auto overscroll-contain px-4 py-4 sm:px-5 sm:py-5"
+          className="min-h-0 flex-1 space-y-6 overflow-y-auto overscroll-contain px-4 py-4 md:px-6 md:py-6"
           onSubmit={form.handleSubmit((values) => saveMutation.mutate(values))}
         >
           {formFields}
         </form>
-        <div className="flex shrink-0 flex-col gap-2 border-t border-border bg-surface-raised px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-5 sm:py-4">
+        <div className="flex shrink-0 flex-col gap-3 border-t border-border bg-surface-raised px-4 py-3 md:flex-row md:items-center md:justify-between md:px-6 md:py-4">
           {footerActions}
         </div>
       </div>

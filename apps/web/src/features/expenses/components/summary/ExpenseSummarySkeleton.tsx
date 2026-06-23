@@ -9,7 +9,7 @@ export function ExpenseSummarySkeleton({ variant = 'group' }: ExpenseSummarySkel
     <div className="space-y-4" aria-hidden>
       <div className="xp-summary-panel">
         <Skeleton variant="text" className="h-5 w-28" />
-        <div className="mt-4 grid grid-cols-1 items-center gap-5 lg:grid-cols-[minmax(0,14rem)_1fr] lg:gap-8">
+        <div className="mt-4 grid grid-cols-1 items-center gap-6 md:grid-cols-2 md:gap-8 lg:grid-cols-[minmax(0,14rem)_1fr] lg:gap-8">
           <div className="space-y-4">
             {variant === 'member' && (
               <>
@@ -24,7 +24,7 @@ export function ExpenseSummarySkeleton({ variant = 'group' }: ExpenseSummarySkel
           </div>
         </div>
         <div className="mt-5 border-t border-border pt-5">
-          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-3">
             {Array.from({ length: 3 }).map((_, index) => (
               <Skeleton key={index} variant="rect" className="h-11 rounded-xp-lg" />
             ))}
@@ -35,7 +35,7 @@ export function ExpenseSummarySkeleton({ variant = 'group' }: ExpenseSummarySkel
       {variant === 'group' && (
         <div className="xp-summary-panel">
           <Skeleton variant="text" className="h-5 w-32" />
-          <div className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-3">
             {Array.from({ length: 2 }).map((_, index) => (
               <Skeleton key={index} variant="rect" className="h-11 rounded-xp-lg" />
             ))}

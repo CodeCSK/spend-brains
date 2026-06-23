@@ -26,9 +26,9 @@ export function ExpenseSummaryOverview({
           {title}
         </h2>
 
-        <div className="mt-4 grid grid-cols-1 items-center gap-5 lg:grid-cols-[minmax(0,14rem)_1fr] lg:gap-8 xl:grid-cols-[minmax(0,16rem)_minmax(0,1fr)]">
+        <div className="mt-4 grid grid-cols-1 items-center gap-6 md:grid-cols-2 md:gap-8 lg:grid-cols-[minmax(0,14rem)_1fr] lg:gap-8 xl:grid-cols-[minmax(0,16rem)_minmax(0,1fr)]">
           <div className="min-w-0">{metrics}</div>
-          <div className="min-w-0 flex justify-center lg:justify-end">{chart}</div>
+          <div className="min-w-0 flex justify-center md:justify-end">{chart}</div>
         </div>
 
         {breakdown ? (

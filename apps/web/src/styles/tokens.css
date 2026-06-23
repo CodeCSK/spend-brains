@@ -139,8 +139,12 @@
   --content-max-width: 720px;
   --content-max-width-wide: 1120px;
   --sidebar-width: 15rem;
-  --sidebar-width-collapsed: 4rem;
+  --sidebar-width-collapsed: 4.5rem;
   --header-height: 3rem;
+  --header-height-tablet: 3.5rem;
   --bottom-nav-height: 3.5rem;
   --table-row-height: 2.5rem;
+  --tablet-min: 48rem; /* 768px */
+  --tablet-max: 85.375rem; /* 1366px */
+  --desktop-min: 80rem; /* 1280px */
 }

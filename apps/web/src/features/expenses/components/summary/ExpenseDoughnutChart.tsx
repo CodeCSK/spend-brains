@@ -124,13 +124,13 @@ export function ExpenseDoughnutChart({
       <div
         className={cn(
           'flex flex-col gap-6',
-          showLegend && 'lg:flex-row lg:items-center',
+          showLegend && 'md:flex-row md:items-center md:justify-center lg:flex-row',
         )}
       >
         <div className="relative mx-auto shrink-0">
           <svg
             viewBox={`0 0 ${SIZE} ${SIZE}`}
-            className="h-56 w-56 sm:h-60 sm:w-60"
+            className="h-56 w-56 sm:h-60 sm:w-60 md:h-64 md:w-64"
             role="img"
             aria-label={`${totalLabel} spending doughnut chart`}
           >
