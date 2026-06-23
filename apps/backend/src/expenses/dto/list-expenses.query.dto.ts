@@ -58,6 +58,13 @@ export class ListExpensesQueryDto {
   @IsUUID()
   paidBy?: string;
 
+  @ApiPropertyOptional({
+    description: 'Only expenses where this member has a share',
+  })
+  @IsOptional()
+  @IsUUID()
+  sharedWith?: string;
+
   @ApiPropertyOptional({ format: 'date', description: 'Inclusive lower bound' })
   @IsOptional()
   @IsString()

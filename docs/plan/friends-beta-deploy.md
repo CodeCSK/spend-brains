@@ -94,7 +94,7 @@ fly secrets set `
   MSG91_AUTH_KEY="your-msg91-auth-key" `
   MSG91_SENDER_ID="SPBRNS" `
   MSG91_OTP_TEMPLATE_ID="your-dlt-otp-template-id" `
-  CORS_ORIGINS="https://spendbrains-web-beta.pages.dev" `
+  CORS_ORIGINS="https://spend-brains.pages.dev,http://localhost:5173" `
   SUPER_ADMIN_PHONES="+919876543210"
 ```
 
@@ -149,13 +149,15 @@ Swagger (optional): `https://spendbrains-api-beta.fly.dev/apis`
 | `VITE_API_URL` | `https://spendbrains-api-beta.fly.dev` |
 | `VITE_BETA_MODE` | `true` |
 
-5. **Save and deploy** → note your URL, e.g. `https://spendbrains-web-beta.pages.dev`
+5. **Save and deploy** → note your URL, e.g. `https://spend-brains.pages.dev`
 
-6. **Update CORS** on Fly with the real Pages URL:
+6. **Update CORS** on Fly if your Pages URL differs from `fly.toml` (or set once via secret):
 
 ```powershell
-fly secrets set CORS_ORIGINS="https://spendbrains-web-beta.pages.dev"
+fly secrets set CORS_ORIGINS="https://spend-brains.pages.dev,http://localhost:5173"
 ```
+
+> **CORS is not per-deploy.** Fly secrets persist until you change them. You only update when the web URL changes (new project name, custom domain) or you add origins (e.g. preview URLs). A wrong origin must match **exactly** — `https://spend-brains.pages.dev` ≠ `https://spendbrains-web-beta.pages.dev`.
 
 (Redeploy not required — secrets reload on next request.)
 

@@ -17,6 +17,8 @@ primary_region = 'bom'
   OTP_MAX_ATTEMPTS = '10'
   OTP_RATE_LIMIT_PHONE_PER_HOUR = '20'
   OTP_RATE_LIMIT_IP_PER_HOUR = '50'
+  # Web SPA origin(s) — comma-separated; must match Cloudflare Pages URL exactly
+  CORS_ORIGINS = 'https://spend-brains.pages.dev,http://localhost:5173'
 
 [http_service]
   internal_port = 3000

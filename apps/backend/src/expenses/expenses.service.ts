@@ -73,6 +73,9 @@ export class ExpensesService {
       eventId,
       ...(query.categoryId && { categoryId: query.categoryId }),
       ...(query.paidBy && { paidBy: query.paidBy }),
+      ...(query.sharedWith && {
+        shares: { some: { userId: query.sharedWith } },
+      }),
       ...(query.search && {
         description: { contains: query.search, mode: 'insensitive' },
       }),

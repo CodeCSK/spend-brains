@@ -24,6 +24,7 @@ export type ExpenseListParams = {
   order?: 'asc' | 'desc'
   categoryId?: string
   paidBy?: string
+  sharedWith?: string
   dateFrom?: string
   dateTo?: string
   search?: string

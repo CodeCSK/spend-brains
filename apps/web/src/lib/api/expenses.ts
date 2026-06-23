@@ -13,6 +13,7 @@ function buildExpenseQuery(params?: ExpenseListParams): string {
   if (params.order) search.set('order', params.order)
   if (params.categoryId) search.set('categoryId', params.categoryId)
   if (params.paidBy) search.set('paidBy', params.paidBy)
+  if (params.sharedWith) search.set('sharedWith', params.sharedWith)
   if (params.dateFrom) search.set('dateFrom', params.dateFrom)
   if (params.dateTo) search.set('dateTo', params.dateTo)
   if (params.search) search.set('search', params.search)
