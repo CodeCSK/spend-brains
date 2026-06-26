@@ -55,6 +55,17 @@ When doing planned web feature work (beyond the auth shell), read **[apps/web/do
 
 ---
 
+## Git workflow
+
+| Branch | Use |
+|--------|-----|
+| `develop` | Target for every feature PR |
+| `master` | Production releases only (`develop` → `master`) |
+
+Details → [ops/branching.md](./ops/branching.md)
+
+---
+
 ## Non‑negotiable rules
 
 | Rule | Detail |
