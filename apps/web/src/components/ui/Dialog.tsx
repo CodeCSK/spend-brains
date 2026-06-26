@@ -81,10 +81,7 @@ export function Dialog({
   const isForm = variant === 'form'
 
   return createPortal(
-    <div
-      className="fixed inset-0 z-[100] flex items-end justify-center p-4 md:p-6 xl:items-center xl:p-6"
-      style={{ height: '100dvh', width: '100vw' }}
-    >
+    <div className="fixed inset-0 z-[100] flex items-end justify-center p-4 md:p-6 xl:items-center xl:p-6">
       <button
         type="button"
         className="absolute inset-0 bg-surface-inverse/50 backdrop-blur-[2px]"
