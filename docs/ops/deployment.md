@@ -22,7 +22,9 @@
 |-----|--------|---------|
 | local | — | Development |
 | staging | `develop` | QA |
-| production | `main` | Live users |
+| production | `master` | Live users |
+
+Branch flow (feature PRs → `develop`, release PRs → `master`): [branching.md](./branching.md)
 
 ---
 
