@@ -135,6 +135,27 @@ html {
   scrollbar-gutter: stable;
 }
 
+/* App shell routes — single scroll container (.xp-shell-content), not the document */
+html.xp-app-viewport {
+  height: 100%;
+  overflow: hidden;
+  scrollbar-gutter: auto;
+}
+
+html.xp-app-viewport body {
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+}
+
+html.xp-app-viewport #root {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+}
+
 .tabular-amount {
   font-variant-numeric: tabular-nums;
   letter-spacing: -0.01em;
@@ -648,6 +669,12 @@ html {
 .xp-app-shell {
   height: 100dvh;
   overflow: hidden;
+}
+
+html.xp-app-viewport .xp-app-shell {
+  flex: 1;
+  height: auto;
+  min-height: 0;
 }
 
 .xp-shell-main {

@@ -67,6 +67,14 @@ export function AppShell() {
   }, [closeNavDrawer, navDrawerMounted, navDrawerVisible, openNavDrawer])
 
   useEffect(() => {
+    document.documentElement.classList.add('xp-app-viewport')
+
+    return () => {
+      document.documentElement.classList.remove('xp-app-viewport')
+    }
+  }, [])
+
+  useEffect(() => {
     closeNavDrawer()
   }, [location.pathname, closeNavDrawer])
 

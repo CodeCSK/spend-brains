@@ -136,7 +136,7 @@ Swagger (optional): `https://spendbrains-api-beta.fly.dev/apis`
 
 | Setting | Value |
 |---------|-------|
-| Production branch | `main` (or your default branch) |
+| Production branch | `master` |
 | Root directory | `/` (repo root) |
 | Build command | `npm ci && npm run build -w web` |
 | Build output directory | `apps/web/dist` |

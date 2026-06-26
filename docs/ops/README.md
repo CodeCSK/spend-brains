@@ -2,6 +2,7 @@
 
 | Topic | Doc |
 |-------|-----|
+| Branching & releases | [branching.md](./branching.md) |
 | Hosting & CI/CD | [deployment.md](./deployment.md) |
 | Security & DPDP | [security-and-dpdp.md](./security-and-dpdp.md) |
 | Pre-launch gate | [../plan/pre-launch-checklist.md](../plan/pre-launch-checklist.md) |
