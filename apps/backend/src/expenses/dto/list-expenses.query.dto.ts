@@ -38,7 +38,10 @@ export class ListExpensesQueryDto {
   @Max(100)
   limit: number = 20;
 
-  @ApiPropertyOptional({ enum: ExpenseSortField, default: ExpenseSortField.ExpenseDate })
+  @ApiPropertyOptional({
+    enum: ExpenseSortField,
+    default: ExpenseSortField.ExpenseDate,
+  })
   @IsOptional()
   @IsEnum(ExpenseSortField)
   sort: ExpenseSortField = ExpenseSortField.ExpenseDate;

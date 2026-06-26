@@ -163,9 +163,9 @@ describe('Events domain (e2e)', () => {
       })
       .expect(201);
     expect(res.body.shares.length).toBe(3);
-    expect(res.body.shares.every((s: { amount: string }) => s.amount === '400.00')).toBe(
-      true,
-    );
+    expect(
+      res.body.shares.every((s: { amount: string }) => s.amount === '400.00'),
+    ).toBe(true);
   });
 
   it('summaries reflect paid vs share', async () => {
@@ -173,7 +173,9 @@ describe('Events domain (e2e)', () => {
       .get(`/v1/events/${eventId}/summaries`)
       .set(auth(captain))
       .expect(200);
-    const cap = res.body.find((b: { userId: string }) => b.userId === captain.id);
+    const cap = res.body.find(
+      (b: { userId: string }) => b.userId === captain.id,
+    );
     expect(cap.totalPaid).toBe('1200.00');
     expect(cap.totalShare).toBe('400.00');
     expect(cap.netBalance).toBe('800.00');

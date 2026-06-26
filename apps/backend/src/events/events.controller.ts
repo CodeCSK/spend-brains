@@ -67,7 +67,9 @@ export class EventsController {
 
   @Post('join/:publicId')
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Join (public) or request to join (private) an event' })
+  @ApiOperation({
+    summary: 'Join (public) or request to join (private) an event',
+  })
   @ApiOkResponse({ type: JoinEventResultDto })
   join(@CurrentUser() user: RequestUser, @Param('publicId') publicId: string) {
     return this.eventsService.join(user.id, publicId);
@@ -75,7 +77,9 @@ export class EventsController {
 
   @Get(':id')
   @UseGuards(EventMemberGuard)
-  @ApiOperation({ summary: 'Get event detail with current role and member count' })
+  @ApiOperation({
+    summary: 'Get event detail with current role and member count',
+  })
   @ApiOkResponse({ type: EventDto })
   getOne(
     @Param('id', ParseEventRefPipe) id: string,
@@ -135,7 +139,9 @@ export class EventsController {
   @Get(':id/join-requests')
   @UseGuards(EventMemberGuard, RolesGuard)
   @Roles(MemberRole.captain, MemberRole.vice_captain)
-  @ApiOperation({ summary: 'List pending join requests (captain / vice-captain)' })
+  @ApiOperation({
+    summary: 'List pending join requests (captain / vice-captain)',
+  })
   @ApiOkResponse({ type: [JoinRequestDto] })
   listJoinRequests(@Param('id', ParseUUIDPipe) id: string) {
     return this.eventsService.listJoinRequests(id);

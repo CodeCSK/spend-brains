@@ -16,15 +16,8 @@ import type { Request } from 'express';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
 import { Public } from '../common/decorators/public.decorator';
 import { AuthService } from './auth.service';
-import {
-  MessageResponseDto,
-  TokenResponseDto,
-} from './dto/auth-response.dto';
-import {
-  RefreshTokenDto,
-  SendOtpDto,
-  VerifyOtpDto,
-} from './dto/auth.dto';
+import { MessageResponseDto, TokenResponseDto } from './dto/auth-response.dto';
+import { RefreshTokenDto, SendOtpDto, VerifyOtpDto } from './dto/auth.dto';
 import type { RequestUser } from './types/request-user';
 
 @ApiTags('Auth')
@@ -39,7 +32,9 @@ export class AuthController {
   @ApiOkResponse({ type: MessageResponseDto })
   sendOtp(@Body() dto: SendOtpDto, @Req() req: Request) {
     const ip =
-      (req.headers['x-forwarded-for'] as string | undefined)?.split(',')[0]?.trim() ??
+      (req.headers['x-forwarded-for'] as string | undefined)
+        ?.split(',')[0]
+        ?.trim() ??
       req.ip ??
       '';
     return this.authService.sendOtp(dto, ip);

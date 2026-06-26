@@ -22,8 +22,7 @@ import { AuthClient, SendOtpDto, VerifyOtpDto } from './dto/auth.dto';
 import type { TokenResponseDto } from './dto/auth-response.dto';
 import type { JwtPayload } from './types/jwt-payload';
 
-const OTP_SEND_MESSAGE =
-  'If this number is valid, an OTP has been sent.';
+const OTP_SEND_MESSAGE = 'If this number is valid, an OTP has been sent.';
 
 @Injectable()
 export class AuthService {
@@ -42,7 +41,10 @@ export class AuthService {
     this.otpConfig = configService.get('otp', { infer: true });
   }
 
-  async sendOtp(dto: SendOtpDto, ipAddress: string): Promise<{ message: string }> {
+  async sendOtp(
+    dto: SendOtpDto,
+    ipAddress: string,
+  ): Promise<{ message: string }> {
     if (dto.client === AuthClient.Web && this.captchaService.isRequired()) {
       await this.captchaService.verify(dto.captchaToken);
     }
@@ -232,7 +234,9 @@ export class AuthService {
     });
 
     const refreshToken = generateRefreshToken();
-    const refreshExpiresMs = this.parseDurationMs(this.jwtConfig.refreshExpiresIn);
+    const refreshExpiresMs = this.parseDurationMs(
+      this.jwtConfig.refreshExpiresIn,
+    );
     const expiresAt = new Date(Date.now() + refreshExpiresMs);
 
     await this.prisma.refreshToken.create({

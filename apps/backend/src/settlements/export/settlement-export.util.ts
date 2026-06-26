@@ -112,17 +112,23 @@ function paymentRow(
   const parts: string[] = [];
 
   if (striped) {
-    parts.push(rect(left + 1, rowTop, INNER - 2, ROW_H, C.rowAlt, undefined, 0));
+    parts.push(
+      rect(left + 1, rowTop, INNER - 2, ROW_H, C.rowAlt, undefined, 0),
+    );
   }
 
   parts.push(t(left + 16, midY, truncate(from, 18), { size: 14, weight: 600 }));
-  parts.push(t(left + 148, midY, 'pays', { size: 12, fill: C.muted, anchor: 'middle' }));
+  parts.push(
+    t(left + 148, midY, 'pays', { size: 12, fill: C.muted, anchor: 'middle' }),
+  );
   parts.push(t(left + 168, midY, truncate(to, 18), { size: 14, weight: 600 }));
-  parts.push(t(left + INNER - 16, midY, formatAmount(amount), {
-    size: 17,
-    weight: 700,
-    anchor: 'end',
-  }));
+  parts.push(
+    t(left + INNER - 16, midY, formatAmount(amount), {
+      size: 17,
+      weight: 700,
+      anchor: 'end',
+    }),
+  );
 
   return parts.join('\n  ');
 }
@@ -137,10 +143,15 @@ export function buildSettlementSvg(data: SettlementExportData): string {
 
   let paymentLines = '';
   if (data.lines.length === 0) {
-    paymentLines = t(PAD + 16, listTop + tableHeaderH + 30, 'Everyone is settled up.', {
-      size: 14,
-      fill: C.muted,
-    });
+    paymentLines = t(
+      PAD + 16,
+      listTop + tableHeaderH + 30,
+      'Everyone is settled up.',
+      {
+        size: 14,
+        fill: C.muted,
+      },
+    );
   } else {
     paymentLines = data.lines
       .map((line, index) =>

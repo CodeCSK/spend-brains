@@ -42,7 +42,7 @@ Repository automation enforces this flow:
 | Check | What it does |
 |-------|----------------|
 | **Branch policy** | Rejects PRs that do not target `develop` (features) or `master` (releases from `develop` only) |
-| **CI** | Lint, test, and build on PRs to `develop` and `master` |
+| **CI** | Install, backend test (`--passWithNoTests`), and web build on PRs to `develop` and `master` |
 
 ## One-time admin setup
 

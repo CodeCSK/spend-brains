@@ -37,7 +37,8 @@ export class SendOtpDto {
   phone!: string;
 
   @ApiProperty({
-    description: 'User must accept OTP / privacy terms before SMS is sent (DPDP)',
+    description:
+      'User must accept OTP / privacy terms before SMS is sent (DPDP)',
     example: true,
   })
   @IsBoolean()
@@ -53,7 +54,8 @@ export class SendOtpDto {
   client: AuthClient = AuthClient.Web;
 
   @ApiPropertyOptional({
-    description: 'Cloudflare Turnstile token — required for web when Turnstile is enabled',
+    description:
+      'Cloudflare Turnstile token — required for web when Turnstile is enabled',
   })
   @IsOptional()
   @IsString()

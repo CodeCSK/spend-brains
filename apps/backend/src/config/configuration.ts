@@ -63,7 +63,9 @@ export default (): RootConfig => ({
     port: parseInt(process.env.PORT ?? '3000', 10),
   },
   cors: {
-    origins: (process.env.CORS_ORIGINS ?? 'http://localhost:5173,http://localhost:3000')
+    origins: (
+      process.env.CORS_ORIGINS ?? 'http://localhost:5173,http://localhost:3000'
+    )
       .split(',')
       .map((o) => o.trim())
       .filter(Boolean),

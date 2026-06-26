@@ -27,10 +27,7 @@ export class UsersController {
   @Patch('me')
   @ApiOperation({ summary: 'Update current user profile' })
   @ApiOkResponse({ type: UserProfileDto })
-  patchMe(
-    @CurrentUser() user: RequestUser,
-    @Body() dto: UpdateUserProfileDto,
-  ) {
+  patchMe(@CurrentUser() user: RequestUser, @Body() dto: UpdateUserProfileDto) {
     return this.usersService.updateProfile(user.id, dto);
   }
 }
