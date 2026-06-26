@@ -51,8 +51,7 @@ export class UpdateEventDto {
 
   @ApiPropertyOptional({
     enum: EventType,
-    description:
-      'Changing the type resets cover_image_url to that type default',
+    description: 'Changing the type resets cover_image_url to that type default',
   })
   @IsOptional()
   @IsEnum(EventType)

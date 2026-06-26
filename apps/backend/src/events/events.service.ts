@@ -124,9 +124,7 @@ export class EventsService {
       ...(dto.name !== undefined && { name: dto.name }),
       ...(dto.description !== undefined && { description: dto.description }),
       ...(dto.location !== undefined && { location: dto.location }),
-      ...(dto.startDate !== undefined && {
-        startDate: new Date(dto.startDate),
-      }),
+      ...(dto.startDate !== undefined && { startDate: new Date(dto.startDate) }),
       ...(dto.endDate !== undefined && { endDate: new Date(dto.endDate) }),
       ...(dto.visibility !== undefined && { visibility: dto.visibility }),
       ...(dto.eventType !== undefined && {
@@ -183,11 +181,7 @@ export class EventsService {
   async join(
     userId: string,
     publicId: string,
-  ): Promise<{
-    status: 'joined' | 'requested';
-    message: string;
-    eventId: string | null;
-  }> {
+  ): Promise<{ status: 'joined' | 'requested'; message: string; eventId: string | null }> {
     const event = await this.prisma.event.findUnique({
       where: { publicId },
       select: { id: true, visibility: true },

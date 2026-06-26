@@ -7,15 +7,15 @@ import {
 import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { SettlementsService } from '../settlements/settlements.service';
-import {
-  canDeleteExpense,
-  canEditExpense,
-} from '../common/permissions/event-permissions';
+import { canDeleteExpense, canEditExpense } from '../common/permissions/event-permissions';
 import type { EventMembership } from '../common/guards/event-membership.types';
 import type { CreateExpenseDto } from './dto/create-expense.dto';
 import type { UpdateExpenseDto } from './dto/update-expense.dto';
 import type { ListExpensesQueryDto } from './dto/list-expenses.query.dto';
-import { ExpenseDto, ExpenseListDto } from './dto/expense-response.dto';
+import {
+  ExpenseDto,
+  ExpenseListDto,
+} from './dto/expense-response.dto';
 
 type ExpenseWithShares = Prisma.ExpenseGetPayload<{
   include: { shares: { select: { userId: true; amount: true } } };
@@ -147,12 +147,8 @@ export class ExpensesService {
     const expense = await this.prisma.$transaction(async (tx) => {
       const data: Prisma.ExpenseUpdateInput = {
         ...(dto.description !== undefined && { description: dto.description }),
-        ...(dto.amount !== undefined && {
-          amount: new Prisma.Decimal(dto.amount),
-        }),
-        ...(dto.paidBy !== undefined && {
-          payer: { connect: { id: dto.paidBy } },
-        }),
+        ...(dto.amount !== undefined && { amount: new Prisma.Decimal(dto.amount) }),
+        ...(dto.paidBy !== undefined && { payer: { connect: { id: dto.paidBy } } }),
         ...(dto.expenseDate !== undefined && {
           expenseDate: new Date(dto.expenseDate),
         }),
@@ -251,10 +247,7 @@ export class ExpensesService {
    * Equal split in integer paise; leftover paise are distributed one each to
    * the first participants so the shares sum exactly to the total.
    */
-  private splitEqually(
-    amount: number,
-    participants: string[],
-  ): Prisma.Decimal[] {
+  private splitEqually(amount: number, participants: string[]): Prisma.Decimal[] {
     const totalPaise = Math.round(amount * 100);
     const n = participants.length;
     const base = Math.floor(totalPaise / n);

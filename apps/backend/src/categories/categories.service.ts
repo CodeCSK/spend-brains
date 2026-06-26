@@ -57,9 +57,7 @@ export class CategoriesService {
         'Cannot delete a category that has expenses; reassign them first',
       );
     }
-    await this.prisma.eventExpenseCategory.delete({
-      where: { id: categoryId },
-    });
+    await this.prisma.eventExpenseCategory.delete({ where: { id: categoryId } });
   }
 
   private async getCategory(eventId: string, categoryId: string) {

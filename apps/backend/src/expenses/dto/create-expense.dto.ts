@@ -27,10 +27,7 @@ export class CreateExpenseDto {
   @MaxLength(500)
   description!: string;
 
-  @ApiProperty({
-    example: 1200,
-    description: 'Amount in INR, up to 2 decimals',
-  })
+  @ApiProperty({ example: 1200, description: 'Amount in INR, up to 2 decimals' })
   @IsNumber({ maxDecimalPlaces: 2 })
   @Min(0.01)
   @Max(99999999.99)

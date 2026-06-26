@@ -36,8 +36,7 @@ export class UpdateUserProfileDto {
   @ApiPropertyOptional({
     nullable: true,
     example: 'preset:spark',
-    description:
-      'Preset id (preset:spark) or legacy HTTPS URL. Set to null to clear.',
+    description: 'Preset id (preset:spark) or legacy HTTPS URL. Set to null to clear.',
   })
   @IsOptional()
   @ValidateIf((_, value) => value !== null)

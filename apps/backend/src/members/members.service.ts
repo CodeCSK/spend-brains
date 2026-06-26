@@ -6,10 +6,7 @@ import {
 } from '@nestjs/common';
 import { MemberRole } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
-import type {
-  AddMemberDto,
-  UpdateMemberRoleDto,
-} from './dto/member-request.dto';
+import type { AddMemberDto, UpdateMemberRoleDto } from './dto/member-request.dto';
 import type { MemberDto } from './dto/member-response.dto';
 
 @Injectable()
@@ -35,9 +32,7 @@ export class MembersService {
       select: { id: true, displayName: true, avatarUrl: true, phone: true },
     });
     if (!user) {
-      throw new NotFoundException(
-        'No Spendbrains user found with that phone number',
-      );
+      throw new NotFoundException('No Spendbrains user found with that phone number');
     }
 
     const existing = await this.prisma.eventMember.findUnique({

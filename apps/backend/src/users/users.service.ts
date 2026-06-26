@@ -43,9 +43,7 @@ export class UsersService {
       const user = await this.prisma.user.update({
         where: { id: userId },
         data: {
-          ...(dto.displayName !== undefined && {
-            displayName: dto.displayName,
-          }),
+          ...(dto.displayName !== undefined && { displayName: dto.displayName }),
           ...(dto.avatarUrl !== undefined && { avatarUrl: dto.avatarUrl }),
         },
       });

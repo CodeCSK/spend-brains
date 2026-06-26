@@ -56,9 +56,7 @@ export class SettlementsController {
   @Post('settlements/:lineId/settle')
   @HttpCode(HttpStatus.OK)
   @Roles(MemberRole.captain, MemberRole.vice_captain)
-  @ApiOperation({
-    summary: 'Mark a payment line settled (captain / vice-captain)',
-  })
+  @ApiOperation({ summary: 'Mark a payment line settled (captain / vice-captain)' })
   @ApiOkResponse({ type: SettlementLineDto })
   settle(
     @Param('eventId', ParseUUIDPipe) eventId: string,
@@ -71,9 +69,7 @@ export class SettlementsController {
   @Post('settlements/:lineId/unsettle')
   @HttpCode(HttpStatus.OK)
   @Roles(MemberRole.captain, MemberRole.vice_captain)
-  @ApiOperation({
-    summary: 'Revert a settled payment line (captain / vice-captain)',
-  })
+  @ApiOperation({ summary: 'Revert a settled payment line (captain / vice-captain)' })
   @ApiOkResponse({ type: SettlementLineDto })
   unsettle(
     @Param('eventId', ParseUUIDPipe) eventId: string,
@@ -83,9 +79,7 @@ export class SettlementsController {
   }
 
   @Get('settlements/export')
-  @ApiOperation({
-    summary: 'Export settlement details as a shareable image (SVG)',
-  })
+  @ApiOperation({ summary: 'Export settlement details as a shareable image (SVG)' })
   @ApiProduces('image/svg+xml')
   async export(
     @Param('eventId', ParseUUIDPipe) eventId: string,
